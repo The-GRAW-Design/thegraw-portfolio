@@ -9,6 +9,14 @@ const COVER_FRAME: DitherFrame = { x: 0, y: 0, width: 1, height: 1 };
 /** The hero runs 30% past the first screen (`h-[130svh]` on the section). */
 const HERO_SCREENS = 1.3;
 
+/** Figma "Desktop - 1" image rectangle: 2274×2069 at (-40, -217.66) in the 1920×1080 frame. */
+const HERO_FRAME: DitherFrame = {
+  x: -0.02083,
+  y: -0.20154,
+  width: 1.18438,
+  height: 1.91604,
+};
+
 /**
  * Figma "Desktop - 1" palette (white → RED GRAW → deep red), rendered like the
  * footer at the user's request: gradient map with grain, 3px pixels.
@@ -24,15 +32,19 @@ export const HERO_DITHER: DitherPreset = {
   scatter: 0.3,
   quantize: "posterize",
   levels: 16,
-  // Image rectangle 2274×2069 at (-40, -217.66) in the 1920×1080 frame, kept
-  // on the first screen: the image already runs past it, into the extra 30%.
+  // Kept on the first screen: the image already runs past it, into the extra 30%.
   frame: {
-    x: -0.02083,
-    y: -0.20154 / HERO_SCREENS,
-    width: 1.18438,
-    height: 1.91604 / HERO_SCREENS,
+    ...HERO_FRAME,
+    y: HERO_FRAME.y / HERO_SCREENS,
+    height: HERO_FRAME.height / HERO_SCREENS,
   },
   mobileFrame: COVER_FRAME,
+};
+
+/** 404: the hero knight on a single screen. */
+export const NOT_FOUND_DITHER: DitherPreset = {
+  ...HERO_DITHER,
+  frame: HERO_FRAME,
 };
 
 /** Figma "Footer": image at 29% over RED GRAW, offset −15%, scatter 50%, then Pixelate (2px, 16 levels). */

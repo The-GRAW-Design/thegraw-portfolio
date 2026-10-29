@@ -15,6 +15,12 @@ export const HOME_PAGE = {
   viewAllImage: asset("/images/home/view-all-band.webp"),
 } as const;
 
+export const NOT_FOUND_PAGE = {
+  title: "Page not found",
+  code: "error 404",
+  back: "back to home",
+} as const;
+
 export const PROJECT_PAGE = {
   /** The Figma project pages use this photo for every image. */
   image: asset("/images/home/featured-project.webp"),
