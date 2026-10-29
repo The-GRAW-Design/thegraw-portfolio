@@ -20,13 +20,13 @@ export type CollageImage = {
   crop: CollageCrop;
 };
 
-/** A piece around the main image: it floats and follows the cursor. */
+/** A piece around the main image: it floats, follows the cursor and blinks. */
 export type CollagePiece = CollageImage & {
   /** Drawn under the main image (Figma layer order). */
   behind?: boolean;
-  /** 0–1: how far it travels with the cursor. */
+  /** 0–1: how far it travels with the cursor (× 70px). */
   depth: number;
-  /** Two 0–1 seeds for its idle float (speed, phase and amplitude). */
+  /** 0–1 seeds for x and y: speed, phase and size of the idle float, and how fast it catches the cursor. */
   seed: readonly [number, number];
 };
 
