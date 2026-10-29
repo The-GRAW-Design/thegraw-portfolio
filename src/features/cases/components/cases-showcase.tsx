@@ -11,6 +11,7 @@ import {
   COLLAGE_SIZE,
 } from "@/features/cases/components/collage-image";
 import { SwapText } from "@/features/cases/components/swap-text";
+import { usePieceVisibility } from "@/features/cases/hooks/use-piece-visibility";
 import { useStepInput } from "@/features/cases/hooks/use-step-input";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { DURATION, EASE, gsap, useGSAP } from "@/lib/gsap";
@@ -23,9 +24,20 @@ const FOLLOW = 0.18;
 const STACK_GAP = 0.92;
 /** How much a case shrinks while it is away from the center. */
 const AWAY_SCALE = 0.06;
-/** Cursor parallax of the main image and of the pieces, in Figma px. */
+/** Cursor parallax of the main image and of the pieces, in px. */
 const MAIN_PARALLAX = 16;
 const PIECE_PARALLAX = 70;
+/** A hovered piece pushes the others away: strength and falloff, in px. */
+const REPEL_STRENGTH = 185;
+const REPEL_RANGE = 1000;
+/** Share of the push covered per 60fps frame. */
+const REPEL_FOLLOW = 0.02;
+
+/** Center of each piece, in Figma px of the collage. */
+const PIECE_CENTERS = CASE_COLLAGE.pieces.map(({ rect }) => ({
+  x: rect.x + rect.width / 2,
+  y: rect.y + rect.height / 2,
+}));
 
 /**
  * The collage box: 1276×655 design px, placed like the Figma frame (its main
@@ -41,14 +53,16 @@ const pad = (value: number) => String(value).padStart(2, "0");
  * Figma "Cases", with the mechanics of julia-paternostro.com: one case per
  * wheel notch, swipe or arrow key, eased toward the target; the cases stack
  * vertically in an endless loop, shrinking away from the center; the pieces
- * around the main image float, follow the cursor and re-enter on each case.
+ * around the main image float, follow the cursor, push away from the hovered
+ * one and blink in and out (see `usePieceVisibility`).
  */
 export function CasesShowcase() {
   const stageRef = useRef<HTMLElement>(null);
   const viewMoreRef = useRef<HTMLButtonElement>(null);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
   const layerRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const pieceRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const pieceRefs = useRef<(HTMLElement | null)[]>([]);
+  const innerRefs = useRef<(HTMLElement | null)[]>([]);
   const targetRef = useRef(0);
   const activeRef = useRef(0);
   const [service, setService] = useState<ServiceId>(SERVICE_TABS[0].id);
@@ -64,6 +78,13 @@ export function CasesShowcase() {
   );
   const count = projects.length;
   const current = projects[active] ?? projects[0];
+
+  const { repelRef, onPieceEnter, onPieceLeave } = usePieceVisibility({
+    stageRef,
+    innerRefs,
+    caseKey: `${service}-${active}`,
+    reducedMotion,
+  });
 
   useStepInput(
     stageRef,
@@ -86,6 +107,7 @@ export function CasesShowcase() {
       const pointer = { x: 0, y: 0 };
       const smooth = { x: 0, y: 0 };
       const drift = CASE_COLLAGE.pieces.map(() => ({ x: 0, y: 0 }));
+      const push = CASE_COLLAGE.pieces.map(() => ({ x: 0, y: 0 }));
 
       const onPointerMove = (event: PointerEvent) => {
         if (event.pointerType !== "mouse") return;
@@ -122,10 +144,9 @@ export function CasesShowcase() {
           if (offset > count / 2) offset -= count;
           const distance = Math.abs(offset);
           const near = Math.max(0, 1 - distance);
-          const x = MAIN_PARALLAX * unit * smooth.x * near;
+          const x = MAIN_PARALLAX * smooth.x * near;
           const y =
-            offset * STACK_GAP * height +
-            MAIN_PARALLAX * unit * smooth.y * near;
+            offset * STACK_GAP * height + MAIN_PARALLAX * smooth.y * near;
           const scale = 1 - AWAY_SCALE * Math.min(distance, 1);
           slide.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
           slide.style.visibility = distance > 1.25 ? "hidden" : "visible";
@@ -141,24 +162,51 @@ export function CasesShowcase() {
         });
 
         const seconds = time;
+        const source = still ? repelRef.current : null;
+        const pushLag = 1 - Math.pow(1 - REPEL_FOLLOW, frames);
         CASE_COLLAGE.pieces.forEach((piece, index) => {
           const element = pieceRefs.current[index];
           if (!element) return;
-          const [speed, phase] = piece.seed;
-          const follow = (0.045 + 0.12 * speed) * frames;
+          const [seedX, seedY] = piece.seed;
+          const followX = Math.min(1, (0.045 + 0.12 * seedX) * frames);
+          const followY = Math.min(1, (0.045 + 0.12 * seedY) * frames);
           const goalX = pointer.x * still * piece.depth * PIECE_PARALLAX;
           const goalY = pointer.y * still * piece.depth * PIECE_PARALLAX;
-          drift[index].x += (goalX - drift[index].x) * Math.min(1, follow);
-          drift[index].y += (goalY - drift[index].y) * Math.min(1, follow);
+          drift[index].x += (goalX - drift[index].x) * followX;
+          drift[index].y += (goalY - drift[index].y) * followY;
           const floatX =
             still *
-            Math.sin(seconds * (0.3 + 0.5 * speed) + Math.PI * 2 * speed) *
-            (4 + 9 * speed);
+            Math.sin(seconds * (0.3 + 0.5 * seedX) + Math.PI * 2 * seedX) *
+            (4 + 9 * seedX);
           const floatY =
             still *
-            Math.cos(seconds * (0.28 + 0.5 * phase) + Math.PI * 2 * phase) *
-            (4 + 9 * phase);
-          element.style.transform = `translate3d(${((drift[index].x + floatX) * unit).toFixed(2)}px, ${((drift[index].y + floatY) * unit).toFixed(2)}px, 0)`;
+            Math.cos(seconds * (0.28 + 0.5 * seedY) + Math.PI * 2 * seedY) *
+            (4 + 9 * seedY);
+
+          // Away from the hovered piece, harder the closer it is.
+          let pushX = 0;
+          let pushY = 0;
+          if (source !== null && source !== index) {
+            let awayX =
+              (PIECE_CENTERS[index].x - PIECE_CENTERS[source].x) * unit;
+            let awayY =
+              (PIECE_CENTERS[index].y - PIECE_CENTERS[source].y) * unit;
+            let distance = Math.hypot(awayX, awayY);
+            if (distance < 1) {
+              awayX = Math.cos(Math.PI * 2 * seedX);
+              awayY = Math.sin(Math.PI * 2 * seedX);
+              distance = 1;
+            }
+            const force = REPEL_STRENGTH * Math.exp(-distance / REPEL_RANGE);
+            pushX = (awayX / distance) * force;
+            pushY = (awayY / distance) * force;
+          }
+          push[index].x += (pushX - push[index].x) * pushLag;
+          push[index].y += (pushY - push[index].y) * pushLag;
+
+          const x = drift[index].x + floatX + push[index].x;
+          const y = drift[index].y + floatY + push[index].y;
+          element.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
         });
 
         const index = ((nearest % count) + count) % count;
@@ -178,27 +226,6 @@ export function CasesShowcase() {
       };
     },
     { dependencies: [count, service, reducedMotion] },
-  );
-
-  // Each case brings its pieces back in.
-  useGSAP(
-    () => {
-      if (reducedMotion) return;
-      gsap.fromTo(
-        "[data-piece-inner]",
-        { scale: 0.82, autoAlpha: 0 },
-        {
-          scale: 1,
-          autoAlpha: 1,
-          duration: DURATION.enter,
-          ease: EASE.expo,
-          stagger: { each: 0.06, from: "random" },
-          delay: 0.08,
-          overwrite: true,
-        },
-      );
-    },
-    { scope: stageRef, dependencies: [active, service, reducedMotion] },
   );
 
   // First load: the stage settles in.
@@ -240,21 +267,30 @@ export function CasesShowcase() {
       >
         {CASE_COLLAGE.pieces.map((piece, index) =>
           Boolean(piece.behind) === behind ? (
-            <div
+            <Link
               key={piece.src}
               ref={(element) => {
                 pieceRefs.current[index] = element;
               }}
-              className="absolute will-change-transform"
+              href={current ? getProjectHref(current) : "#"}
+              tabIndex={-1}
+              draggable={false}
+              className="pointer-events-auto absolute will-change-transform"
               style={collageBoxStyle(piece)}
+              onPointerEnter={(event) => {
+                if (event.pointerType === "mouse") onPieceEnter(index);
+              }}
+              onPointerLeave={() => onPieceLeave(index)}
             >
               <div
-                data-piece-inner
-                className="absolute inset-0 overflow-hidden"
+                ref={(element) => {
+                  innerRefs.current[index] = element;
+                }}
+                className="absolute inset-0 overflow-hidden opacity-0"
               >
                 <CollageImage image={piece} priority />
               </div>
-            </div>
+            </Link>
           ) : null,
         )}
       </div>
@@ -283,17 +319,17 @@ export function CasesShowcase() {
                 slideRefs.current[index] = element;
               }}
               aria-hidden={!isActive}
-              className={cn(
-                "absolute inset-0 will-change-transform",
-                !isActive && "pointer-events-none",
-              )}
+              className="pointer-events-none absolute inset-0 will-change-transform"
             >
               <div className={COLLAGE_BOX}>
                 <Link
                   href={getProjectHref(project)}
                   tabIndex={isActive ? 0 : -1}
                   aria-label={project.name}
-                  className="group absolute block overflow-hidden"
+                  className={cn(
+                    "group absolute block overflow-hidden",
+                    isActive && "pointer-events-auto",
+                  )}
                   style={collageBoxStyle(CASE_COLLAGE.main)}
                 >
                   <CollageImage
