@@ -19,8 +19,10 @@ export default function HomePage() {
   return (
     <>
       <main id="conteudo">
-        <HeroSection />
-        <CaseStudiesIntroSection />
+        <div className="relative">
+          <HeroSection />
+          <CaseStudiesIntroSection />
+        </div>
         {SHOWCASES.map((project) => (
           <ProjectShowcaseSection key={project.slug} project={project} />
         ))}
