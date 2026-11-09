@@ -25,7 +25,6 @@
   --color-paper: #e4e4e4;
   --color-placeholder: #d9d9d9;
   --color-menu: #eaeaea;
-  --color-bar: #787878;
   --color-taupe: #9f9192;
   --color-olive: #84835e;
   --color-wine: #3f0710;
@@ -95,6 +94,9 @@
   --text-giant: calc(var(--fluid) * 248.266);
   --text-giant--line-height: 1.2;
   --text-giant--letter-spacing: -0.07em;
+  --text-lets: max(3.5rem, calc(var(--fluid) * 257.131));
+  --text-lets--line-height: 0.93;
+  --text-lets--letter-spacing: -0.04em;
   --text-display: max(3rem, calc(var(--fluid) * 156));
   --text-display--line-height: 0.93;
   --text-display--letter-spacing: -0.04em;
