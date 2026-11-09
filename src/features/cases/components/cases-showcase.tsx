@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useRef, useState, type MouseEvent } from "react";
+import { ComingSoon } from "@/components/ui/coming-soon";
 import { CASE_COLLAGE, CASES_PAGE, SERVICE_TABS } from "@/constants/cases";
 import { getProjectHref, PROJECTS } from "@/constants/projects";
 import { CasesDrawer } from "@/features/cases/components/cases-drawer";
@@ -12,11 +13,13 @@ import {
   COLLAGE_SIZE,
 } from "@/features/cases/components/collage-image";
 import { SwapText } from "@/features/cases/components/swap-text";
-import { usePieceVisibility } from "@/features/cases/hooks/use-piece-visibility";
+import {
+  REST_OPACITY,
+  usePieceVisibility,
+} from "@/features/cases/hooks/use-piece-visibility";
 import { useStepInput } from "@/features/cases/hooks/use-step-input";
 import { openCaseTransition } from "@/features/cases/utils/open-case-transition";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { ComingSoon } from "@/components/ui/coming-soon";
 import { DURATION, EASE, gsap, useGSAP } from "@/lib/gsap";
 import type { Project, ServiceId } from "@/types/project";
 import { cn } from "@/utils/cn";
@@ -55,17 +58,18 @@ const pad = (value: number) => String(value).padStart(2, "0");
 /**
  * Figma "Cases", with the mechanics of julia-paternostro.com: one case per
  * wheel notch, swipe or arrow key, eased toward the target; the cases stack
- * vertically in an endless loop, shrinking away from the center; the pieces
- * around the main image float, follow the cursor, push away from the hovered
- * one and blink in and out (see `usePieceVisibility`).
+ * vertically in an endless loop, shrinking away from the center; each case
+ * brings its pieces along, which float, follow the cursor, push away from
+ * the hovered one and blink in and out (see `usePieceVisibility`).
  */
 export function CasesShowcase() {
   const stageRef = useRef<HTMLElement>(null);
   const viewMoreRef = useRef<HTMLButtonElement>(null);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const layerRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const pieceRefs = useRef<(HTMLElement | null)[]>([]);
-  const innerRefs = useRef<(HTMLElement | null)[]>([]);
+  const boxRef = useRef<HTMLDivElement | null>(null);
+  /** Per case, its pieces (moved by the frame loop) and their inner boxes. */
+  const pieceRefs = useRef<(HTMLElement | null)[][]>([]);
+  const innerRefs = useRef<(HTMLElement | null)[][]>([]);
   const targetRef = useRef(0);
   const activeRef = useRef(0);
   const [service, setService] = useState<ServiceId>(SERVICE_TABS[0].id);
@@ -107,11 +111,11 @@ export function CasesShowcase() {
   );
   const count = projects.length;
   const current = projects[active] ?? projects[0];
-  const pieces = current?.collage?.pieces;
 
   const { repelRef, onPieceEnter, onPieceLeave } = usePieceVisibility({
     stageRef,
     innerRefs,
+    activeIndex: active,
     caseKey: `${service}-${active}`,
     reducedMotion,
   });
@@ -165,7 +169,7 @@ export function CasesShowcase() {
         const height = stage.clientHeight;
         // Design px → CSS px, from the rendered collage width.
         const unit =
-          (layerRefs.current[0]?.offsetWidth ?? COLLAGE_SIZE.width) /
+          (boxRef.current?.offsetWidth ?? COLLAGE_SIZE.width) /
           COLLAGE_SIZE.width;
 
         slideRefs.current.forEach((slide, index) => {
@@ -182,21 +186,12 @@ export function CasesShowcase() {
           slide.style.visibility = distance > 1.25 ? "hidden" : "visible";
         });
 
-        // The pieces belong to the nearest case and leave with it.
         const nearest = Math.round(position);
-        const shift = nearest - position;
-        layerRefs.current.forEach((layer) => {
-          if (!layer) return;
-          layer.style.transform = `translate3d(0, ${(shift * STACK_GAP * height).toFixed(2)}px, 0)`;
-          layer.style.opacity = Math.max(0, 1 - 7 * Math.abs(shift)).toFixed(3);
-        });
 
         const seconds = time;
         const source = still ? repelRef.current : null;
         const pushLag = 1 - Math.pow(1 - REPEL_FOLLOW, frames);
         CASE_COLLAGE.pieces.forEach((piece, index) => {
-          const element = pieceRefs.current[index];
-          if (!element) return;
           const [seedX, seedY] = piece.seed;
           const followX = Math.min(1, (0.045 + 0.12 * seedX) * frames);
           const followY = Math.min(1, (0.045 + 0.12 * seedY) * frames);
@@ -236,7 +231,12 @@ export function CasesShowcase() {
 
           const x = drift[index].x + floatX + push[index].x;
           const y = drift[index].y + floatY + push[index].y;
-          element.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
+          const transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
+          // Every case carries its pieces: they move the same way in each.
+          pieceRefs.current.forEach((slidePieces) => {
+            const element = slidePieces?.[index];
+            if (element) element.style.transform = transform;
+          });
         });
 
         const index = ((nearest % count) + count) % count;
@@ -284,52 +284,52 @@ export function CasesShowcase() {
     { scope: stageRef },
   );
 
-  const pieceLayer = (behind: boolean, layerIndex: number) => (
-    <div
-      aria-hidden
-      className="pointer-events-none absolute inset-0 will-change-transform"
-    >
-      <div
-        ref={(element) => {
-          layerRefs.current[layerIndex] = element;
-        }}
-        className={COLLAGE_BOX}
-      >
-        {CASE_COLLAGE.pieces.map((piece, index) =>
-          pieces && Boolean(piece.behind) === behind ? (
-            <Link
-              key={`${current.slug}-${index}`}
-              ref={(element) => {
-                pieceRefs.current[index] = element;
-              }}
-              href={current ? getProjectHref(current) : "#"}
-              tabIndex={-1}
-              draggable={false}
-              className="pointer-events-auto absolute will-change-transform"
-              style={collageBoxStyle(piece)}
-              onPointerEnter={(event) => {
-                if (event.pointerType === "mouse") onPieceEnter(index);
-              }}
-              onPointerLeave={() => onPieceLeave(index)}
-              onClick={(event) => openCase(event, current, pieces[index])}
-            >
-              <div
-                ref={(element) => {
-                  innerRefs.current[index] = element;
-                }}
-                className="absolute inset-0 overflow-hidden opacity-0"
-              >
-                <CollageImage
-                  src={pieces[index]}
-                  sizes="(min-width: 1024px) 21vw, 30vw"
-                />
-              </div>
-            </Link>
-          ) : null,
-        )}
-      </div>
-    </div>
-  );
+  const renderPieces = (
+    project: Project,
+    slideIndex: number,
+    isActive: boolean,
+    behind: boolean,
+  ) => {
+    const pieces = project.collage?.pieces;
+    if (!pieces) return null;
+    return CASE_COLLAGE.pieces.map((piece, index) =>
+      Boolean(piece.behind) === behind ? (
+        <Link
+          key={index}
+          ref={(element) => {
+            (pieceRefs.current[slideIndex] ??= [])[index] = element;
+          }}
+          href={getProjectHref(project)}
+          tabIndex={-1}
+          aria-hidden
+          draggable={false}
+          className={cn(
+            "absolute will-change-transform",
+            isActive && "pointer-events-auto",
+          )}
+          style={collageBoxStyle(piece)}
+          onPointerEnter={(event) => {
+            if (isActive && event.pointerType === "mouse") onPieceEnter(index);
+          }}
+          onPointerLeave={() => onPieceLeave(index)}
+          onClick={(event) => openCase(event, project, pieces[index])}
+        >
+          <div
+            ref={(element) => {
+              (innerRefs.current[slideIndex] ??= [])[index] = element;
+            }}
+            className="absolute inset-0 overflow-hidden"
+            style={{ opacity: REST_OPACITY }}
+          >
+            <CollageImage
+              src={pieces[index]}
+              sizes="(min-width: 1024px) 21vw, 30vw"
+            />
+          </div>
+        </Link>
+      ) : null,
+    );
+  };
 
   return (
     <section
@@ -343,7 +343,6 @@ export function CasesShowcase() {
       <h1 className="sr-only">{CASES_PAGE.title}</h1>
 
       <div data-cases-slides className="absolute inset-0">
-        {pieceLayer(true, 0)}
         {projects.map((project, index) => {
           const isActive = index === active;
           return (
@@ -355,7 +354,11 @@ export function CasesShowcase() {
               aria-hidden={!isActive}
               className="pointer-events-none absolute inset-0 will-change-transform"
             >
-              <div className={COLLAGE_BOX}>
+              <div
+                ref={index === 0 ? boxRef : undefined}
+                className={COLLAGE_BOX}
+              >
+                {renderPieces(project, index, isActive, true)}
                 <Link
                   href={getProjectHref(project)}
                   tabIndex={isActive ? 0 : -1}
@@ -379,11 +382,11 @@ export function CasesShowcase() {
                     <ComingSoon />
                   )}
                 </Link>
+                {renderPieces(project, index, isActive, false)}
               </div>
             </div>
           );
         })}
-        {pieceLayer(false, 1)}
       </div>
 
       <div
