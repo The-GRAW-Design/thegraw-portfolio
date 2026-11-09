@@ -65,7 +65,9 @@ export function ServicesHeroSection({
         className="absolute inset-0 bg-[linear-gradient(149.38deg,transparent_42.738%,var(--color-dusk)_103.51%)]"
       />
 
-      <div className="relative flex flex-col items-end text-right lg:absolute lg:top-386 lg:left-1036 lg:w-747">
+      {/* Higher than the Figma 386: centered in the first screen (the block
+          is 712 design px tall), clear of the header. */}
+      <div className="relative flex flex-col items-end text-right lg:absolute lg:top-[max(calc(var(--spacing)*120),calc((100svh-var(--spacing)*712)/2))] lg:left-1036 lg:w-747">
         <h1 className="sr-only">{SERVICES_PAGE.title}</h1>
         <ul ref={listRef} aria-label={SERVICES_PAGE.title}>
           {SERVICE_OFFER.map((service) => {
