@@ -155,9 +155,18 @@ export function ServicesProjectsSection({
                   data-slide-content
                   className="absolute inset-x-16 bottom-104 flex flex-col gap-20 lg:inset-x-auto lg:top-115 lg:bottom-auto lg:left-218 lg:flex-row lg:items-start lg:gap-271"
                 >
-                  <ProjectBrand className="gap-24 lg:w-226.25 lg:gap-71.5" />
-                  <ProjectMeta className="w-full lg:w-514.25" />
-                  <ProjectDisciplines className="lg:w-146" />
+                  <ProjectBrand
+                    info={PROJECT_SHOWCASE.info}
+                    className="gap-24 lg:w-226.25 lg:gap-71.5"
+                  />
+                  <ProjectMeta
+                    info={PROJECT_SHOWCASE.info}
+                    className="w-full lg:w-514.25"
+                  />
+                  <ProjectDisciplines
+                    info={PROJECT_SHOWCASE.info}
+                    className="lg:w-146"
+                  />
                 </div>
               </Link>
             </li>

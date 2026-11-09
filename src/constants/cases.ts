@@ -47,8 +47,9 @@ export const CASE_COLLAGE: CaseCollage = {
 };
 
 /**
- * "all projects" grid, in Figma order; the cases without a photo yet follow
- * as {EM BREVE} cards (the Figma "Delete This" slot is Conexão Duo's).
+ * "all projects" grid, in Figma order (its "Delete This" medal is Conexão
+ * Duo's), then the cases it does not have yet; the ones without a photo show
+ * the {EM BREVE} card.
  */
 export const ALL_PROJECTS_ORDER = [
   "grupo-penguin",
@@ -59,6 +60,7 @@ export const ALL_PROJECTS_ORDER = [
   "elle-fanning",
   "site-naturallis",
   "conexao-duo",
+  "gilberto-do-acordeon",
   "rotulos-naturallis",
   "maria-clara-lopes",
 ] as const;

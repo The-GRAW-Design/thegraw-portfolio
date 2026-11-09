@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { LogoLayers } from "@/components/ui/logo-layers";
 import { ParallaxImage } from "@/components/ui/parallax-image";
 import { Reveal } from "@/components/ui/reveal";
 import type { ProjectLogo, ProjectMedia } from "@/types/project";
@@ -20,23 +20,10 @@ function LogoPanel({ logo, box }: { logo: ProjectLogo; box: ProjectMedia }) {
         logo.panelClassName,
       )}
     >
-      <div
-        className="relative"
-        style={{
-          width: `${(logo.width / box.width) * 100}%`,
-          aspectRatio: `${logo.width} / ${logo.height}`,
-        }}
-      >
-        {logo.layers.map((layer) => (
-          <div
-            key={layer.src}
-            className="absolute"
-            style={{ inset: layer.inset }}
-          >
-            <Image src={layer.src} alt="" fill sizes="40vw" />
-          </div>
-        ))}
-      </div>
+      <LogoLayers
+        logo={logo}
+        style={{ width: `${(logo.width / box.width) * 100}%` }}
+      />
     </div>
   );
 }

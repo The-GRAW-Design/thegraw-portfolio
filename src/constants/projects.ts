@@ -1,8 +1,10 @@
 import type {
   Credit,
+  LogoArt,
   Project,
   ProjectLogo,
   ProjectMedia,
+  ShowcaseInfo,
 } from "@/types/project";
 import { asset } from "@/utils/asset";
 
@@ -75,6 +77,33 @@ const CONEXAO_LOGO: ProjectLogo = {
   panelClassName: "bg-gray-graw",
 };
 
+/** Figma symbol "Logo allce", white (home slide, 113×44). */
+const ALLCE_LOGO_LIGHT: LogoArt = {
+  width: 113,
+  height: 44,
+  layers: [
+    logoLayer("allce-light", "0% 0% 0% 0%"),
+    logoLayer("allce-registered-light", "10.21% 0.03% 81.12% 96.56%"),
+  ],
+};
+
+/** Figma "Logo Grupo Penguin", white (home and services slides). */
+const PENGUIN_LOGO_LIGHT: LogoArt = {
+  width: 98.596,
+  height: 32.865,
+  layers: [logoLayer("grupo-penguin", "0% 0% 0% 0%")],
+};
+
+/** Figma copy of the slides, written for Grupo Penguin and kept on all of them. */
+const SHOWCASE_DESCRIPTION = "A calm, editorial, website for a wellness brand";
+const SHOWCASE_DISCIPLINES = ["branding", "web design", "development"];
+
+/** Home slide images, cropped to the frame and to the card. */
+const showcaseImages = (slug: string) => ({
+  background: asset(`/images/projects/${slug}/showcase.webp`),
+  card: asset(`/images/projects/${slug}/card.webp`),
+});
+
 /** The 867.58×829.81 box next to "Solution" (Grupo Penguin page). */
 const PENGUIN_SPLIT: ProjectMedia = {
   width: 867.58,
@@ -83,9 +112,10 @@ const PENGUIN_SPLIT: ProjectMedia = {
 };
 
 /**
- * The ten Figma project pages, in canvas order. Allce and Grupo Penguin have
- * their galleries; the others have names, credits and the photos of the
- * "all projects" grid, and show {EM BREVE} where the case study will go.
+ * The ten Figma project pages, in canvas order, and the home-only Gilberto do
+ * Acordeon. Allce and Grupo Penguin have their galleries; the others have
+ * names, credits and the photos of the "all projects" grid and of the home
+ * slides, and show {EM BREVE} where the case study will go.
  */
 export const PROJECTS: readonly Project[] = [
   {
@@ -126,6 +156,15 @@ export const PROJECTS: readonly Project[] = [
       ],
       final: image("allce", "stage", 1920, 822),
     },
+    showcase: {
+      ...showcaseImages("allce"),
+      client: "Allce. Co",
+      year: "2024",
+      handle: "/allce",
+      logo: ALLCE_LOGO_LIGHT,
+      description: SHOWCASE_DESCRIPTION,
+      disciplines: ["branding", "Visual identy"],
+    },
   },
   {
     slug: "grupo-penguin",
@@ -164,6 +203,15 @@ export const PROJECTS: readonly Project[] = [
         image("grupo-penguin", "signage", 1507, 846),
       ],
       final: { ...image("grupo-penguin", "basket", 1920, 800), bleed: true },
+    },
+    showcase: {
+      ...showcaseImages("grupo-penguin"),
+      client: "Poliana Fernandes",
+      year: "2025",
+      handle: "/grupopenguin",
+      logo: PENGUIN_LOGO_LIGHT,
+      description: SHOWCASE_DESCRIPTION,
+      disciplines: SHOWCASE_DISCIPLINES,
     },
   },
   {
@@ -221,9 +269,10 @@ export const PROJECTS: readonly Project[] = [
     title: "Conexão Duo",
     category: "brand identy",
     services: ["branding"],
-    cover: null,
-    hero: { src: COMING_SOON_IMAGE },
-    collage: null,
+    // The "Delete This" medal of the grid is this case's (home slide).
+    cover: asset("/images/projects/conexao-duo/hero.webp"),
+    hero: hero("conexao-duo"),
+    collage: { main: asset("/images/projects/conexao-duo/hero.webp") },
     credits: credits(
       { label: "Project director", value: DIRECTOR },
       "Conexão Duo",
@@ -231,6 +280,20 @@ export const PROJECTS: readonly Project[] = [
       "2026",
     ),
     logo: CONEXAO_LOGO,
+    showcase: {
+      background: asset("/images/projects/conexao-duo/hero.webp"),
+      card: asset("/images/projects/conexao-duo/card.webp"),
+      client: "Conexão Duo",
+      year: "2026",
+      handle: "/conexãoduo",
+      logo: {
+        width: 113,
+        height: 29,
+        layers: [logoLayer("conexao-duo", "0% 0% 0% 0%")],
+      },
+      description: SHOWCASE_DESCRIPTION,
+      disciplines: SHOWCASE_DISCIPLINES,
+    },
   },
   {
     slug: "rotulos-naturallis",
@@ -239,7 +302,7 @@ export const PROJECTS: readonly Project[] = [
     category: "Packpaging",
     services: ["packpaging"],
     cover: null,
-    hero: { src: COMING_SOON_IMAGE },
+    hero: null,
     collage: null,
     credits: credits(
       { label: "Project director", value: "Thawany Gomes" },
@@ -255,7 +318,7 @@ export const PROJECTS: readonly Project[] = [
     category: "Design",
     services: ["branding"],
     cover: null,
-    hero: { src: COMING_SOON_IMAGE },
+    hero: null,
     collage: null,
     credits: credits(
       { label: "Designer", value: DIRECTOR },
@@ -296,22 +359,46 @@ export const PROJECTS: readonly Project[] = [
       "2024",
     ),
   },
+  {
+    // Only on the home (Figma "Projeto Allce" variant "projeto").
+    slug: "gilberto-do-acordeon",
+    name: "Gilberto do Acordeon",
+    title: "Gilberto do Acordeon",
+    category: "brand identy",
+    services: ["branding"],
+    cover: asset("/images/projects/gilberto-do-acordeon/card.webp"),
+    hero: hero("gilberto-do-acordeon"),
+    collage: {
+      main: asset("/images/projects/gilberto-do-acordeon/hero.webp"),
+    },
+    credits: [[{ label: "Client", value: "Gilberto do Acordeon" }]],
+    showcase: {
+      background: asset("/images/projects/gilberto-do-acordeon/hero.webp"),
+      card: asset("/images/projects/gilberto-do-acordeon/card.webp"),
+      client: "Gilberto do Acordeon",
+      year: "2026",
+      handle: "/gilbertodoacordeon",
+      description: SHOWCASE_DESCRIPTION,
+      disciplines: SHOWCASE_DISCIPLINES,
+    },
+  },
 ];
 
 /**
- * Figma project showcase (home "Projeto Allce" and services "Projeto view
- * Services" slides): every variant shows this Grupo Penguin placeholder.
+ * Figma "Projeto view Services" slides: every variant shows this Grupo
+ * Penguin placeholder.
  */
 export const PROJECT_SHOWCASE = {
   slug: "grupo-penguin",
-  client: "grupo penguin",
-  handle: "/grupopenguin",
-  year: "2026",
-  logo: asset("/images/logos/grupo-penguin.svg"),
-  description: "A calm, editorial, website for a wellness brand",
-  disciplines: ["branding", "web design", "development"],
   image: asset("/images/services/project-slide.webp"),
-  device: asset("/images/home/case-phone.webp"),
+  info: {
+    client: "grupo penguin",
+    year: "2026",
+    handle: "/grupopenguin",
+    logo: PENGUIN_LOGO_LIGHT,
+    description: SHOWCASE_DESCRIPTION,
+    disciplines: SHOWCASE_DISCIPLINES,
+  } satisfies ShowcaseInfo,
 } as const;
 
 export const SHOWCASE_LABELS = {

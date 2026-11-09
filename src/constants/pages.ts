@@ -9,8 +9,8 @@ export const HOME_PAGE = {
     title: ["case", "studies"],
     body: "A closer look at how strategy, design, and development shape each project.",
   },
-  /** Four "Projeto Allce" slides in the Figma home. */
-  showcaseCount: 4,
+  /** The four "Projeto Allce" slides of the Figma home, in order. */
+  showcases: ["allce", "grupo-penguin", "conexao-duo", "gilberto-do-acordeon"],
   viewAllCases: "View All Cases",
   viewAllImage: asset("/images/home/view-all-band.webp"),
 } as const;
