@@ -1,46 +1,302 @@
-import type { Project, ServiceId } from "@/types/project";
+import type {
+  Credit,
+  Project,
+  ProjectLogo,
+  ProjectMedia,
+} from "@/types/project";
 import { asset } from "@/utils/asset";
 
-const ALL_SERVICES: readonly ServiceId[] = [
-  "branding",
-  "web-design",
-  "packpaging",
+const DIRECTOR = "André Gonçalves";
+
+const credits = (
+  lead: Credit,
+  client: string,
+  team: Credit,
+  date: string,
+): Project["credits"] => [
+  [lead, { label: "Client", value: client }],
+  [team, { label: "Date", value: date }],
 ];
 
-/** Figma placeholder details, shared by every case until there is content. */
-const PLACEHOLDER = {
-  title: "Project Name",
-  client: "Allce. Co",
-  category: "brand identy",
-  year: "2022",
-  services: ALL_SERVICES,
-} as const;
+const image = (slug: string, file: string, width: number, height: number) => ({
+  src: asset(`/images/projects/${slug}/${file}.webp`),
+  width,
+  height,
+});
 
-/** Cases collage main image, the cover of cases without one in the Figma. */
-const COLLAGE_COVER = asset("/images/cases/collage-main.webp");
+const hero = (slug: string, position?: string) => ({
+  src: asset(`/images/projects/${slug}/hero.webp`),
+  position,
+});
 
-/** The ten Figma project pages, in the order of the canvas: slug, name, cover. */
-const CASES: readonly (readonly [string, string, string | null])[] = [
-  ["allce", "Allce", "allce"],
-  ["grupo-penguin", "Grupo Penguin", "grupo-penguin"],
-  ["e2-company", "e2 company", "e2-company"],
-  ["lorena-lourenco", "Lorena Lourenço", "lorena-lourenco"],
-  ["site-naturallis", "Site Naturallis", "site-naturallis"],
-  ["conexao-duo", "Conexão Duo", null],
-  ["rotulos-naturallis", "Rotulos Naturallis", null],
-  ["packpaging-2", "Packpaging 2", null],
-  ["elle-fanning", "Elle Fanning", "elle-fanning"],
-  ["app-3", "App 3", null],
+const cover = (slug: string) => asset(`/images/cases/covers/${slug}.webp`);
+
+const logoLayer = (file: string, inset: string) => ({
+  src: asset(`/images/logos/${file}.svg`),
+  inset,
+});
+
+/** Figma placeholder ("Delete This") of the cases with no image yet. */
+export const COMING_SOON_IMAGE = asset("/images/cases/coming-soon.webp");
+
+/** Figma "Allce" project page (3023:996). */
+const ALLCE_WIDE = (file: string) => image("allce", file, 1507, 848);
+
+/** Figma "Grupo Penguin" project page (3023:1085). */
+const PENGUIN_WIDE = (file: string) => image("grupo-penguin", file, 1507, 850);
+
+const PENGUIN_LOGO: ProjectLogo = {
+  width: 595.22,
+  height: 198.618,
+  layers: [
+    logoLayer("grupo-penguin-word-dark", "15.09% 2.79% 16.61% 29.08%"),
+    logoLayer("grupo-penguin-tm-dark", "28.69% 0% 64.75% 95.23%"),
+    logoLayer("grupo-penguin-mark-dark", "0.01% 71.06% -0.01% 0%"),
+  ],
+  panelClassName: "bg-smoke",
+};
+
+/** Figma symbol "logo - LORENA LOURENÇO" (3149:956). */
+const LORENA_LOGO: ProjectLogo = {
+  width: 707.68,
+  height: 255.79,
+  layers: [
+    logoLayer("lorena-lourenco-top", "0% 0% 44.99% 0%"),
+    logoLayer("lorena-lourenco-bottom", "62.26% 7.17% 0% 8.23%"),
+  ],
+  panelClassName: "bg-white-graw",
+};
+
+/** Figma symbol "Logo conexão Duo" (3149:957). */
+const CONEXAO_LOGO: ProjectLogo = {
+  width: 708,
+  height: 183.247,
+  layers: [logoLayer("conexao-duo", "0% 0% 0% 0%")],
+  panelClassName: "bg-gray-graw",
+};
+
+/** The 867.58×829.81 box next to "Solution" (Grupo Penguin page). */
+const PENGUIN_SPLIT: ProjectMedia = {
+  width: 867.58,
+  height: 829.81,
+  logo: PENGUIN_LOGO,
+};
+
+/**
+ * The ten Figma project pages, in canvas order. Allce and Grupo Penguin have
+ * their galleries; the others have names, credits and the photos of the
+ * "all projects" grid, and show {EM BREVE} where the case study will go.
+ */
+export const PROJECTS: readonly Project[] = [
+  {
+    slug: "allce",
+    name: "Allce",
+    title: "Allce",
+    category: "brand identy",
+    services: ["branding"],
+    cover: cover("allce"),
+    hero: hero("allce"),
+    collage: {
+      main: asset("/images/projects/allce/wall.webp"),
+      pieces: [
+        asset("/images/projects/allce/tshirt.webp"),
+        asset("/images/projects/allce/gym.webp"),
+        asset("/images/projects/allce/news.webp"),
+        asset("/images/projects/allce/chairs.webp"),
+      ],
+    },
+    credits: credits(
+      { label: "Project director", value: DIRECTOR },
+      "Allce. Co",
+      { label: "Motion Designer", value: "Alan Erick" },
+      "2024",
+    ),
+    gallery: {
+      lead: [image("allce", "logo", 1496, 844)],
+      split: image("allce", "solution", 868, 847),
+      middle: [
+        [ALLCE_WIDE("gym"), ALLCE_WIDE("wall")],
+        [ALLCE_WIDE("app")],
+        [ALLCE_WIDE("tshirt")],
+      ],
+      closing: [
+        image("allce", "chairs", 1496, 841),
+        image("allce", "comfort", 1507, 847),
+        image("allce", "news", 1507, 847),
+      ],
+      final: image("allce", "stage", 1920, 822),
+    },
+  },
+  {
+    slug: "grupo-penguin",
+    name: "Grupo Penguin",
+    title: "Grupo Penguin",
+    category: "brand identy",
+    services: ["branding"],
+    cover: cover("grupo-penguin"),
+    hero: hero("grupo-penguin"),
+    collage: {
+      main: asset("/images/projects/grupo-penguin/magazine.webp"),
+      pieces: [
+        asset("/images/projects/grupo-penguin/bags.webp"),
+        asset("/images/projects/grupo-penguin/palette.webp"),
+        asset("/images/projects/grupo-penguin/keys.webp"),
+        asset("/images/projects/grupo-penguin/signage.webp"),
+      ],
+    },
+    credits: credits(
+      { label: "Project director", value: DIRECTOR },
+      "Poliana Fernandes",
+      { label: "Motion Designer", value: "Alan Erick" },
+      "2025",
+    ),
+    gallery: {
+      lead: [PENGUIN_WIDE("palette")],
+      split: PENGUIN_SPLIT,
+      middle: [
+        [PENGUIN_WIDE("magazine")],
+        [PENGUIN_WIDE("billboard")],
+        [PENGUIN_WIDE("tags")],
+      ],
+      closing: [
+        image("grupo-penguin", "bags", 1496, 847),
+        image("grupo-penguin", "keys", 1496, 850),
+        image("grupo-penguin", "signage", 1507, 846),
+      ],
+      final: { ...image("grupo-penguin", "basket", 1920, 800), bleed: true },
+    },
+  },
+  {
+    slug: "e2-company",
+    name: "e2 company",
+    title: "E2 Company",
+    category: "Web",
+    services: ["web-design"],
+    cover: cover("e2-company"),
+    hero: hero("e2-company", "object-[50%_30%]"),
+    collage: { main: asset("/images/projects/e2-company/hero.webp") },
+    credits: credits(
+      { label: "Project director", value: DIRECTOR },
+      "E2 Company",
+      { label: "Dev", value: DIRECTOR },
+      "2025",
+    ),
+  },
+  {
+    slug: "lorena-lourenco",
+    name: "Lorena Lourenço",
+    title: "Lorena Lourenço",
+    category: "brand identy",
+    services: ["branding"],
+    cover: cover("lorena-lourenco"),
+    hero: hero("lorena-lourenco"),
+    collage: { main: asset("/images/projects/lorena-lourenco/hero.webp") },
+    credits: credits(
+      { label: "Project director", value: DIRECTOR },
+      "Lorena Lourenço",
+      { label: "Motion Designer", value: "Alan Erick" },
+      "2026",
+    ),
+    logo: LORENA_LOGO,
+  },
+  {
+    slug: "site-naturallis",
+    name: "Site Naturallis",
+    title: "Web Naturallis",
+    category: "Web",
+    services: ["web-design"],
+    cover: cover("site-naturallis"),
+    hero: hero("site-naturallis", "object-[50%_45%]"),
+    collage: { main: asset("/images/projects/site-naturallis/hero.webp") },
+    credits: credits(
+      { label: "Project director", value: DIRECTOR },
+      "Naturallis",
+      { label: "Dev", value: "Eric Elias" },
+      "2026",
+    ),
+  },
+  {
+    slug: "conexao-duo",
+    name: "Conexão Duo",
+    title: "Conexão Duo",
+    category: "brand identy",
+    services: ["branding"],
+    cover: null,
+    hero: { src: COMING_SOON_IMAGE },
+    collage: null,
+    credits: credits(
+      { label: "Project director", value: DIRECTOR },
+      "Conexão Duo",
+      { label: "Motion Designer", value: "Alan Erick" },
+      "2026",
+    ),
+    logo: CONEXAO_LOGO,
+  },
+  {
+    slug: "rotulos-naturallis",
+    name: "Rótulos Naturallis",
+    title: "Rótulos Naturallis",
+    category: "Packpaging",
+    services: ["packpaging"],
+    cover: null,
+    hero: { src: COMING_SOON_IMAGE },
+    collage: null,
+    credits: credits(
+      { label: "Project director", value: "Thawany Gomes" },
+      "Naturallis",
+      { label: "Designer", value: DIRECTOR },
+      "2024-2026",
+    ),
+  },
+  {
+    slug: "maria-clara-lopes",
+    name: "Maria Clara Lopes",
+    title: "Maria Clara Lopes",
+    category: "Design",
+    services: ["branding"],
+    cover: null,
+    hero: { src: COMING_SOON_IMAGE },
+    collage: null,
+    credits: credits(
+      { label: "Designer", value: DIRECTOR },
+      "Maria Clara",
+      { label: "Copie", value: DIRECTOR },
+      "2025",
+    ),
+  },
+  {
+    slug: "elle-fanning",
+    name: "Elle Fanning",
+    title: "Elle Fanning",
+    category: "brand identy",
+    services: ["branding"],
+    cover: cover("elle-fanning"),
+    hero: hero("elle-fanning", "object-[50%_35%]"),
+    collage: { main: asset("/images/projects/elle-fanning/hero.webp") },
+    credits: credits(
+      { label: "Designer", value: DIRECTOR },
+      "The Graw",
+      { label: "Dev", value: "Eric Elias" },
+      "2026",
+    ),
+  },
+  {
+    slug: "tati-hotelzinho-pet",
+    name: "Tati Hotelzinho Pet",
+    title: "Tati Hotelzinho Pet",
+    category: "brand identy",
+    services: ["branding"],
+    cover: cover("tati-hotelzinho-pet"),
+    hero: hero("tati-hotelzinho-pet", "object-[50%_30%]"),
+    collage: { main: asset("/images/projects/tati-hotelzinho-pet/hero.webp") },
+    credits: credits(
+      { label: "Project director", value: DIRECTOR },
+      "Tati Hotelzinho Pet",
+      { label: "Motion Designer", value: "Alan Erick" },
+      "2024",
+    ),
+  },
 ];
-
-export const PROJECTS: readonly Project[] = CASES.map(
-  ([slug, name, cover]) => ({
-    ...PLACEHOLDER,
-    slug,
-    name,
-    cover: cover ? asset(`/images/cases/covers/${cover}.webp`) : COLLAGE_COVER,
-  }),
-);
 
 /**
  * Figma project showcase (home "Projeto Allce" and services "Projeto view
@@ -72,10 +328,5 @@ export function findProject(slug: string) {
   return PROJECTS.find((project) => project.slug === slug);
 }
 
-/** Studio "Projects Lead" card: the original placeholder project. */
-export const FEATURED_PROJECT: Project = {
-  ...PLACEHOLDER,
-  slug: "allce",
-  name: "Allce",
-  cover: asset("/images/home/featured-project.webp"),
-};
+/** Studio "Projects Lead" card. */
+export const FEATURED_PROJECT = PROJECTS[0];

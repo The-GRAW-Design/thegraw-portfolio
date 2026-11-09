@@ -6,22 +6,12 @@ export type CollageRect = {
   height: number;
 };
 
-/** Image size and offset inside its box, as Figma percentages of the box. */
-export type CollageCrop = {
-  width: number;
-  height: number;
-  left: number;
-  top: number;
-};
-
-export type CollageImage = {
-  src: string;
+export type CollageSlot = {
   rect: CollageRect;
-  crop: CollageCrop;
 };
 
 /** A piece around the main image: it floats, follows the cursor and blinks. */
-export type CollagePiece = CollageImage & {
+export type CollagePiece = CollageSlot & {
   /** Drawn under the main image (Figma layer order). */
   behind?: boolean;
   /** 0–1: how far it travels with the cursor (× 70px). */
@@ -31,6 +21,6 @@ export type CollagePiece = CollageImage & {
 };
 
 export type CaseCollage = {
-  main: CollageImage;
+  main: CollageSlot;
   pieces: readonly CollagePiece[];
 };

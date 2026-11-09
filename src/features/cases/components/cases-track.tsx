@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, type ReactNode } from "react";
+import { ComingSoon } from "@/components/ui/coming-soon";
 import { getProjectHref } from "@/constants/projects";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { gsap, useGSAP } from "@/lib/gsap";
@@ -153,14 +154,21 @@ export function CasesTrack({
                 draggable={false}
                 className="group relative block aspect-[568/320] overflow-hidden bg-gray-graw"
               >
-                <Image
-                  src={project.cover}
-                  alt={project.name}
-                  fill
-                  sizes="(min-width: 1024px) 30vw, 72vw"
-                  draggable={false}
-                  className="object-cover transition-transform duration-700 ease-power3 group-hover:scale-105 group-focus-visible:scale-105"
-                />
+                {project.cover ? (
+                  <Image
+                    src={project.cover}
+                    alt={project.name}
+                    fill
+                    sizes="(min-width: 1024px) 30vw, 72vw"
+                    draggable={false}
+                    className="object-cover transition-transform duration-700 ease-power3 group-hover:scale-105 group-focus-visible:scale-105"
+                  />
+                ) : (
+                  <>
+                    <ComingSoon sizes="(min-width: 1024px) 30vw, 72vw" />
+                    <span className="sr-only">{project.name}</span>
+                  </>
+                )}
               </Link>
             </li>
           ))}
