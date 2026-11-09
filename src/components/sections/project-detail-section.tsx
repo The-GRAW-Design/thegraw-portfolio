@@ -79,7 +79,10 @@ export function ProjectDetailSection({ project }: ProjectDetailSectionProps) {
   return (
     <>
       <section data-header-theme="light" className="bg-black-graw">
-        <div className="relative h-[60svh] w-full bg-coal lg:h-692">
+        <div
+          data-project-hero
+          className="relative h-[60svh] w-full bg-coal lg:h-692"
+        >
           <ParallaxImage
             src={project.hero.src}
             alt=""

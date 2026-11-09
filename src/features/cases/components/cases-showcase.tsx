@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useMemo, useRef, useState, type MouseEvent } from "react";
 import { CASE_COLLAGE, CASES_PAGE, SERVICE_TABS } from "@/constants/cases";
 import { getProjectHref, PROJECTS } from "@/constants/projects";
 import { CasesDrawer } from "@/features/cases/components/cases-drawer";
@@ -13,10 +14,11 @@ import {
 import { SwapText } from "@/features/cases/components/swap-text";
 import { usePieceVisibility } from "@/features/cases/hooks/use-piece-visibility";
 import { useStepInput } from "@/features/cases/hooks/use-step-input";
+import { openCaseTransition } from "@/features/cases/utils/open-case-transition";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { ComingSoon } from "@/components/ui/coming-soon";
 import { DURATION, EASE, gsap, useGSAP } from "@/lib/gsap";
-import type { ServiceId } from "@/types/project";
+import type { Project, ServiceId } from "@/types/project";
 import { cn } from "@/utils/cn";
 
 /** Share of the eased distance covered per 60fps frame. */
@@ -72,6 +74,32 @@ export function CasesShowcase() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const reducedMotion = useReducedMotion();
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
+  const router = useRouter();
+
+  // A plain click opens the case with the image growing into its hero.
+  const openCase = (
+    event: MouseEvent<HTMLAnchorElement>,
+    project: Project,
+    sourceImage: string | null,
+  ) => {
+    if (
+      reducedMotion ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    )
+      return;
+    event.preventDefault();
+    openCaseTransition({
+      source: event.currentTarget,
+      sourceImage,
+      project,
+      href: getProjectHref(project),
+      navigate: (href) => router.push(href),
+    });
+  };
 
   const projects = useMemo(
     () => PROJECTS.filter((project) => project.services.includes(service)),
@@ -283,6 +311,7 @@ export function CasesShowcase() {
                 if (event.pointerType === "mouse") onPieceEnter(index);
               }}
               onPointerLeave={() => onPieceLeave(index)}
+              onClick={(event) => openCase(event, current, pieces[index])}
             >
               <div
                 ref={(element) => {
@@ -336,6 +365,9 @@ export function CasesShowcase() {
                     isActive && "pointer-events-auto",
                   )}
                   style={collageBoxStyle(CASE_COLLAGE.main)}
+                  onClick={(event) =>
+                    openCase(event, project, project.collage?.main ?? null)
+                  }
                 >
                   {project.collage ? (
                     <CollageImage
