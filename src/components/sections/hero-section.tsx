@@ -6,13 +6,14 @@ import { DitherImage } from "@/features/dither-image";
  * Figma "Desktop - 1": dithered knight with the blackletter headline. The
  * first screen matches the frame; the image goes on for 30% more below it.
  * The headline scales with the section, not the viewport, so its first and
- * last letters stay clear of the scrollbar.
+ * last letters stay clear of the scrollbar. Once that extra 30% is shown it
+ * stays put, so the case studies glass slides over it.
  */
 export function HeroSection() {
   return (
     <section
       data-header-theme="light"
-      className="@container relative h-[130svh] overflow-hidden bg-red-graw"
+      className="@container sticky top-[-30svh] h-[130svh] overflow-hidden bg-red-graw"
     >
       <DitherImage {...HERO_DITHER} animation="intro" />
       <SplitReveal
