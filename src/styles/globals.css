@@ -37,6 +37,7 @@
   --color-dim: #434343;
   --color-chip-text: #8c8c8c;
   --color-track: #888888;
+  --color-smoke: #eeeeee;
 
   /* Figma shader gradient-map stops */
   --color-red-graw-deep: #7b000b;
@@ -184,6 +185,11 @@
   --text-fine--letter-spacing: -0.04em;
   --text-micro: max(0.4375rem, calc(var(--fluid) * 9.33));
   --text-micro--letter-spacing: -0.13em;
+  /* "{EM BREVE}" card: Medium 94.4 on an 886 frame (cards rescale --fluid). */
+  --text-soon: calc(var(--fluid) * 94.4);
+  --text-soon--line-height: normal;
+
+  --blur-soon: calc(var(--fluid) * 35.35);
 
   --tracking-tight: -0.07em;
   --tracking-snug: -0.04em;
