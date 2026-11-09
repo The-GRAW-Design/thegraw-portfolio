@@ -14,6 +14,7 @@ import { SwapText } from "@/features/cases/components/swap-text";
 import { usePieceVisibility } from "@/features/cases/hooks/use-piece-visibility";
 import { useStepInput } from "@/features/cases/hooks/use-step-input";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { ComingSoon } from "@/components/ui/coming-soon";
 import { DURATION, EASE, gsap, useGSAP } from "@/lib/gsap";
 import type { ServiceId } from "@/types/project";
 import { cn } from "@/utils/cn";
@@ -78,6 +79,7 @@ export function CasesShowcase() {
   );
   const count = projects.length;
   const current = projects[active] ?? projects[0];
+  const pieces = current?.collage?.pieces;
 
   const { repelRef, onPieceEnter, onPieceLeave } = usePieceVisibility({
     stageRef,
@@ -266,9 +268,9 @@ export function CasesShowcase() {
         className={COLLAGE_BOX}
       >
         {CASE_COLLAGE.pieces.map((piece, index) =>
-          Boolean(piece.behind) === behind ? (
+          pieces && Boolean(piece.behind) === behind ? (
             <Link
-              key={piece.src}
+              key={`${current.slug}-${index}`}
               ref={(element) => {
                 pieceRefs.current[index] = element;
               }}
@@ -288,7 +290,10 @@ export function CasesShowcase() {
                 }}
                 className="absolute inset-0 overflow-hidden opacity-0"
               >
-                <CollageImage image={piece} priority />
+                <CollageImage
+                  src={pieces[index]}
+                  sizes="(min-width: 1024px) 21vw, 30vw"
+                />
               </div>
             </Link>
           ) : null,
@@ -332,11 +337,15 @@ export function CasesShowcase() {
                   )}
                   style={collageBoxStyle(CASE_COLLAGE.main)}
                 >
-                  <CollageImage
-                    image={CASE_COLLAGE.main}
-                    priority={index < 2}
-                    className="transition-transform duration-700 ease-power3 group-hover:scale-[1.03]"
-                  />
+                  {project.collage ? (
+                    <CollageImage
+                      src={project.collage.main}
+                      priority={index < 2}
+                      className="transition-transform duration-700 ease-power3 group-hover:scale-[1.03]"
+                    />
+                  ) : (
+                    <ComingSoon />
+                  )}
                 </Link>
               </div>
             </div>
