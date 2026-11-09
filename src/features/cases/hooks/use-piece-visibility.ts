@@ -15,28 +15,31 @@ const SHOW = 0.6;
 const HOVER_FADE = 0.24;
 const HOVER_POP = 0.78;
 /** Opacity of a resting piece (the hovered one goes to 1). */
-const REST_OPACITY = 0.9;
+export const REST_OPACITY = 0.9;
 const HOVER_SCALE = 1.04;
 const HIDDEN_SCALE = 0.88;
 
 type PieceVisibilityOptions = {
   stageRef: RefObject<HTMLElement | null>;
-  /** The inner element of each piece, the one that fades and scales. */
-  innerRefs: RefObject<(HTMLElement | null)[]>;
+  /** Per case, the inner element of each piece (the one that fades and scales). */
+  innerRefs: RefObject<(HTMLElement | null)[][]>;
+  /** The case on stage, an index into `innerRefs`. */
+  activeIndex: number;
   /** Changes whenever a new case takes the stage. */
   caseKey: string;
   reducedMotion: boolean;
 };
 
 /**
- * Visibility of the collage pieces, as on julia-paternostro.com: they come in
- * one by one with each case, one or two blink out at a time while it rests,
- * the one under the cursor pops forward (and comes back if it had blinked
- * out), and shaking the mouse sends them all away for a moment.
+ * Visibility of the collage pieces, as on julia-paternostro.com: every case
+ * arrives with all of them in place, then one or two blink out at a time
+ * while it rests, the one under the cursor pops forward (and comes back if it
+ * had blinked out), and shaking the mouse sends them all away for a moment.
  */
 export function usePieceVisibility({
   stageRef,
   innerRefs,
+  activeIndex,
   caseKey,
   reducedMotion,
 }: PieceVisibilityOptions) {
@@ -46,7 +49,7 @@ export function usePieceVisibility({
 
   useEffect(() => {
     const stage = stageRef.current;
-    const inners = innerRefs.current;
+    const inners = innerRefs.current[activeIndex] ?? [];
     const elements = inners.filter((element) => element !== null);
     const count = inners.length;
     if (!stage || elements.length === 0) return;
@@ -92,11 +95,15 @@ export function usePieceVisibility({
       blinking = next;
       applyAll();
     };
+    const startBlinking = () => {
+      window.clearInterval(blinkTimer);
+      if (count > 1) blinkTimer = window.setInterval(blink, BLINK_EVERY);
+    };
     const show = () => {
       shown = true;
       delays = inners.map(() => 0.012 + 0.11 * Math.random());
       applyAll();
-      if (count > 1) blinkTimer = window.setInterval(blink, BLINK_EVERY);
+      startBlinking();
     };
     const hide = () => {
       shown = false;
@@ -108,10 +115,11 @@ export function usePieceVisibility({
       showTimer = window.setTimeout(show, SHAKE_AWAY);
     };
 
-    // A new case: its pieces start hidden and come in one by one.
+    // A new case arrives with all its pieces in place; they blink later.
     gsap.killTweensOf(elements);
-    gsap.set(elements, { opacity: 0, scale: HIDDEN_SCALE });
-    show();
+    gsap.set(elements, { opacity: REST_OPACITY, scale: 1 });
+    shown = true;
+    startBlinking();
 
     hoverRef.current = (index, entering) => {
       if (!entering && hovered !== index) return;
@@ -146,9 +154,17 @@ export function usePieceVisibility({
       window.clearInterval(blinkTimer);
       window.clearTimeout(showTimer);
       hoverRef.current = () => {};
+      // Leaving the stage, every piece comes back, so the case is whole
+      // whenever it shows up again.
       gsap.killTweensOf(elements);
+      gsap.to(elements, {
+        opacity: REST_OPACITY,
+        scale: 1,
+        duration: SHOW,
+        ease: EASE.expo,
+      });
     };
-  }, [stageRef, innerRefs, caseKey, reducedMotion]);
+  }, [stageRef, innerRefs, activeIndex, caseKey, reducedMotion]);
 
   const onPieceEnter = useCallback((index: number) => {
     repelRef.current = index;
