@@ -1,13 +1,15 @@
-import Image from "next/image";
-import { PROJECT_SHOWCASE, SHOWCASE_LABELS } from "@/constants/projects";
+import { LogoLayers } from "@/components/ui/logo-layers";
+import { SHOWCASE_LABELS } from "@/constants/projects";
+import type { ShowcaseInfo } from "@/types/project";
 import { cn } from "@/utils/cn";
 
 type ShowcaseProps = {
+  info: ShowcaseInfo;
   className?: string;
 };
 
-/** Figma showcase meta: "Client grupo penguin" and "year 2026", uppercase. */
-export function ProjectMeta({ className }: ShowcaseProps) {
+/** Figma showcase meta: "Client …" and "year …", uppercase. */
+export function ProjectMeta({ info, className }: ShowcaseProps) {
   return (
     <dl
       className={cn(
@@ -17,37 +19,38 @@ export function ProjectMeta({ className }: ShowcaseProps) {
     >
       <div className="flex gap-17.5">
         <dt>{SHOWCASE_LABELS.client}</dt>
-        <dd className="font-medium">{PROJECT_SHOWCASE.client}</dd>
+        <dd className="font-medium">{info.client}</dd>
       </div>
       <div className="flex gap-11.5">
         <dt>{SHOWCASE_LABELS.year}</dt>
-        <dd className="font-medium">{PROJECT_SHOWCASE.year}</dd>
+        <dd className="font-medium">{info.year}</dd>
       </div>
     </dl>
   );
 }
 
 /** Figma showcase brand: the client logo over a two-line description. */
-export function ProjectBrand({ className }: ShowcaseProps) {
+export function ProjectBrand({ info, className }: ShowcaseProps) {
   return (
     <div className={cn("flex flex-col items-start", className)}>
-      <Image
-        src={PROJECT_SHOWCASE.logo}
-        alt={PROJECT_SHOWCASE.client}
-        width={99}
-        height={33}
-        className="h-auto w-80 lg:w-98.5"
-      />
-      <p className="max-w-226 text-lead">{PROJECT_SHOWCASE.description}</p>
+      {info.logo && (
+        <LogoLayers
+          logo={info.logo}
+          alt={info.client}
+          className="max-w-[80vw]"
+          style={{ width: `calc(var(--spacing) * ${info.logo.width})` }}
+        />
+      )}
+      <p className="max-w-226 text-lead">{info.description}</p>
     </div>
   );
 }
 
 /** Figma showcase disciplines, one per line on desktop. */
-export function ProjectDisciplines({ className }: ShowcaseProps) {
+export function ProjectDisciplines({ info, className }: ShowcaseProps) {
   return (
     <ul className={cn("flex flex-wrap gap-x-12 text-lead lg:block", className)}>
-      {PROJECT_SHOWCASE.disciplines.map((discipline) => (
+      {info.disciplines.map((discipline) => (
         <li key={discipline}>{discipline}</li>
       ))}
     </ul>

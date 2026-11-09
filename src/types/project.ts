@@ -3,15 +3,37 @@ export type ServiceId = "branding" | "web-design" | "packpaging";
 
 export type Credit = { label: string; value: string };
 
-/** A logo drawn from its Figma SVG layers on a colored panel. */
-export type ProjectLogo = {
+/** A logo drawn from its Figma SVG layers. */
+export type LogoArt = {
   /** Logo box in Figma px. */
   width: number;
   height: number;
   /** Each layer with its Figma inset (% of the logo box: top right bottom left). */
   layers: readonly { src: string; inset: string }[];
+};
+
+/** A logo on a colored panel (gallery box). */
+export type ProjectLogo = LogoArt & {
   /** Panel color, as a theme background class. */
   panelClassName: string;
+};
+
+/** Figma "Projeto Allce" slide details (home and services). */
+export type ShowcaseInfo = {
+  client: string;
+  year: string;
+  handle: string;
+  logo?: LogoArt;
+  description: string;
+  disciplines: readonly string[];
+};
+
+/** A project's home slide: full-frame background and the device card. */
+export type ProjectShowcase = ShowcaseInfo & {
+  /** Cropped to the 1920×1080 frame. */
+  background: string;
+  /** Cropped to the 450.45×605.111 card. */
+  card: string;
 };
 
 /** A gallery box in Figma px: an image already cropped to it, or a logo panel. */
@@ -51,8 +73,11 @@ export type Project = {
   services: readonly ServiceId[];
   /** Card image (all projects, tracks); `null` shows the {EM BREVE} card. */
   cover: string | null;
-  /** Project page hero, with its focal point as an `object-[x_y]` class. */
-  hero: { src: string; position?: string };
+  /**
+   * Project page hero, with its focal point as an `object-[x_y]` class;
+   * `null` shows the {EM BREVE} glass there instead.
+   */
+  hero: { src: string; position?: string } | null;
   /** Cases page collage; `null` shows the {EM BREVE} card there too. */
   collage: ProjectCollage | null;
   /** Credits, in two columns of two. */
@@ -61,4 +86,6 @@ export type Project = {
   logo?: ProjectLogo;
   /** Case study gallery; without one the page shows {EM BREVE}. */
   gallery?: ProjectGallery;
+  /** Home slide (Figma "Projeto Allce" variants). */
+  showcase?: ProjectShowcase;
 };

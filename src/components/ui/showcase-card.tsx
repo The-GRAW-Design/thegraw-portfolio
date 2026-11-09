@@ -4,16 +4,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
 import { RollText } from "@/components/ui/roll-text";
-import {
-  getProjectHref,
-  PROJECT_SHOWCASE,
-  SHOWCASE_LABELS,
-} from "@/constants/projects";
+import { SHOWCASE_LABELS } from "@/constants/projects";
 import { EASE, gsap, useGSAP } from "@/lib/gsap";
 import { asset } from "@/utils/asset";
 import { cn } from "@/utils/cn";
 
 type ShowcaseCardProps = {
+  href: string;
+  /** Image cropped to the 450.45×605.111 card. */
+  image: string;
+  handle: string;
   className?: string;
 };
 
@@ -21,7 +21,12 @@ type ShowcaseCardProps = {
  * Figma "Frame 34994": the device shot with the "Explore project" bar and its
  * red arrow box. It unveils from the bottom as it scrolls in.
  */
-export function ShowcaseCard({ className }: ShowcaseCardProps) {
+export function ShowcaseCard({
+  href,
+  image,
+  handle,
+  className,
+}: ShowcaseCardProps) {
   const ref = useRef<HTMLAnchorElement>(null);
 
   useGSAP(
@@ -58,7 +63,7 @@ export function ShowcaseCard({ className }: ShowcaseCardProps) {
   return (
     <Link
       ref={ref}
-      href={getProjectHref(PROJECT_SHOWCASE)}
+      href={href}
       className={cn(
         "group relative flex aspect-[450.45/605.111] w-full max-w-450 flex-col justify-end overflow-hidden lg:h-605 lg:w-450.5 lg:max-w-none",
         className,
@@ -66,7 +71,7 @@ export function ShowcaseCard({ className }: ShowcaseCardProps) {
     >
       <span data-card-image className="absolute inset-0">
         <Image
-          src={PROJECT_SHOWCASE.device}
+          src={image}
           alt=""
           fill
           sizes="(min-width: 1024px) 24vw, 90vw"
@@ -78,7 +83,7 @@ export function ShowcaseCard({ className }: ShowcaseCardProps) {
           <span className="text-lead">
             <RollText>{SHOWCASE_LABELS.explore}</RollText>
           </span>
-          <span className="text-fine uppercase">{PROJECT_SHOWCASE.handle}</span>
+          <span className="text-fine uppercase">{handle}</span>
         </span>
         <Image
           src={asset("/icons/explore-arrow.svg")}

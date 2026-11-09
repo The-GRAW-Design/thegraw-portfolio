@@ -71,7 +71,8 @@ function Gallery({ gallery }: { gallery: ProjectGallery }) {
 /**
  * Figma "Project Open" (1920 frame, BLACK GRAW): hero, intro and the case
  * study. A case without its gallery yet shows its logo (when there is one)
- * and the {EM BREVE} glass right under the intro.
+ * and the {EM BREVE} glass right under the intro (or as its hero, when it
+ * has no photo either).
  */
 export function ProjectDetailSection({ project }: ProjectDetailSectionProps) {
   const { gallery } = project;
@@ -83,12 +84,16 @@ export function ProjectDetailSection({ project }: ProjectDetailSectionProps) {
           data-project-hero
           className="relative h-[60svh] w-full bg-coal lg:h-692"
         >
-          <ParallaxImage
-            src={project.hero.src}
-            alt=""
-            priority
-            imageClassName={project.hero.position}
-          />
+          {project.hero ? (
+            <ParallaxImage
+              src={project.hero.src}
+              alt=""
+              priority
+              imageClassName={project.hero.position}
+            />
+          ) : (
+            <ComingSoon scale="page" sizes="100vw" />
+          )}
         </div>
       </section>
 
@@ -123,20 +128,23 @@ export function ProjectDetailSection({ project }: ProjectDetailSectionProps) {
               {project.logo && (
                 <GalleryImage media={{ ...WIDE_BOX, logo: project.logo }} />
               )}
-              <Reveal className="p-10 lg:p-11">
-                <div
-                  className="relative w-full overflow-hidden"
-                  style={{
-                    aspectRatio: `${WIDE_BOX.width} / ${WIDE_BOX.height}`,
-                  }}
-                >
-                  <ComingSoon
-                    image={project.hero.src}
-                    scale="page"
-                    sizes="80vw"
-                  />
-                </div>
-              </Reveal>
+              {/* Without a hero photo, the hero is the {EM BREVE} glass. */}
+              {project.hero && (
+                <Reveal className="p-10 lg:p-11">
+                  <div
+                    className="relative w-full overflow-hidden"
+                    style={{
+                      aspectRatio: `${WIDE_BOX.width} / ${WIDE_BOX.height}`,
+                    }}
+                  >
+                    <ComingSoon
+                      image={project.hero.src}
+                      scale="page"
+                      sizes="80vw"
+                    />
+                  </div>
+                </Reveal>
+              )}
             </div>
           )}
         </div>

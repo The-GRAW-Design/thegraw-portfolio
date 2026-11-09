@@ -1,3 +1,4 @@
+import { COMING_SOON_IMAGE } from "@/constants/projects";
 import { DURATION, EASE, gsap } from "@/lib/gsap";
 import type { Project } from "@/types/project";
 
@@ -77,7 +78,10 @@ export function openCaseTransition({
   backdrop.className = "absolute inset-0 bg-black-graw opacity-0";
   const frame = document.createElement("div");
   frame.className = "absolute overflow-hidden bg-coal";
-  const hero = layer(project.hero.src, project.hero.position ?? "");
+  const hero = layer(
+    project.hero?.src ?? COMING_SOON_IMAGE,
+    project.hero ? (project.hero.position ?? "") : "blur-soon",
+  );
   // Where the hero parallax sits at the top of the page: hand over in place.
   const progress = window.innerHeight / (window.innerHeight + heroHeight());
   hero.style.opacity = "0";
