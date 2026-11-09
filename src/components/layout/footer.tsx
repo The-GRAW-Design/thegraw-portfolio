@@ -17,8 +17,9 @@ type FooterProps = {
 };
 
 /**
- * Figma "Footer" (937px): dithered figure behind the studio details. It slides
- * out from under the section above, like the project under the hero.
+ * Figma "Footer" (937px): dithered figure behind the studio details, which
+ * are kept together at its bottom. It slides out from under the section
+ * above, like the project under the hero.
  */
 export function Footer({ tone = "red" }: FooterProps) {
   const [emailUser, emailDomain] = STUDIO_INFO.email.split("@");
@@ -36,7 +37,14 @@ export function Footer({ tone = "red" }: FooterProps) {
           {...(tone === "red" ? FOOTER_DITHER : FOOTER_DARK_DITHER)}
           animation="scroll"
         />
-        <div className="relative flex flex-col gap-48 px-16 pt-96 pb-64 lg:static lg:block lg:p-0">
+        {/* The details sit together at the bottom (the Figma 608px block),
+            so they come out from under the page above all at once. */}
+        <div
+          className={cn(
+            "relative flex flex-col gap-48 px-16 pt-96 pb-64 lg:absolute lg:inset-x-0 lg:block lg:h-608 lg:p-0",
+            tone === "red" ? "lg:bottom-29" : "lg:bottom-0",
+          )}
+        >
           <Image
             src={asset("/icons/logo-the-graw-wordmark.svg")}
             alt="The Graw"
