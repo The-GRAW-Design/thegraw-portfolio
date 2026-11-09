@@ -6,12 +6,17 @@ import { PROJECT_PAGE } from "@/constants/pages";
 import { PROJECTS } from "@/constants/projects";
 import { CasesTrack } from "@/features/cases/components/cases-track";
 import { DitherImage } from "@/features/dither-image";
+import type { Project } from "@/types/project";
+
+type ProjectMoreSectionProps = {
+  project: Project;
+};
 
 /**
  * Figma "Project Open" closing block (1920×1039.658): the credits with the
  * orange END, then the other cases on the track, over the studio texture.
  */
-export function ProjectMoreSection() {
+export function ProjectMoreSection({ project }: ProjectMoreSectionProps) {
   return (
     <section
       data-header-theme="light"
@@ -21,7 +26,7 @@ export function ProjectMoreSection() {
 
       <div className="relative grid px-16 lg:absolute lg:top-32.5 lg:left-300 lg:p-0">
         <Reveal className="col-start-1 row-start-1 grid grid-cols-2 gap-x-24 lg:flex lg:w-1034 lg:gap-90 lg:p-10">
-          {PROJECT_PAGE.credits.map((column, columnIndex) => (
+          {project.credits.map((column, columnIndex) => (
             <dl
               key={columnIndex}
               data-reveal

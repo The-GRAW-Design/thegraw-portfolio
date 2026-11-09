@@ -9,31 +9,25 @@ export const HOME_PAGE = {
     title: ["case", "studies"],
     body: "A closer look at how strategy, design, and development shape each project.",
   },
-  /** Four "Projeto Allce" slides in the Figma home. */
-  showcaseCount: 4,
+  /** The four "Projeto Allce" slides of the Figma home, in order. */
+  showcases: ["allce", "grupo-penguin", "conexao-duo", "gilberto-do-acordeon"],
   viewAllCases: "View All Cases",
   viewAllImage: asset("/images/home/view-all-band.webp"),
 } as const;
 
+export const NOT_FOUND_PAGE = {
+  title: "Page not found",
+  code: "error 404",
+  back: "back to home",
+} as const;
+
 export const PROJECT_PAGE = {
-  /** The Figma project pages use this photo for every image. */
-  image: asset("/images/home/featured-project.webp"),
   viewAll: "view all",
   solution: "Solution",
   process: "process",
   results: "results",
   resultsBody:
     "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many",
-  credits: [
-    [
-      { label: "Project director", value: "André Gonçalves" },
-      { label: "Client", value: "Allce. Co" },
-    ],
-    [
-      { label: "Motion Designer", value: "Alan Erick" },
-      { label: "Date", value: "2024" },
-    ],
-  ],
   end: "END",
 } as const;
 
@@ -77,21 +71,18 @@ export const STUDIO_PAGE = {
   projectsLead: "Projects Lead",
   portrait: asset("/images/studio/portrait.webp"),
   projectsLeadImage: asset("/images/studio/projects-lead.webp"),
-  /**
-   * Shown one at a time while scrolling, each with its own photo. The Figma
-   * has only the first photo; the other two are site images standing in.
-   */
+  /** Shown one at a time while scrolling, each with its Figma photo. */
   sections: [
     {
       heading: "Purpose",
-      image: asset("/images/studio/workspace.webp"),
+      image: asset("/images/studio/purpose.webp"),
       body: [
         "We move brands forward through clear thinking, distinctive design, and digital experiences built with purpose.",
       ],
     },
     {
       heading: "Pillars",
-      image: asset("/images/services/branding.webp"),
+      image: asset("/images/studio/pillars.webp"),
       body: [
         "Clarity — We turn complex ideas into clear, focused experiences.",
         "Identity — We create distinctive visual languages that make each brand recognizable.",
@@ -100,7 +91,7 @@ export const STUDIO_PAGE = {
     },
     {
       heading: "Foundations",
-      image: asset("/images/cases/collage-main.webp"),
+      image: asset("/images/studio/foundations.webp"),
       body: [
         "Good work starts with listening. We ask the right questions, understand the challenge, and make deliberate decisions at every step — from the first idea to the final detail.",
       ],

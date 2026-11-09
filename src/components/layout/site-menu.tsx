@@ -20,7 +20,7 @@ type SiteMenuProps = {
 
 const FOCUSABLE = "a[href], button:not([disabled])";
 const DESKTOP = "(min-width: 64rem)";
-/** Words rise in red and settle into the link gray (hover still wins). */
+/** Words rise in red and settle into the link color (hover still wins). */
 const LINK_TINT = "--menu-link-tint";
 
 // The panel wipes down with a slanted edge while its links straighten up
@@ -75,7 +75,7 @@ function buildMenuTimeline(root: HTMLElement, onClosed: () => void) {
       links,
       { [LINK_TINT]: themeColor("red-graw") },
       {
-        [LINK_TINT]: themeColor("menu-link"),
+        [LINK_TINT]: themeColor("menu"),
         duration: 0.8,
         ease: EASE.inOut,
         stagger: 0.05,
@@ -186,7 +186,7 @@ export function SiteMenu({ open, onClose, returnFocusRef }: SiteMenuProps) {
       />
       <div
         data-menu-panel
-        className="absolute inset-x-16 top-16 overflow-hidden bg-menu px-24 pt-96 pb-48 [clip-path:polygon(0%_0%,100%_0%,100%_0%,0%_0%)] lg:inset-x-auto lg:top-31 lg:right-55 lg:h-629 lg:w-1339 lg:p-0"
+        className="absolute inset-x-16 top-16 overflow-hidden bg-black-graw px-24 pt-96 pb-48 [clip-path:polygon(0%_0%,100%_0%,100%_0%,0%_0%)] lg:inset-x-auto lg:top-31 lg:right-55 lg:h-629 lg:w-1339 lg:p-0"
       >
         <nav
           data-menu-content
@@ -220,7 +220,7 @@ export function SiteMenu({ open, onClose, returnFocusRef }: SiteMenuProps) {
                   <span className="-ml-[0.06em] block overflow-hidden pr-8 pl-[0.06em]">
                     <span
                       data-menu-link
-                      className="block text-display text-[color:var(--menu-link-tint,var(--color-menu-link))] transition-colors duration-300 ease-power3 will-change-transform group-data-knockout:text-transparent"
+                      className="block text-display text-[color:var(--menu-link-tint,var(--color-menu))] transition-colors duration-300 ease-power3 will-change-transform group-data-knockout:text-transparent"
                     >
                       {link.label}
                     </span>

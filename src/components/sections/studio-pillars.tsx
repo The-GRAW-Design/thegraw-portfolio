@@ -6,16 +6,21 @@ import { Reveal } from "@/components/ui/reveal";
 import { STUDIO_PAGE } from "@/constants/pages";
 import { EASE, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { cn } from "@/utils/cn";
+import { themeColor } from "@/utils/theme-color";
 
 /** Scroll, in viewport heights, that each section stays on screen. */
 const STEP = 0.6;
 const SHOWN = "inset(0% 0% 0% 0%)";
 const HIDDEN = "inset(100% 0% 0% 0%)";
 
+/** How far a section rises as it stacks under the previous one, in px. */
+const RISE = 60;
+
 /**
- * Figma "Studio" purpose, pillars and foundations, one at a time: the row
- * pins and the scroll swaps the text (out up, in from below) while the next
- * photo unveils from the bottom over the previous one.
+ * Figma "Studio" purpose, pillars and foundations: the row pins and the
+ * scroll stacks them one under the other, as laid out in the Figma. The one
+ * coming in is red and the ones before it settle to black, while its photo
+ * unveils from the bottom over the previous one.
  */
 export function StudioPillars() {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -40,8 +45,14 @@ export function StudioPillars() {
         },
         (context) => {
           const pace = context.conditions?.reduced ? 0 : 1;
+          const red = themeColor("red-graw");
+          const black = themeColor("black");
           let current = 0;
-          gsap.set(blocks, { opacity: (index) => (index === 0 ? 1 : 0) });
+          gsap.set(blocks, {
+            opacity: (index) => (index === 0 ? 1 : 0),
+            y: (index) => (index === 0 ? 0 : RISE),
+            color: (index) => (index === 0 ? red : black),
+          });
           gsap.set(images, {
             clipPath: (index) => (index === 0 ? SHOWN : HIDDEN),
           });
@@ -49,25 +60,17 @@ export function StudioPillars() {
           const show = (next: number) => {
             if (next === current) return;
             const forward = next > current ? 1 : -1;
-            gsap.to(blocks[current], {
-              opacity: 0,
-              y: -40 * forward,
-              duration: 0.5 * pace,
-              ease: EASE.out,
-              overwrite: true,
-            });
-            gsap.fromTo(
-              blocks[next],
-              { opacity: 0, y: 40 * forward },
-              {
-                opacity: 1,
-                y: 0,
-                duration: 0.9 * pace,
-                delay: 0.1 * pace,
-                ease: EASE.expo,
+            blocks.forEach((block, index) => {
+              const stacked = index <= next;
+              gsap.to(block, {
+                opacity: stacked ? 1 : 0,
+                y: stacked ? 0 : RISE,
+                color: index === next ? red : black,
+                duration: (stacked ? 1 : 0.5) * pace,
+                ease: stacked ? EASE.expo : EASE.out,
                 overwrite: true,
-              },
-            );
+              });
+            });
             images.forEach((image, index) => {
               gsap.to(image, {
                 clipPath: index <= next ? SHOWN : HIDDEN,
@@ -109,12 +112,12 @@ export function StudioPillars() {
       ref={rootRef}
       className="flex flex-col gap-48 lg:flex-row lg:items-start lg:gap-101 lg:pl-93"
     >
-      <Reveal className="grid lg:w-703">
+      <Reveal className="flex flex-col gap-51 lg:w-703">
         {sections.map((section, index) => (
           <div
             key={section.heading}
             data-pillar
-            className={cn("col-start-1 row-start-1", index > 0 && "opacity-0")}
+            className={cn(index === 0 ? "text-red-graw" : "opacity-0")}
           >
             <h2 className="text-heading font-light">{section.heading}</h2>
             {section.body.map((paragraph) => (
