@@ -186,7 +186,7 @@
   --text-micro: max(0.4375rem, calc(var(--fluid) * 9.33));
   --text-micro--letter-spacing: -0.13em;
   /* "{EM BREVE}" card: Medium 94.4 on an 886 frame (cards rescale --fluid). */
-  --text-soon: calc(var(--fluid) * 94.4);
+  --text-soon: max(1.5rem, calc(var(--fluid) * 94.4));
   --text-soon--line-height: normal;
 
   --blur-soon: calc(var(--fluid) * 35.35);
