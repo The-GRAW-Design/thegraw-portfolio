@@ -2,7 +2,7 @@ import { ArrowLink } from "@/components/ui/arrow-link";
 import { EdgeFades } from "@/components/ui/edge-fades";
 import { Marquee } from "@/components/ui/marquee";
 import { Reveal } from "@/components/ui/reveal";
-import { SplitReveal } from "@/components/ui/split-reveal";
+import { TypeText } from "@/components/ui/type-text";
 import { LETS_WORK, PROPOSAL_CTA, PROPOSAL_HREF } from "@/constants/services";
 
 const BAR_COUNT = 5;
@@ -26,13 +26,12 @@ export function LetsWorkSection() {
         <EdgeFades tone="light" className="w-48 lg:w-105" />
       </div>
 
-      <SplitReveal
+      <TypeText
         as="h2"
-        split="lines"
-        className="px-16 text-display lg:absolute lg:top-445 lg:left-285 lg:w-626 lg:p-0"
+        className="mx-16 text-display lg:absolute lg:top-445 lg:left-285 lg:m-0 lg:w-626"
       >
         {LETS_WORK.title}
-      </SplitReveal>
+      </TypeText>
 
       <Reveal className="flex flex-col items-start gap-32 px-16 lg:absolute lg:top-510 lg:left-1373 lg:w-373 lg:p-0">
         <p data-reveal className="text-body leading-[0.93] tracking-snug">
