@@ -24,15 +24,22 @@ export function SwapText({
 
   useGSAP(
     () => {
-      const media = gsap.matchMedia();
-      media.add("(prefers-reduced-motion: no-preference)", () => {
-        gsap.from(textRef.current, {
-          yPercent: 110 * direction,
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        return;
+      }
+      // Always lands on 0, even when a change cuts the previous one short (a
+      // `from` would take the mid-way position as its end and leave the text
+      // stuck out of its clip).
+      gsap.fromTo(
+        textRef.current,
+        { yPercent: 110 * direction },
+        {
+          yPercent: 0,
           duration: DURATION.hover + 0.3,
           ease: EASE.out,
-        });
-      });
-      return () => media.revert();
+          overwrite: true,
+        },
+      );
     },
     { dependencies: [children] },
   );
