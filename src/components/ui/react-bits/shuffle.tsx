@@ -33,6 +33,8 @@ export interface ShuffleProps {
   triggerOnce?: boolean;
   respectReducedMotion?: boolean;
   triggerOnHover?: boolean;
+  /** Shuffle when the text scrolls into view; off, it only shuffles on hover. */
+  playOnEnter?: boolean;
   effect?: "slide" | "flip" | "blur";
   hoverRadius?: number;
   motionBlur?: boolean;
@@ -89,6 +91,7 @@ export const Shuffle: React.FC<ShuffleProps> = ({
   triggerOnce = true,
   respectReducedMotion = true,
   triggerOnHover = true,
+  playOnEnter = true,
   effect = "slide",
   hoverRadius = 0,
   motionBlur = false,
@@ -724,20 +727,24 @@ export const Shuffle: React.FC<ShuffleProps> = ({
 
       const create = () => {
         build();
-        play();
+        if (playOnEnter) play();
         armHover();
         setReady(true);
       };
 
-      const st = ScrollTrigger.create({
-        trigger: el,
-        start: scrollTriggerStart,
-        once: triggerOnce,
-        onEnter: create,
-      });
+      // Without an entrance, the text is set up at once and stays still.
+      const st = playOnEnter
+        ? ScrollTrigger.create({
+            trigger: el,
+            start: scrollTriggerStart,
+            once: triggerOnce,
+            onEnter: create,
+          })
+        : null;
+      if (!playOnEnter) create();
 
       return () => {
-        st.kill();
+        st?.kill();
         removeHover();
         teardown();
         svg?.remove();
@@ -765,6 +772,7 @@ export const Shuffle: React.FC<ShuffleProps> = ({
         triggerOnce,
         respectReducedMotion,
         triggerOnHover,
+        playOnEnter,
         effect,
         hoverRadius,
         motionBlur,
@@ -782,7 +790,7 @@ export const Shuffle: React.FC<ShuffleProps> = ({
 
   const classes = cn(
     "inline-block whitespace-nowrap will-change-transform",
-    ready ? "visible" : "invisible",
+    ready || !playOnEnter ? "visible" : "invisible",
     className,
   );
 
