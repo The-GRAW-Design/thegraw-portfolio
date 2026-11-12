@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { ParallaxImage } from "@/components/ui/parallax-image";
+import { Magnet } from "@/components/ui/react-bits/magnet";
 import { SplitReveal } from "@/components/ui/split-reveal";
 import { STUDIO_DITHER } from "@/constants/dither";
 import { STUDIO_PAGE, TEAM_MEMBERS } from "@/constants/pages";
@@ -45,35 +46,40 @@ export function StudioHeroSection() {
         aria-label="Equipe"
         className="relative flex flex-col gap-24 px-16 pt-32 lg:absolute lg:top-88 lg:left-960 lg:w-556 lg:gap-37 lg:p-0"
       >
+        {/* The arrows pull toward the cursor (React Bits Magnet). */}
         <div className="flex gap-11">
-          <button
-            type="button"
-            aria-label="Pessoa anterior"
-            className="transition-transform duration-300 ease-power3 hover:-translate-x-3"
-            onClick={() => go(-1)}
-          >
-            <Image
-              src={asset("/icons/arrow-prev.svg")}
-              alt=""
-              width={48}
-              height={48}
-              className="size-40 rotate-180 lg:size-48"
-            />
-          </button>
-          <button
-            type="button"
-            aria-label="Próxima pessoa"
-            className="transition-transform duration-300 ease-power3 hover:translate-x-3"
-            onClick={() => go(1)}
-          >
-            <Image
-              src={asset("/icons/arrow-next.svg")}
-              alt=""
-              width={48}
-              height={48}
-              className="size-40 lg:size-48"
-            />
-          </button>
+          <Magnet padding={36} magnetStrength={3} maxOffset={10}>
+            <button
+              type="button"
+              aria-label="Pessoa anterior"
+              className="block"
+              onClick={() => go(-1)}
+            >
+              <Image
+                src={asset("/icons/arrow-prev.svg")}
+                alt=""
+                width={48}
+                height={48}
+                className="size-40 rotate-180 lg:size-48"
+              />
+            </button>
+          </Magnet>
+          <Magnet padding={36} magnetStrength={3} maxOffset={10}>
+            <button
+              type="button"
+              aria-label="Próxima pessoa"
+              className="block"
+              onClick={() => go(1)}
+            >
+              <Image
+                src={asset("/icons/arrow-next.svg")}
+                alt=""
+                width={48}
+                height={48}
+                className="size-40 lg:size-48"
+              />
+            </button>
+          </Magnet>
         </div>
         <div key={index} className="flex flex-col gap-15">
           <SplitReveal
