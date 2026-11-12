@@ -23,6 +23,8 @@ export interface MagnetProps extends HTMLAttributes<HTMLDivElement> {
   spring?: MagnetSpring;
   onActiveChange?: (active: boolean) => void;
   wrapperClassName?: string;
+  /** Element of both layers: a span fits inside buttons and links. */
+  as?: "div" | "span";
   innerClassName?: string;
 }
 
@@ -52,7 +54,7 @@ type Settings = {
 };
 
 type Entry = {
-  wrapper: HTMLDivElement;
+  wrapper: HTMLElement;
   settings: { current: Settings };
   reduce: boolean;
   wake: () => void;
@@ -153,12 +155,14 @@ export const Magnet = ({
   spring,
   onActiveChange,
   wrapperClassName = "",
+  as = "div",
   innerClassName = "",
   style,
   ...props
 }: MagnetProps) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
+  const Tag = as as "div";
   const wakeRef = useRef<(() => void) | null>(null);
   const settings: Settings = {
     padding: Math.max(0, padding),
@@ -313,19 +317,20 @@ export const Magnet = ({
   });
 
   return (
-    <div
+    <Tag
       ref={wrapperRef}
       className={wrapperClassName}
       style={{ position: "relative", display: "inline-block", ...style }}
       {...props}
     >
-      <div
+      <Tag
         ref={innerRef}
         className={innerClassName}
-        style={{ willChange: "transform" }}
+        // Block, so a span layer can be transformed too.
+        style={{ willChange: "transform", display: "block" }}
       >
         {children}
-      </div>
-    </div>
+      </Tag>
+    </Tag>
   );
 };

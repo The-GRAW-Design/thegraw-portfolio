@@ -202,8 +202,8 @@ export function ServicesProjectsSection({
         className="group absolute bottom-24 left-1/2 z-20 flex h-48 w-96 -translate-x-1/2 items-center justify-center bg-coal text-back text-red-graw lg:bottom-45 lg:h-59 lg:w-118"
         onClick={backToTop}
       >
-        <Magnet padding={40} magnetStrength={3} maxOffset={8}>
-          <span className="block">{SERVICES_PAGE.back}</span>
+        <Magnet as="span" padding={40} magnetStrength={3} maxOffset={8}>
+          {SERVICES_PAGE.back}
         </Magnet>
       </button>
     </section>
