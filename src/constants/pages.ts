@@ -53,7 +53,7 @@ export const TEAM_MEMBERS = [
     roleClassName: "text-role-motion lg:top-[71.61%] lg:left-51",
   },
   {
-    name: "Eric Elias",
+    name: "Erik Elias",
     role: "DEVELOPER",
     bio: TEAM_BIO,
     roleClassName: "text-giant lg:top-[71.13%] lg:left-640",

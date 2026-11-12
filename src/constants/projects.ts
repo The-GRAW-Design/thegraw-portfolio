@@ -259,7 +259,7 @@ export const PROJECTS: readonly Project[] = [
     credits: credits(
       { label: "Project director", value: DIRECTOR },
       "Naturallis",
-      { label: "Dev", value: "Eric Elias" },
+      { label: "Dev", value: "Erik Elias" },
       "2026",
     ),
   },
@@ -339,7 +339,7 @@ export const PROJECTS: readonly Project[] = [
     credits: credits(
       { label: "Designer", value: DIRECTOR },
       "The Graw",
-      { label: "Dev", value: "Eric Elias" },
+      { label: "Dev", value: "Erik Elias" },
       "2026",
     ),
   },
