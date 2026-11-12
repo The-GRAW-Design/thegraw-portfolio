@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_CONFIG.name}`,
   },
   description: SITE_CONFIG.description,
-  // The G of the wordmark on RED GRAW; PNG and ICO for browsers without SVG.
+  // The header logo (THE GRAW + DESIGN) on RED GRAW; PNG and ICO fallbacks.
   icons: {
     icon: [
       { url: asset("/favicon.svg"), type: "image/svg+xml" },
