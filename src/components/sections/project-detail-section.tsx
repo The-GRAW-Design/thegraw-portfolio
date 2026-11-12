@@ -1,6 +1,7 @@
 import { ComingSoon } from "@/components/ui/coming-soon";
 import { GalleryImage } from "@/components/ui/gallery-image";
 import { ParallaxImage } from "@/components/ui/parallax-image";
+import { ScrollReveal } from "@/components/ui/react-bits/scroll-reveal";
 import { Reveal } from "@/components/ui/reveal";
 import { SplitReveal } from "@/components/ui/split-reveal";
 import { LOREM_LONG, PROJECT_PAGE } from "@/constants/pages";
@@ -9,6 +10,29 @@ import type { Project, ProjectGallery } from "@/types/project";
 type ProjectDetailSectionProps = {
   project: Project;
 };
+
+/** Long copy: its words come in one after the other (React Bits ScrollReveal). */
+function Copy({
+  children,
+  className,
+}: {
+  children: string;
+  className: string;
+}) {
+  return (
+    <ScrollReveal
+      tag="p"
+      mode="enter"
+      stagger={0.012}
+      duration={0.7}
+      baseOpacity={0}
+      blurStrength={6}
+      containerClassName={className}
+    >
+      {children}
+    </ScrollReveal>
+  );
+}
 
 /** Gallery box under the intro: 1517.428 wide minus the 11.109px frame. */
 const WIDE_BOX = { width: 1495.21, height: 829.81 } as const;
@@ -27,10 +51,12 @@ function Gallery({ gallery }: { gallery: ProjectGallery }) {
             sizes="(min-width: 1024px) 47vw, 100vw"
             className="lg:w-889.75"
           />
-          <Reveal className="flex flex-col gap-16 px-10 lg:w-582.75 lg:gap-15.5 lg:px-0">
-            <h2 className="text-chapter">{PROJECT_PAGE.solution}</h2>
-            <p className="text-copy">{LOREM_LONG}</p>
-          </Reveal>
+          <div className="flex flex-col gap-16 px-10 lg:w-582.75 lg:gap-15.5 lg:px-0">
+            <SplitReveal as="h2" split="chars" className="text-chapter">
+              {PROJECT_PAGE.solution}
+            </SplitReveal>
+            <Copy className="text-copy">{LOREM_LONG}</Copy>
+          </div>
         </div>
         {gallery.middle.map((group) => (
           <div
@@ -48,16 +74,20 @@ function Gallery({ gallery }: { gallery: ProjectGallery }) {
         ))}
       </div>
 
-      <Reveal className="flex flex-col gap-32 px-10 lg:w-1490 lg:flex-row lg:items-start lg:gap-33.25 lg:px-0">
-        <div data-reveal className="flex flex-col gap-6.75 lg:w-885.25">
-          <h2 className="text-chapter">{PROJECT_PAGE.process}</h2>
-          <p className="text-copy">{LOREM_LONG}</p>
+      <div className="flex flex-col gap-32 px-10 lg:w-1490 lg:flex-row lg:items-start lg:gap-33.25 lg:px-0">
+        <div className="flex flex-col gap-6.75 lg:w-885.25">
+          <SplitReveal as="h2" split="chars" className="text-chapter">
+            {PROJECT_PAGE.process}
+          </SplitReveal>
+          <Copy className="text-copy">{LOREM_LONG}</Copy>
         </div>
-        <div data-reveal className="flex flex-col gap-6.75 lg:w-571">
-          <h2 className="text-chapter">{PROJECT_PAGE.results}</h2>
-          <p className="text-copy">{PROJECT_PAGE.resultsBody}</p>
+        <div className="flex flex-col gap-6.75 lg:w-571">
+          <SplitReveal as="h2" split="chars" className="text-chapter">
+            {PROJECT_PAGE.results}
+          </SplitReveal>
+          <Copy className="text-copy">{PROJECT_PAGE.resultsBody}</Copy>
         </div>
-      </Reveal>
+      </div>
 
       <div className="flex w-full flex-col gap-24 lg:gap-45.5">
         {gallery.closing.map((media) => (
@@ -111,13 +141,16 @@ export function ProjectDetailSection({ project }: ProjectDetailSectionProps) {
             >
               {project.title}
             </SplitReveal>
-            <p className="text-meta text-orange lg:w-99">{project.category}</p>
+            <SplitReveal
+              split="words"
+              trigger="load"
+              delay={0.4}
+              className="text-meta text-orange lg:w-99"
+            >
+              {project.category}
+            </SplitReveal>
           </div>
-          {gallery && (
-            <Reveal>
-              <p className="text-body lg:w-1037">{LOREM_LONG}</p>
-            </Reveal>
-          )}
+          {gallery && <Copy className="text-body lg:w-1037">{LOREM_LONG}</Copy>}
         </div>
 
         <div className="flex w-full flex-col items-center gap-64 px-6 lg:w-1517.5 lg:gap-62 lg:px-0">
