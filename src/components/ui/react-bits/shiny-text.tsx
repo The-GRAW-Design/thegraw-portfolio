@@ -67,7 +67,8 @@ const parseColor = (value: string): number[] | null => {
   if (typeof document === "undefined") return null;
   if (!paint) paint = document.createElement("canvas").getContext("2d");
   if (!paint) return null;
-  const token = /^var((--[w-]+))$/.exec(value.trim());
+  // Theme tokens (`var(--color-*)`) resolve before the canvas parses them.
+  const token = /^var\((--[\w-]+)\)$/.exec(value.trim());
   const css = token
     ? getComputedStyle(document.documentElement)
         .getPropertyValue(token[1])
