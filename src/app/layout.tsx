@@ -4,6 +4,7 @@ import { SkipLink } from "@/components/layout/skip-link";
 import { SITE_CONFIG } from "@/constants/site";
 import { seagram, sfPro } from "@/lib/fonts";
 import { SmoothScrollProvider } from "@/lib/smooth-scroll-provider";
+import { asset } from "@/utils/asset";
 import "lenis/dist/lenis.css";
 import "@/styles/globals.css";
 
@@ -13,6 +14,14 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_CONFIG.name}`,
   },
   description: SITE_CONFIG.description,
+  // The G of the wordmark on RED GRAW; PNG and ICO for browsers without SVG.
+  icons: {
+    icon: [
+      { url: asset("/favicon.svg"), type: "image/svg+xml" },
+      { url: asset("/favicon.ico"), sizes: "16x16 32x32 48x48" },
+    ],
+    apple: asset("/apple-touch-icon.png"),
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
