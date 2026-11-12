@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, type KeyboardEvent, type RefObject } from "react";
-import { RollText } from "@/components/ui/roll-text";
+import { ShuffleText } from "@/components/ui/shuffle-text";
 import { MENU_VISUAL, NAV_LINKS } from "@/constants/navigation";
 import { useMenuKnockout } from "@/hooks/use-menu-knockout";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
@@ -237,7 +237,7 @@ export function SiteMenu({ open, onClose, returnFocusRef }: SiteMenuProps) {
           className="group absolute top-16 right-16 bg-black-graw px-19 pt-5 pb-4 text-nav text-red-graw lg:top-14.25 lg:right-11"
           onClick={onClose}
         >
-          <RollText>Menu</RollText>
+          <ShuffleText>Menu</ShuffleText>
         </button>
       </div>
     </div>

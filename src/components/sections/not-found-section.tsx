@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Reveal } from "@/components/ui/reveal";
-import { RollText } from "@/components/ui/roll-text";
+import { ShuffleText } from "@/components/ui/shuffle-text";
 import { SplitReveal } from "@/components/ui/split-reveal";
 import { NOT_FOUND_DITHER } from "@/constants/dither";
 import { NOT_FOUND_PAGE } from "@/constants/pages";
@@ -33,7 +33,7 @@ export function NotFoundSection() {
           {NOT_FOUND_PAGE.title}
         </SplitReveal>
         <Link data-reveal href="/" className="group text-more">
-          <RollText>{NOT_FOUND_PAGE.back}</RollText>
+          <ShuffleText>{NOT_FOUND_PAGE.back}</ShuffleText>
         </Link>
       </Reveal>
     </section>

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { HeaderLogo } from "@/components/layout/header-logo";
 import { SiteMenu } from "@/components/layout/site-menu";
-import { RollText } from "@/components/ui/roll-text";
+import { ShuffleText } from "@/components/ui/shuffle-text";
 import { DURATION, EASE, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { cn } from "@/utils/cn";
 
@@ -94,7 +94,7 @@ export function Header() {
             )}
             onClick={() => setMenuOpen(true)}
           >
-            <RollText>Menu</RollText>
+            <ShuffleText>Menu</ShuffleText>
           </button>
         </div>
       </header>

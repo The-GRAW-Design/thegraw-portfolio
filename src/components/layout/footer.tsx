@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { RollText } from "@/components/ui/roll-text";
+import { ShuffleText } from "@/components/ui/shuffle-text";
 import { UnderReveal } from "@/components/ui/under-reveal";
 import { FOOTER_DARK_DITHER, FOOTER_DITHER } from "@/constants/dither";
 import { FOOTER_LINKS } from "@/constants/navigation";
@@ -60,7 +60,7 @@ export function Footer({ tone = "red" }: FooterProps) {
                 href={link.href}
                 className={`group text-nav lg:absolute lg:top-10 ${LINK_POSITION[index]}`}
               >
-                <RollText>{link.label}</RollText>
+                <ShuffleText>{link.label}</ShuffleText>
               </Link>
             ))}
           </nav>

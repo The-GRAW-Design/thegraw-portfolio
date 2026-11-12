@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { RollText } from "@/components/ui/roll-text";
+import { ShuffleText } from "@/components/ui/shuffle-text";
 import { cn } from "@/utils/cn";
 import { asset } from "@/utils/asset";
 
@@ -35,7 +35,7 @@ export function ArrowLink({
         className,
       )}
     >
-      <RollText>{children}</RollText>
+      <ShuffleText>{children}</ShuffleText>
       <Image
         src={TONES[tone].icon}
         alt=""
