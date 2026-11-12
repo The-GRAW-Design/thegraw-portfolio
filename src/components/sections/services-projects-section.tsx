@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/project-meta";
 import { GradualBlur } from "@/components/ui/react-bits/gradual-blur";
 import { Magnet } from "@/components/ui/react-bits/magnet";
+import { SplitReveal } from "@/components/ui/split-reveal";
 import { getProjectHref, PROJECT_SHOWCASE } from "@/constants/projects";
 import { SERVICES_PAGE } from "@/constants/services";
 import { useLenis } from "@/hooks/use-lenis";
@@ -193,9 +194,14 @@ export function ServicesProjectsSection({
         />
       ))}
 
-      <p className="pointer-events-none absolute top-72 left-1/2 z-20 -translate-x-1/2 text-section whitespace-nowrap text-red-graw lg:top-31">
+      {/* The label rises letter by letter whenever the service changes. */}
+      <SplitReveal
+        key={label}
+        split="chars"
+        className="pointer-events-none absolute top-72 left-1/2 z-20 -translate-x-1/2 text-section whitespace-nowrap text-red-graw lg:top-31"
+      >
         {label}
-      </p>
+      </SplitReveal>
 
       <button
         type="button"
