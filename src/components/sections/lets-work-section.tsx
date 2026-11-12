@@ -1,5 +1,6 @@
 import { TextType } from "@/components/ui/react-bits/text-type";
 import { ArrowLink } from "@/components/ui/arrow-link";
+import { Magnet } from "@/components/ui/react-bits/magnet";
 import { Reveal } from "@/components/ui/reveal";
 import { LETS_WORK, PROPOSAL_CTA, PROPOSAL_HREF } from "@/constants/services";
 
@@ -38,9 +39,12 @@ export function LetsWorkSection() {
           {LETS_WORK.copy[1]}
         </p>
         <div data-reveal>
-          <ArrowLink href={PROPOSAL_HREF} tone="red">
-            {PROPOSAL_CTA}
-          </ArrowLink>
+          {/* The CTA pulls toward the cursor (React Bits Magnet). */}
+          <Magnet padding={70} magnetStrength={4} maxOffset={14}>
+            <ArrowLink href={PROPOSAL_HREF} tone="red">
+              {PROPOSAL_CTA}
+            </ArrowLink>
+          </Magnet>
         </div>
       </Reveal>
     </section>
