@@ -24,7 +24,7 @@ export interface AnimatedContentProps extends Omit<
   "onAnimationStart"
 > {
   children?: ReactNode;
-  /** Descendants to animate instead of the wrapper (or its children when staggered). */
+  /** Descendants to animate instead of the wrapper (or its children when staggered without one). */
   selector?: string;
   container?: Element | string | null;
   distance?: number;
@@ -122,9 +122,10 @@ export const AnimatedContent = ({
 
     const ctx = gsap.context(() => {
       const picked = selector ? Array.from(el.querySelectorAll(selector)) : [];
+      // With a selector, its matches or else the wrapper itself.
       const targets: Element[] = picked.length
         ? picked
-        : stagger > 0 && el.children.length
+        : !selector && stagger > 0 && el.children.length
           ? Array.from(el.children)
           : [el];
       const horizontal = direction === "horizontal";
