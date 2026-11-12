@@ -4,9 +4,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useRef, useState, type MouseEvent } from "react";
 import { ComingSoon } from "@/components/ui/coming-soon";
+import { AnimatedContent } from "@/components/ui/react-bits/animated-content";
 import { CASE_COLLAGE, CASES_PAGE, SERVICE_TABS } from "@/constants/cases";
 import { getProjectHref, PROJECTS } from "@/constants/projects";
 import { Counter } from "@/components/ui/react-bits/counter";
+import { ShuffleText } from "@/components/ui/shuffle-text";
 import { CasesDrawer } from "@/features/cases/components/cases-drawer";
 import {
   CollageImage,
@@ -259,32 +261,6 @@ export function CasesShowcase() {
     { dependencies: [count, service, reducedMotion] },
   );
 
-  // First load: the stage settles in.
-  useGSAP(
-    () => {
-      const media = gsap.matchMedia();
-      media.add("(prefers-reduced-motion: no-preference)", () => {
-        gsap.from("[data-cases-chrome]", {
-          autoAlpha: 0,
-          y: 24,
-          duration: DURATION.enter,
-          ease: EASE.out,
-          stagger: 0.08,
-          delay: 0.3,
-        });
-        gsap.from("[data-cases-slides]", {
-          autoAlpha: 0,
-          yPercent: 12,
-          scale: 0.94,
-          duration: DURATION.enterSlow,
-          ease: EASE.expo,
-        });
-      });
-      return () => media.revert();
-    },
-    { scope: stageRef },
-  );
-
   const renderPieces = (
     project: Project,
     slideIndex: number,
@@ -343,7 +319,17 @@ export function CasesShowcase() {
     >
       <h1 className="sr-only">{CASES_PAGE.title}</h1>
 
-      <div data-cases-slides className="absolute inset-0">
+      {/* First load: the cases settle in from below, out of focus, and the
+          controls follow one by one (React Bits AnimatedContent). */}
+      <AnimatedContent
+        trigger="mount"
+        distance={80}
+        scale={0.94}
+        blur={12}
+        duration={DURATION.enterSlow}
+        ease={EASE.expo}
+        className="absolute inset-0"
+      >
         {projects.map((project, index) => {
           const isActive = index === active;
           return (
@@ -388,77 +374,89 @@ export function CasesShowcase() {
             </div>
           );
         })}
-      </div>
+      </AnimatedContent>
 
-      <div
-        role="group"
-        aria-label="Serviços"
-        data-cases-chrome
-        className="absolute top-72 left-1/2 flex -translate-x-1/2 gap-8 lg:top-29 lg:gap-12"
+      <AnimatedContent
+        trigger="mount"
+        selector="[data-cases-chrome]"
+        distance={24}
+        blur={8}
+        delay={0.3}
+        stagger={0.08}
+        duration={DURATION.enter}
+        ease={EASE.out}
+        className="pointer-events-none absolute inset-0"
       >
-        {SERVICE_TABS.map((tab) => {
-          const pressed = tab.id === service;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              aria-pressed={pressed}
-              className={cn(
-                "flex h-36 items-center px-10 text-tab whitespace-nowrap transition-colors duration-300 ease-power3 lg:h-40 lg:px-11.5",
-                pressed
-                  ? "bg-red-graw text-white"
-                  : "bg-chip text-chip-text hover:text-white",
-              )}
-              onClick={() => {
-                if (pressed) return;
-                setService(tab.id);
-                setActive(0);
-              }}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
+        <div
+          role="group"
+          aria-label="Serviços"
+          data-cases-chrome
+          className="pointer-events-auto absolute top-72 left-1/2 flex -translate-x-1/2 gap-8 lg:top-29 lg:gap-12"
+        >
+          {SERVICE_TABS.map((tab) => {
+            const pressed = tab.id === service;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                aria-pressed={pressed}
+                className={cn(
+                  "flex h-36 items-center px-10 text-tab whitespace-nowrap transition-colors duration-300 ease-power3 lg:h-40 lg:px-11.5",
+                  pressed
+                    ? "bg-red-graw text-white"
+                    : "bg-chip text-chip-text hover:text-white",
+                )}
+                onClick={() => {
+                  if (pressed) return;
+                  setService(tab.id);
+                  setActive(0);
+                }}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
 
-      <p
-        aria-live="polite"
-        data-cases-chrome
-        className="absolute bottom-96 left-16 text-index uppercase lg:top-[calc(50%-var(--u)*7.5)] lg:bottom-auto lg:left-62 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:-rotate-90"
-      >
-        <span className="sr-only">Case atual: </span>
-        <SwapText direction={direction}>{current?.name ?? ""}</SwapText>
-      </p>
+        <p
+          aria-live="polite"
+          data-cases-chrome
+          className="absolute bottom-96 left-16 text-index uppercase lg:top-[calc(50%-var(--u)*7.5)] lg:bottom-auto lg:left-62 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:-rotate-90"
+        >
+          <span className="sr-only">Case atual: </span>
+          <SwapText direction={direction}>{current?.name ?? ""}</SwapText>
+        </p>
 
-      <div
-        data-cases-chrome
-        className="absolute right-16 bottom-80 flex w-44 flex-col items-center gap-7.25 text-center text-counter lg:top-1/2 lg:right-47 lg:bottom-auto lg:-translate-y-1/2"
-      >
-        {/* The case number rolls like an odometer (React Bits Counter). */}
-        <span className="text-white">
-          <Counter value={active + 1} minDigits={2} />
-        </span>
-        <span aria-hidden className="h-[0.611px] w-full bg-white" />
-        <span className="text-dim">
-          <span className="sr-only">de </span>
-          {pad(count)}
-        </span>
-      </div>
+        <div
+          data-cases-chrome
+          className="absolute right-16 bottom-80 flex w-44 flex-col items-center gap-7.25 text-center text-counter lg:top-1/2 lg:right-47 lg:bottom-auto lg:-translate-y-1/2"
+        >
+          {/* The case number rolls like an odometer (React Bits Counter). */}
+          <span className="text-white">
+            <Counter value={active + 1} minDigits={2} />
+          </span>
+          <span aria-hidden className="h-[0.611px] w-full bg-white" />
+          <span className="text-dim">
+            <span className="sr-only">de </span>
+            {pad(count)}
+          </span>
+        </div>
 
-      <button
-        ref={viewMoreRef}
-        type="button"
-        data-cases-chrome
-        aria-haspopup="dialog"
-        aria-expanded={drawerOpen}
-        className="group absolute bottom-32 left-1/2 -translate-x-1/2 text-more lg:bottom-42"
-        onClick={() => setDrawerOpen(true)}
-      >
-        <span className="relative">
-          {CASES_PAGE.viewMore}
-          <span className="absolute inset-x-0 -bottom-2 h-px origin-left scale-x-0 bg-current transition-transform duration-300 ease-power3 group-hover:scale-x-100" />
-        </span>
-      </button>
+        <button
+          ref={viewMoreRef}
+          type="button"
+          data-cases-chrome
+          aria-haspopup="dialog"
+          aria-expanded={drawerOpen}
+          className="group pointer-events-auto absolute bottom-32 left-1/2 -translate-x-1/2 text-more lg:bottom-42"
+          onClick={() => setDrawerOpen(true)}
+        >
+          <span className="relative">
+            <ShuffleText>{CASES_PAGE.viewMore}</ShuffleText>
+            <span className="absolute inset-x-0 -bottom-2 h-px origin-left scale-x-0 bg-current transition-transform duration-300 ease-power3 group-hover:scale-x-100" />
+          </span>
+        </button>
+      </AnimatedContent>
 
       <CasesDrawer
         open={drawerOpen}
