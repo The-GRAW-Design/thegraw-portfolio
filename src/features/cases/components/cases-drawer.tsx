@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type RefObject } from "react";
+import { ShuffleText } from "@/components/ui/shuffle-text";
 import { CASES_PAGE } from "@/constants/cases";
 import { CASES_DRAWER_DITHER } from "@/constants/dither";
 import { CasesTrack } from "@/features/cases/components/cases-track";
@@ -123,9 +124,9 @@ export function CasesDrawer({
         <Link
           data-drawer-item
           href="/cases/all"
-          className="relative text-more text-red-graw"
+          className="group relative text-more text-red-graw"
         >
-          {CASES_PAGE.viewAll}
+          <ShuffleText>{CASES_PAGE.viewAll}</ShuffleText>
         </Link>
         <CasesTrack
           projects={projects}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Reveal } from "@/components/ui/reveal";
+import { ShuffleText } from "@/components/ui/shuffle-text";
 import { ScrollFloat } from "@/components/ui/react-bits/scroll-float";
 import { PROJECT_END_DITHER } from "@/constants/dither";
 import { PROJECT_PAGE } from "@/constants/pages";
@@ -26,7 +27,10 @@ export function ProjectMoreSection({ project }: ProjectMoreSectionProps) {
       <DitherImage {...PROJECT_END_DITHER} animation="scroll" />
 
       <div className="relative grid px-16 lg:absolute lg:top-32.5 lg:left-300 lg:p-0">
-        <Reveal className="col-start-1 row-start-1 grid grid-cols-2 gap-x-24 lg:flex lg:w-1034 lg:gap-90 lg:p-10">
+        <Reveal
+          blur={6}
+          className="col-start-1 row-start-1 grid grid-cols-2 gap-x-24 lg:flex lg:w-1034 lg:gap-90 lg:p-10"
+        >
           {project.credits.map((column, columnIndex) => (
             <dl
               key={columnIndex}
@@ -69,9 +73,9 @@ export function ProjectMoreSection({ project }: ProjectMoreSectionProps) {
           aside={
             <Link
               href="/cases/all"
-              className="text-more whitespace-nowrap transition-colors duration-300 ease-power3 hover:text-red-graw"
+              className="group text-more whitespace-nowrap transition-colors duration-300 ease-power3 hover:text-red-graw"
             >
-              {PROJECT_PAGE.viewAll}
+              <ShuffleText>{PROJECT_PAGE.viewAll}</ShuffleText>
             </Link>
           }
         />
