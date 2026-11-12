@@ -48,12 +48,14 @@ export function ProjectMoreSection({ project }: ProjectMoreSectionProps) {
             </dl>
           ))}
         </Reveal>
-        {/* The letters float up with the scroll (React Bits ScrollFloat). */}
+        {/* The letters flip up with the scroll (React Bits ScrollFloat), with
+            nothing clipping them on the way. */}
         <ScrollFloat
           tag="p"
+          effect="flip"
           ease={EASE.inOut}
-          stagger={0.06}
-          containerClassName="pointer-events-none col-start-1 row-start-1 mt-auto justify-self-end text-end text-orange lg:mt-55 lg:ml-714 lg:h-334 lg:w-606 lg:justify-self-start"
+          stagger={0.08}
+          containerClassName="pointer-events-none overflow-visible col-start-1 row-start-1 mt-auto justify-self-end text-end text-orange lg:mt-55 lg:ml-714 lg:h-334 lg:w-606 lg:justify-self-start"
         >
           {PROJECT_PAGE.end}
         </ScrollFloat>
