@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ScrollReveal } from "@/components/ui/react-bits/scroll-reveal";
+import { Reveal } from "@/components/ui/reveal";
 import { ShuffleText } from "@/components/ui/shuffle-text";
 import { UnderReveal } from "@/components/ui/under-reveal";
 import { FOOTER_DARK_DITHER, FOOTER_DITHER } from "@/constants/dither";
@@ -39,13 +41,16 @@ export function Footer({ tone = "red" }: FooterProps) {
         />
         {/* The details sit together at the bottom (the Figma 608px block),
             so they come out from under the page above all at once. */}
-        <div
+        <Reveal
+          stagger={0.05}
+          blur={6}
           className={cn(
             "relative flex flex-col gap-48 px-16 pt-96 pb-64 lg:absolute lg:inset-x-0 lg:block lg:h-608 lg:p-0",
             tone === "red" ? "lg:bottom-29" : "lg:bottom-0",
           )}
         >
           <Image
+            data-reveal
             src={asset("/icons/logo-the-graw-wordmark.svg")}
             alt="The Graw"
             width={174}
@@ -57,6 +62,7 @@ export function Footer({ tone = "red" }: FooterProps) {
             {FOOTER_LINKS.map((link, index) => (
               <Link
                 key={link.href}
+                data-reveal
                 href={link.href}
                 className={`group text-nav lg:absolute lg:top-10 ${LINK_POSITION[index]}`}
               >
@@ -65,36 +71,62 @@ export function Footer({ tone = "red" }: FooterProps) {
             ))}
           </nav>
 
-          <p className="max-w-552 text-nav leading-[1.03] lg:absolute lg:top-157 lg:left-886 lg:w-552">
-            {STUDIO_INFO.tagline[0]}
-            <br />
-            {STUDIO_INFO.tagline[1]}
-          </p>
+          {/* The words light up as the footer comes out (React Bits
+              ScrollReveal); the line break is the Figma one. */}
+          <ScrollReveal
+            tag="p"
+            containerClassName="max-w-552 text-nav leading-[1.03] lg:absolute lg:top-157 lg:left-886 lg:w-552"
+            textClassName="whitespace-pre-line"
+            baseOpacity={0.15}
+            blurStrength={5}
+            stagger={0.04}
+          >
+            {`${STUDIO_INFO.tagline[0]}\n${STUDIO_INFO.tagline[1]}`}
+          </ScrollReveal>
 
           <div className="grid grid-cols-2 gap-x-24 gap-y-32 text-small lg:contents">
-            <p className="leading-[1.2] lg:absolute lg:top-413 lg:left-886">
+            <p
+              data-reveal
+              className="leading-[1.2] lg:absolute lg:top-413 lg:left-886"
+            >
               by {STUDIO_INFO.founder}
             </p>
-            <p className="leading-[1.2] lg:absolute lg:top-413 lg:left-1522">
+            <p
+              data-reveal
+              className="leading-[1.2] lg:absolute lg:top-413 lg:left-1522"
+            >
               {STUDIO_INFO.code}
             </p>
-            <p className="lg:absolute lg:top-500 lg:left-138 lg:w-130">
+            <p
+              data-reveal
+              className="lg:absolute lg:top-500 lg:left-138 lg:w-130"
+            >
               {STUDIO_INFO.since}
             </p>
-            <p className="lg:absolute lg:top-500 lg:left-591 lg:w-146">
+            <p
+              data-reveal
+              className="lg:absolute lg:top-500 lg:left-591 lg:w-146"
+            >
               {STUDIO_INFO.instagram}
             </p>
-            <p className="lg:absolute lg:top-500 lg:left-886 lg:w-173">
+            <p
+              data-reveal
+              className="lg:absolute lg:top-500 lg:left-886 lg:w-173"
+            >
               {STUDIO_INFO.pitch}
             </p>
             <a
+              data-reveal
               href={`mailto:${STUDIO_INFO.email}`}
               className="underline-offset-4 hover:underline lg:absolute lg:top-500 lg:left-1522 lg:w-130"
             >
               {emailUser}
               <br />@{emailDomain}
             </a>
-            <p className="lg:absolute lg:top-446 lg:left-1762 lg:w-57">
+            <p
+              data-reveal
+              className="lg:absolute lg:top-446 lg:left-1762 lg:w-57"
+            >
               {STUDIO_INFO.phone.map((part, index) => (
                 <span key={index} className="block">
                   {part}
@@ -102,7 +134,7 @@ export function Footer({ tone = "red" }: FooterProps) {
               ))}
             </p>
           </div>
-        </div>
+        </Reveal>
       </UnderReveal>
     </footer>
   );

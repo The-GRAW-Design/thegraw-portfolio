@@ -16,6 +16,8 @@ type RevealProps = {
   axis?: "x" | "y";
   /** Soft mask that uncovers the block as it rises (images). */
   wipe?: AnimatedContentWipe;
+  /** Starting blur in px, sharpening as it comes in. */
+  blur?: number;
 };
 
 /**
@@ -28,6 +30,7 @@ export function Reveal({
   stagger = 0.12,
   axis = "y",
   wipe = "none",
+  blur = 0,
 }: RevealProps) {
   return (
     <AnimatedContent
@@ -38,6 +41,7 @@ export function Reveal({
       ease={EASE.out}
       stagger={stagger}
       wipe={wipe}
+      blur={blur}
       threshold={0.15}
       className={className}
     >
