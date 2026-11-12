@@ -6,6 +6,7 @@ import { useCallback, useMemo, useRef, useState, type MouseEvent } from "react";
 import { ComingSoon } from "@/components/ui/coming-soon";
 import { CASE_COLLAGE, CASES_PAGE, SERVICE_TABS } from "@/constants/cases";
 import { getProjectHref, PROJECTS } from "@/constants/projects";
+import { Counter } from "@/components/ui/react-bits/counter";
 import { CasesDrawer } from "@/features/cases/components/cases-drawer";
 import {
   CollageImage,
@@ -433,9 +434,10 @@ export function CasesShowcase() {
         data-cases-chrome
         className="absolute right-16 bottom-80 flex w-44 flex-col items-center gap-7.25 text-center text-counter lg:top-1/2 lg:right-47 lg:bottom-auto lg:-translate-y-1/2"
       >
-        <SwapText direction={direction} className="text-white">
-          {pad(active + 1)}
-        </SwapText>
+        {/* The case number rolls like an odometer (React Bits Counter). */}
+        <span className="text-white">
+          <Counter value={active + 1} minDigits={2} />
+        </span>
         <span aria-hidden className="h-[0.611px] w-full bg-white" />
         <span className="text-dim">
           <span className="sr-only">de </span>
