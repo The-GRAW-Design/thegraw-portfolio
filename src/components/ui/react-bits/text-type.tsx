@@ -455,7 +455,8 @@ export const TextType = ({
     ? textColors[index % textColors.length]
     : "inherit";
   const typing = shown < total || isDeleting || typo !== null;
-  const hideCursor = hideCursorWhileTyping && typing;
+  // The cursor waits for the text to come into view.
+  const hideCursor = !isVisible || (hideCursorWhileTyping && typing);
   const customCursorColor =
     cursorColor && cursorColor !== "currentColor"
       ? { color: cursorColor }
