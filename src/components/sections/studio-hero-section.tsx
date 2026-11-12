@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { ParallaxImage } from "@/components/ui/parallax-image";
+import { GlareHover } from "@/components/ui/react-bits/glare-hover";
 import { Magnet } from "@/components/ui/react-bits/magnet";
 import { SplitReveal } from "@/components/ui/split-reveal";
 import { STUDIO_DITHER } from "@/constants/dither";
@@ -114,6 +115,15 @@ export function StudioHeroSection() {
               fill
               sizes="(min-width: 1024px) 14vw, 160px"
               className="object-cover transition-transform duration-500 ease-power3 group-hover:scale-105"
+            />
+            <GlareHover
+              borderRadius="0"
+              glareOpacity={0.3}
+              glareAngle={-35}
+              glareSize={45}
+              rimGlint={false}
+              transitionDuration={800}
+              className="absolute inset-0 border-0"
             />
           </span>
           <span className="flex h-90 w-56 items-center justify-center bg-wine lg:h-150 lg:w-93">

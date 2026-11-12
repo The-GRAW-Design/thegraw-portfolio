@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, type ReactNode } from "react";
 import { ComingSoon } from "@/components/ui/coming-soon";
+import { GlareHover } from "@/components/ui/react-bits/glare-hover";
 import { getProjectHref } from "@/constants/projects";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { gsap, useGSAP } from "@/lib/gsap";
@@ -169,6 +170,15 @@ export function CasesTrack({
                     <span className="sr-only">{project.name}</span>
                   </>
                 )}
+                <GlareHover
+                  borderRadius="0"
+                  glareOpacity={0.25}
+                  glareAngle={-35}
+                  glareSize={40}
+                  rimGlint={false}
+                  transitionDuration={800}
+                  className="absolute inset-0 border-0"
+                />
               </Link>
             </li>
           ))}
