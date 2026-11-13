@@ -34,6 +34,7 @@ export function ServicesHeroSection({
         // image transform.
         className="-scale-x-100"
         imageClassName="object-[50%_35.7%]"
+        settle="load"
       />
       <div
         aria-hidden

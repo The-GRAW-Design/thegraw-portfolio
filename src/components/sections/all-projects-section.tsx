@@ -21,7 +21,8 @@ export function AllProjectsSection() {
       <ul className="grid gap-16 lg:mx-auto lg:w-1798 lg:grid-cols-2 lg:gap-29">
         {GRID.map((project, index) => (
           <li key={project.slug}>
-            <Reveal wipe="up">
+            {/* The right column follows the left one. */}
+            <Reveal wipe="up" delay={index % 2 ? 0.12 : 0}>
               <TransitionLink
                 href={getProjectHref(project)}
                 className="group relative block aspect-[884.5/983] overflow-hidden bg-coal"
@@ -33,6 +34,7 @@ export function AllProjectsSection() {
                     sizes="(min-width: 1024px) 47vw, 100vw"
                     priority={index < 2}
                     amount={4}
+                    settle="scroll"
                     imageClassName="transition-transform duration-700 ease-power3 group-hover:scale-[1.04] group-focus-visible:scale-[1.04]"
                   />
                 ) : (

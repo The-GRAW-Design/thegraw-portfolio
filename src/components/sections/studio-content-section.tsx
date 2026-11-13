@@ -21,6 +21,7 @@ export function StudioContentSection() {
           src={STUDIO_PAGE.videoCover}
           alt=""
           sizes="(min-width: 1024px) 91vw, 100vw"
+          settle="scroll"
         />
         {/* The play label drifts toward the cursor (React Bits Magnet). */}
         <Magnet padding={220} magnetStrength={4} maxOffset={60}>

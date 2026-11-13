@@ -37,6 +37,7 @@ export function StudioHeroSection() {
           priority
           sizes="(min-width: 1024px) 47vw, 100vw"
           imageClassName="object-[50%_30%]"
+          settle="load"
         />
       </div>
 
