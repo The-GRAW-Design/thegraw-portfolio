@@ -23,6 +23,29 @@ export function Header() {
     menuOpenRef.current = menuOpen;
   }, [menuOpen]);
 
+  // First load: the logo and the menu button drop in, after the page starts.
+  useGSAP(
+    () => {
+      // Hidden in the markup, so nothing shows before it drops in.
+      gsap.set("[data-header-row]", { visibility: "visible" });
+      const media = gsap.matchMedia();
+      media.add("(prefers-reduced-motion: no-preference)", () => {
+        gsap.from("[data-header-item]", {
+          yPercent: -140,
+          opacity: 0,
+          duration: DURATION.enter,
+          ease: EASE.expo,
+          stagger: 0.1,
+          delay: 0.5,
+          // The classes own these again (the button fades with the menu).
+          clearProps: "transform,opacity",
+        });
+      });
+      return () => media.revert();
+    },
+    { scope: headerRef },
+  );
+
   useGSAP(
     () => {
       const header = headerRef.current;
@@ -75,9 +98,13 @@ export function Header() {
         inert={menuOpen}
         className="group/header pointer-events-none fixed inset-x-0 top-0 z-40 px-16 pt-16 text-white transition-colors duration-300 data-[theme=dark]:text-black lg:pt-29 lg:pr-46 lg:pl-50"
       >
-        <div className="flex items-center justify-between">
+        <div
+          data-header-row
+          className="invisible flex items-center justify-between"
+        >
           <TransitionLink
             href="/"
+            data-header-item
             aria-label="The Graw, página inicial"
             className="pointer-events-auto block"
           >
@@ -85,11 +112,12 @@ export function Header() {
           </TransitionLink>
           <button
             ref={menuButtonRef}
+            data-header-item
             type="button"
             aria-expanded={menuOpen}
             aria-controls="site-menu"
             className={cn(
-              "group pointer-events-auto flex h-45 w-129 items-center justify-center text-nav transition-opacity duration-300",
+              "group pointer-events-auto flex h-45 w-129 items-center justify-center text-nav transition-[opacity,scale] duration-300 ease-power3 active:scale-95",
               menuOpen && "opacity-0",
             )}
             onClick={() => setMenuOpen(true)}
