@@ -5,7 +5,7 @@ import {
   AnimatedContent,
   type AnimatedContentWipe,
 } from "@/components/ui/react-bits/animated-content";
-import { EASE } from "@/lib/gsap";
+import { DURATION, EASE } from "@/lib/gsap";
 
 type RevealProps = {
   children: ReactNode;
@@ -18,6 +18,8 @@ type RevealProps = {
   wipe?: AnimatedContentWipe;
   /** Starting blur in px, sharpening as it comes in. */
   blur?: number;
+  /** Seconds before it starts, e.g. to follow a neighbor. */
+  delay?: number;
 };
 
 /**
@@ -31,14 +33,16 @@ export function Reveal({
   axis = "y",
   wipe = "none",
   blur = 0,
+  delay = 0,
 }: RevealProps) {
   return (
     <AnimatedContent
       selector="[data-reveal]"
       direction={axis === "x" ? "horizontal" : "vertical"}
-      distance={48}
-      duration={1}
-      ease={EASE.out}
+      distance={56}
+      duration={DURATION.enterSlow}
+      ease={EASE.expo}
+      delay={delay}
       stagger={stagger}
       wipe={wipe}
       blur={blur}

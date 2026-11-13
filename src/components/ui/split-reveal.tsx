@@ -18,10 +18,12 @@ type SplitRevealProps = {
 
 /** Milliseconds between units. */
 const STAGGER = { chars: 25, words: 60, lines: 100 } as const;
+/** Letters tip into place as they rise; words and lines rise straight. */
+const TILT = { chars: 7, words: 0, lines: 0 } as const;
 
 /**
  * Text revealed by chars, words or lines rising from under their masks
- * (React Bits SplitText). The masks keep room around the glyphs, so tight
+ * (React Bits SplitText), the letters tipping upright on the way. The masks keep room around the glyphs, so tight
  * line heights and negative tracking are not cut.
  */
 export function SplitReveal({
@@ -39,8 +41,12 @@ export function SplitReveal({
       splitType={split}
       mask
       maskStyle={MASK_ROOM}
-      from={{ yPercent: 110 }}
-      to={{ yPercent: 0, delay }}
+      from={{
+        yPercent: 110,
+        rotation: TILT[split],
+        transformOrigin: "0% 100%",
+      }}
+      to={{ yPercent: 0, rotation: 0, delay }}
       ease={EASE.expo}
       duration={split === "chars" ? 1.1 : 1}
       delay={STAGGER[split]}
