@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { TransitionLink } from "@/features/page-transition";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { HeaderLogo } from "@/components/layout/header-logo";
@@ -76,13 +76,13 @@ export function Header() {
         className="group/header pointer-events-none fixed inset-x-0 top-0 z-40 px-16 pt-16 text-white transition-colors duration-300 data-[theme=dark]:text-black lg:pt-29 lg:pr-46 lg:pl-50"
       >
         <div className="flex items-center justify-between">
-          <Link
+          <TransitionLink
             href="/"
             aria-label="The Graw, página inicial"
             className="pointer-events-auto block"
           >
             <HeaderLogo />
-          </Link>
+          </TransitionLink>
           <button
             ref={menuButtonRef}
             type="button"

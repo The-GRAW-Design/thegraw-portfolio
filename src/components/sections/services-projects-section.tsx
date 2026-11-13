@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { TransitionLink } from "@/features/page-transition";
 import { useRef } from "react";
 import {
   ProjectBrand,
@@ -141,7 +141,7 @@ export function ServicesProjectsSection({
               data-slide
               className="relative h-full w-[100cqw] shrink-0 snap-start overflow-hidden"
             >
-              <Link
+              <TransitionLink
                 href={getProjectHref(PROJECT_SHOWCASE)}
                 className="group absolute inset-0 block focus-visible:outline-offset-[-4px]"
               >
@@ -174,7 +174,7 @@ export function ServicesProjectsSection({
                     className="lg:w-146"
                   />
                 </div>
-              </Link>
+              </TransitionLink>
             </li>
           ))}
         </ul>

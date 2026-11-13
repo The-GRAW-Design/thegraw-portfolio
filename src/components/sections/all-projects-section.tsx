@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { TransitionLink } from "@/features/page-transition";
 import { ComingSoon } from "@/components/ui/coming-soon";
 import { ParallaxImage } from "@/components/ui/parallax-image";
 import { GlareHover } from "@/components/ui/react-bits/glare-hover";
@@ -22,7 +22,7 @@ export function AllProjectsSection() {
         {GRID.map((project, index) => (
           <li key={project.slug}>
             <Reveal wipe="up">
-              <Link
+              <TransitionLink
                 href={getProjectHref(project)}
                 className="group relative block aspect-[884.5/983] overflow-hidden bg-coal"
               >
@@ -52,7 +52,7 @@ export function AllProjectsSection() {
                   className="absolute inset-0 border-0"
                 />
                 <span className="sr-only">{project.name}</span>
-              </Link>
+              </TransitionLink>
             </Reveal>
           </li>
         ))}

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { TransitionLink } from "@/features/page-transition";
 import { Counter } from "@/components/ui/react-bits/counter";
 import { Reveal } from "@/components/ui/reveal";
 import { ShuffleText } from "@/components/ui/shuffle-text";
@@ -37,9 +37,9 @@ export function NotFoundSection() {
         >
           {NOT_FOUND_PAGE.title}
         </SplitReveal>
-        <Link data-reveal href="/" className="group text-more">
+        <TransitionLink data-reveal href="/" className="group text-more">
           <ShuffleText>{NOT_FOUND_PAGE.back}</ShuffleText>
-        </Link>
+        </TransitionLink>
       </Reveal>
     </section>
   );

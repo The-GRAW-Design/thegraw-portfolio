@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { TransitionLink } from "@/features/page-transition";
 import { useRef } from "react";
 import { GlareHover } from "@/components/ui/react-bits/glare-hover";
 import { ShuffleText } from "@/components/ui/shuffle-text";
@@ -62,7 +62,7 @@ export function ShowcaseCard({
   );
 
   return (
-    <Link
+    <TransitionLink
       ref={ref}
       href={href}
       className={cn(
@@ -105,6 +105,6 @@ export function ShowcaseCard({
           className="h-48 w-44.5 shrink-0 lg:h-54 lg:w-50.25"
         />
       </span>
-    </Link>
+    </TransitionLink>
   );
 }

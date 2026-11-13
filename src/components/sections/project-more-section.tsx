@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { TransitionLink } from "@/features/page-transition";
 import { Reveal } from "@/components/ui/reveal";
 import { ShuffleText } from "@/components/ui/shuffle-text";
 import { ScrollFloat } from "@/components/ui/react-bits/scroll-float";
@@ -71,12 +71,12 @@ export function ProjectMoreSection({ project }: ProjectMoreSectionProps) {
           className="gap-32 lg:gap-69.25"
           footerClassName="w-full px-16 lg:ml-318 lg:w-1285 lg:self-start lg:px-0"
           aside={
-            <Link
+            <TransitionLink
               href="/cases/all"
               className="group text-more whitespace-nowrap transition-colors duration-300 ease-power3 hover:text-red-graw"
             >
               <ShuffleText>{PROJECT_PAGE.viewAll}</ShuffleText>
-            </Link>
+            </TransitionLink>
           }
         />
       </Reveal>

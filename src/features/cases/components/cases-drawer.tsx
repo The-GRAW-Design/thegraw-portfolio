@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { TransitionLink } from "@/features/page-transition";
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { ShuffleText } from "@/components/ui/shuffle-text";
 import { CASES_PAGE } from "@/constants/cases";
@@ -121,13 +121,13 @@ export function CasesDrawer({
         className="absolute inset-x-0 bottom-0 flex flex-col items-center overflow-hidden bg-paper pt-32 pb-40 lg:h-620 lg:pt-39 lg:pb-0"
       >
         <DitherImage {...CASES_DRAWER_DITHER} animation="intro" />
-        <Link
+        <TransitionLink
           data-drawer-item
           href="/cases/all"
           className="group relative text-more text-red-graw"
         >
           <ShuffleText>{CASES_PAGE.viewAll}</ShuffleText>
-        </Link>
+        </TransitionLink>
         <CasesTrack
           projects={projects}
           className="relative mt-32 gap-32 lg:mt-77 lg:gap-77"

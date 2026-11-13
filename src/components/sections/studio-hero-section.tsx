@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { TransitionLink } from "@/features/page-transition";
 import { useState } from "react";
 import { ParallaxImage } from "@/components/ui/parallax-image";
 import { GlareHover } from "@/components/ui/react-bits/glare-hover";
@@ -104,7 +104,7 @@ export function StudioHeroSection() {
 
       <div className="relative flex flex-col gap-12 px-16 pt-32 lg:absolute lg:top-[50.46%] lg:left-1475 lg:p-0">
         <p className="text-label">{STUDIO_PAGE.projectsLead}</p>
-        <Link
+        <TransitionLink
           href={getProjectHref(FEATURED_PROJECT)}
           className="group flex items-center"
         >
@@ -135,7 +135,7 @@ export function StudioHeroSection() {
               className="size-24 transition-transform duration-300 ease-power3 group-hover:translate-x-3 lg:size-36.5"
             />
           </span>
-        </Link>
+        </TransitionLink>
       </div>
 
       {/* Scaled with the section (not the viewport) and its Figma side margin,

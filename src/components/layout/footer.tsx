@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { TransitionLink } from "@/features/page-transition";
 import { ScrollReveal } from "@/components/ui/react-bits/scroll-reveal";
 import { Reveal } from "@/components/ui/reveal";
 import { ShuffleText } from "@/components/ui/shuffle-text";
@@ -60,14 +60,14 @@ export function Footer({ tone = "red" }: FooterProps) {
 
           <nav aria-label="Rodapé" className="flex gap-48 lg:contents">
             {FOOTER_LINKS.map((link, index) => (
-              <Link
+              <TransitionLink
                 key={link.href}
                 data-reveal
                 href={link.href}
                 className={`group text-nav lg:absolute lg:top-10 ${LINK_POSITION[index]}`}
               >
                 <ShuffleText>{link.label}</ShuffleText>
-              </Link>
+              </TransitionLink>
             ))}
           </nav>
 

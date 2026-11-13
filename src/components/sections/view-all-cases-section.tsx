@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { TransitionLink } from "@/features/page-transition";
 import { GlareHover } from "@/components/ui/react-bits/glare-hover";
 import { ShuffleText } from "@/components/ui/shuffle-text";
 import { HOME_PAGE } from "@/constants/pages";
@@ -8,7 +8,7 @@ import { HOME_PAGE } from "@/constants/pages";
 export function ViewAllCasesSection() {
   return (
     <section data-header-theme="light" className="relative bg-black-graw">
-      <Link
+      <TransitionLink
         href="/cases"
         className="group relative flex h-56 items-center justify-center overflow-hidden text-white"
       >
@@ -32,7 +32,7 @@ export function ViewAllCasesSection() {
         <span className="relative text-body leading-normal">
           <ShuffleText>{HOME_PAGE.viewAllCases}</ShuffleText>
         </span>
-      </Link>
+      </TransitionLink>
     </section>
   );
 }
