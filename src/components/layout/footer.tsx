@@ -118,7 +118,7 @@ export function Footer({ tone = "red" }: FooterProps) {
             <a
               data-reveal
               href={`mailto:${STUDIO_INFO.email}`}
-              className="underline-offset-4 hover:underline lg:absolute lg:top-500 lg:left-1522 lg:w-130"
+              className="relative after:absolute after:inset-x-0 after:-bottom-4 after:h-px after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-500 after:ease-expo hover:after:scale-x-100 focus-visible:after:scale-x-100 motion-reduce:after:transition-none lg:absolute lg:top-500 lg:left-1522 lg:w-130"
             >
               {emailUser}
               <br />@{emailDomain}

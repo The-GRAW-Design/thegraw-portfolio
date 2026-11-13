@@ -401,7 +401,7 @@ export function CasesShowcase() {
                 type="button"
                 aria-pressed={pressed}
                 className={cn(
-                  "flex h-36 items-center px-10 text-tab whitespace-nowrap transition-colors duration-300 ease-power3 lg:h-40 lg:px-11.5",
+                  "flex h-36 items-center px-10 text-tab whitespace-nowrap transition-[color,background-color,scale] duration-300 ease-power3 active:scale-95 lg:h-40 lg:px-11.5",
                   pressed
                     ? "bg-red-graw text-white"
                     : "bg-chip text-chip-text hover:text-white",

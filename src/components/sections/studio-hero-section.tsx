@@ -54,7 +54,7 @@ export function StudioHeroSection() {
             <button
               type="button"
               aria-label="Pessoa anterior"
-              className="block"
+              className="block transition-[scale] duration-300 ease-power3 active:scale-90"
               onClick={() => go(-1)}
             >
               <Image
@@ -70,7 +70,7 @@ export function StudioHeroSection() {
             <button
               type="button"
               aria-label="Próxima pessoa"
-              className="block"
+              className="block transition-[scale] duration-300 ease-power3 active:scale-90"
               onClick={() => go(1)}
             >
               <Image
