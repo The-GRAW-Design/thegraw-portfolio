@@ -53,6 +53,10 @@ const E2_SCREEN = (file: string) => image("e2-company", file, 1507, 848);
 /** Screens of the live Elle Fanning site, captured at 1920×1080. */
 const ELLE_SCREEN = (file: string) => image("elle-fanning", file, 1507, 848);
 
+/** Screens of the live Naturallis site, captured at 1920×1080. */
+const NATURALLIS_SCREEN = (file: string) =>
+  image("site-naturallis", file, 1507, 848);
+
 const PENGUIN_LOGO: ProjectLogo = {
   width: 595.22,
   height: 198.618,
@@ -119,9 +123,9 @@ const PENGUIN_SPLIT: ProjectMedia = {
 
 /**
  * The ten Figma project pages, in canvas order, and the home-only Gilberto do
- * Acordeon. Allce and Grupo Penguin have their Figma galleries; e2 company
- * and Elle Fanning have screens and texts of their live sites; the others
- * have names, credits and the photos of the "all projects" grid and of the
+ * Acordeon. Allce and Grupo Penguin have their Figma galleries; e2 company,
+ * Site Naturallis and Elle Fanning have screens and texts of their live
+ * sites; the others have names, credits and the photos of the "all projects" grid and of the
  * home slides, and show {EM BREVE} where the case study will go.
  */
 export const PROJECTS: readonly Project[] = [
@@ -291,13 +295,46 @@ export const PROJECTS: readonly Project[] = [
     services: ["web-design"],
     cover: cover("site-naturallis"),
     hero: hero("site-naturallis", "object-[50%_45%]"),
-    collage: { main: asset("/images/projects/site-naturallis/hero.webp") },
+    collage: {
+      main: asset("/images/projects/site-naturallis/home.webp"),
+      pieces: [
+        asset("/images/projects/site-naturallis/skin-line.webp"),
+        asset("/images/projects/site-naturallis/products.webp"),
+        asset("/images/projects/site-naturallis/before-after.webp"),
+        asset("/images/projects/site-naturallis/cta.webp"),
+      ],
+    },
     credits: credits(
       { label: "Project director", value: DIRECTOR },
       "Naturallis",
       { label: "Dev", value: "Erik Elias" },
       "2026",
     ),
+    gallery: {
+      lead: [image("site-naturallis", "home", 1496, 844)],
+      split: image("site-naturallis", "product", 868, 847),
+      middle: [
+        [NATURALLIS_SCREEN("products"), NATURALLIS_SCREEN("skin-line")],
+        [NATURALLIS_SCREEN("care")],
+        [NATURALLIS_SCREEN("shop")],
+      ],
+      closing: [
+        NATURALLIS_SCREEN("before-after"),
+        NATURALLIS_SCREEN("testimonials"),
+        NATURALLIS_SCREEN("cta"),
+      ],
+      final: { ...image("site-naturallis", "footer", 1920, 822), bleed: true },
+    },
+    copy: {
+      intro:
+        "The institutional site and storefront of Naturallis, a compounding pharmacy with more than thirty years in business. Custom formulas, supplements and care products share one calm system of green and white pages, from the home to the catalogue, the product page, the ingredients and the formula request.",
+      solution:
+        "The home opens inside the pharmacy, with the numbers of the house counting up beside the portrait, and moves through the best sellers, the skin line, the care pillars, the ingredients and a before and after slider. Products come in carousels and in a catalogue with categories and filters, and each one has its own page with sizes, details, how to use and a cart.",
+      process:
+        "Built with Next.js, Tailwind CSS, GSAP with ScrollTrigger and Lenis. The hero and skin line photos become a Three.js distortion scene when WebGL is available, and stay as plain images when it is not or when reduced motion is on. A preloader, page transitions, a custom cursor and magnetic buttons tie the pages together.",
+      results:
+        "A static site published on GitHub Pages at every push, with home, catalogue, product, formulas, ingredients, about, contact, cart and account pages. The cart and the formula request hand the order over to the pharmacy's WhatsApp, so the store works with no server behind it.",
+    },
   },
   {
     slug: "conexao-duo",
