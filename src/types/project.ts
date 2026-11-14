@@ -56,6 +56,14 @@ export type ProjectGallery = {
   final: ProjectMedia & { bleed?: boolean };
 };
 
+/** Case study texts, in the order of the page. */
+export type ProjectCopy = {
+  intro: string;
+  solution: string;
+  process: string;
+  results: string;
+};
+
 /** The cases page collage of a case: main image and the pieces around it. */
 export type ProjectCollage = {
   main: string;
@@ -86,6 +94,8 @@ export type Project = {
   logo?: ProjectLogo;
   /** Case study gallery; without one the page shows {EM BREVE}. */
   gallery?: ProjectGallery;
+  /** Case study texts; without them the gallery keeps the Figma placeholder. */
+  copy?: ProjectCopy;
   /** Home slide (Figma "Projeto Allce" variants). */
   showcase?: ProjectShowcase;
 };
