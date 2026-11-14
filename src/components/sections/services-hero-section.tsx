@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { ParallaxImage } from "@/components/ui/parallax-image";
+import { ProgressiveBlur } from "@/components/ui/progressive-blur";
 import { SplitReveal } from "@/components/ui/split-reveal";
 import { LOREM_LONG } from "@/constants/pages";
 import {
@@ -100,10 +101,8 @@ export function ServicesHeroSection({
           )}
         />
       ))}
-      <div
-        aria-hidden
-        className="absolute inset-0 [mask-image:linear-gradient(149.38deg,transparent_42.738%,var(--color-black)_103.51%)] backdrop-blur-hero"
-      />
+      {/* Figma: a 41.6 background blur growing along the darkening gradient. */}
+      <ProgressiveBlur angle={149.38} from={42.738} to={103.51} blur={41.6} />
       <div
         aria-hidden
         className="absolute inset-0 bg-[linear-gradient(149.38deg,transparent_42.738%,var(--color-dusk)_103.51%)]"
