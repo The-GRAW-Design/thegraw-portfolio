@@ -56,6 +56,10 @@ const FIGMA_FINAL = { width: 1900, height: 799 } as const;
 const LORENA_WIDE = (file: string) =>
   image("lorena-lourenco", file, FIGMA_WIDE.width, FIGMA_WIDE.height);
 
+/** Figma "Conexão Duo" project page (3023:1441). */
+const CONEXAO_WIDE = (file: string) =>
+  image("conexao-duo", file, FIGMA_WIDE.width, FIGMA_WIDE.height);
+
 /** Screens of the live E² Company site, captured at 1920×1080. */
 const E2_SCREEN = (file: string) => image("e2-company", file, 1507, 848);
 
@@ -132,11 +136,11 @@ const PENGUIN_SPLIT: ProjectMedia = {
 
 /**
  * The ten Figma project pages, in canvas order, and the home-only Gilberto do
- * Acordeon. Allce, Grupo Penguin and Lorena Lourenço have their Figma
- * galleries; e2 company,
- * Site Naturallis and Elle Fanning have screens and texts of their live
- * sites; the others have names, credits and the photos of the "all projects" grid and of the
- * home slides, and show {EM BREVE} where the case study will go.
+ * Acordeon. Allce, Grupo Penguin, Lorena Lourenço and Conexão Duo have their
+ * Figma galleries; e2 company, Site Naturallis and Elle Fanning have screens
+ * and texts of their live sites; the others have names, credits and the
+ * photos of the "all projects" grid and of the home slides, and show
+ * {EM BREVE} where the case study will go.
  */
 export const PROJECTS: readonly Project[] = [
   {
@@ -385,6 +389,31 @@ export const PROJECTS: readonly Project[] = [
       "2026",
     ),
     logo: CONEXAO_LOGO,
+    gallery: {
+      lead: [CONEXAO_WIDE("flag")],
+      split: image(
+        "conexao-duo",
+        "symbol",
+        FIGMA_SPLIT.width,
+        FIGMA_SPLIT.height,
+      ),
+      middle: [
+        [CONEXAO_WIDE("colors")],
+        [CONEXAO_WIDE("inegociavel")],
+        [CONEXAO_WIDE("campaign")],
+      ],
+      closing: [
+        CONEXAO_WIDE("bags"),
+        CONEXAO_WIDE("posts"),
+        CONEXAO_WIDE("seo"),
+      ],
+      final: image(
+        "conexao-duo",
+        "stamp",
+        FIGMA_FINAL.width,
+        FIGMA_FINAL.height,
+      ),
+    },
     showcase: {
       background: asset("/images/projects/conexao-duo/hero.webp"),
       card: asset("/images/projects/conexao-duo/card.webp"),
