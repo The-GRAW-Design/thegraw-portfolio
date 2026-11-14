@@ -1,10 +1,14 @@
-import Link from "next/link";
+import { TransitionLink } from "@/features/page-transition";
+import { Counter } from "@/components/ui/react-bits/counter";
 import { Reveal } from "@/components/ui/reveal";
-import { RollText } from "@/components/ui/roll-text";
+import { ShuffleText } from "@/components/ui/shuffle-text";
 import { SplitReveal } from "@/components/ui/split-reveal";
 import { NOT_FOUND_DITHER } from "@/constants/dither";
 import { NOT_FOUND_PAGE } from "@/constants/pages";
 import { DitherImage } from "@/features/dither-image";
+
+const [CODE_LABEL, CODE] = NOT_FOUND_PAGE.code.split(" ");
+const CODE_NUMBER = Number(CODE);
 
 /**
  * 404: the home hero on a single screen (dithered knight and blackletter
@@ -20,8 +24,9 @@ export function NotFoundSection() {
     >
       <DitherImage {...NOT_FOUND_DITHER} animation="intro" />
       <Reveal className="absolute inset-x-0 top-[60svh] flex flex-col items-center gap-16 text-white-graw lg:top-auto lg:bottom-42 lg:gap-0">
+        {/* "error 404": the number rolls in like an odometer (React Bits Counter). */}
         <p data-reveal className="pl-[0.57em] text-index uppercase">
-          {NOT_FOUND_PAGE.code}
+          {CODE_LABEL} <Counter value={CODE_NUMBER} />
         </p>
         <SplitReveal
           as="h1"
@@ -32,9 +37,9 @@ export function NotFoundSection() {
         >
           {NOT_FOUND_PAGE.title}
         </SplitReveal>
-        <Link data-reveal href="/" className="group text-more">
-          <RollText>{NOT_FOUND_PAGE.back}</RollText>
-        </Link>
+        <TransitionLink data-reveal href="/" className="group text-more">
+          <ShuffleText>{NOT_FOUND_PAGE.back}</ShuffleText>
+        </TransitionLink>
       </Reveal>
     </section>
   );

@@ -19,7 +19,7 @@ export default function HomePage() {
   return (
     <>
       <main id="conteudo">
-        <div className="relative">
+        <div data-hero-stack className="relative">
           <HeroSection />
           <CaseStudiesIntroSection />
         </div>

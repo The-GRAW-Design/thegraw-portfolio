@@ -1,9 +1,11 @@
-import Link from "next/link";
+import { TransitionLink } from "@/features/page-transition";
 import { Reveal } from "@/components/ui/reveal";
-import { SplitReveal } from "@/components/ui/split-reveal";
+import { ShuffleText } from "@/components/ui/shuffle-text";
+import { ScrollFloat } from "@/components/ui/react-bits/scroll-float";
 import { PROJECT_END_DITHER } from "@/constants/dither";
 import { PROJECT_PAGE } from "@/constants/pages";
 import { PROJECTS } from "@/constants/projects";
+import { EASE } from "@/lib/gsap";
 import { CasesTrack } from "@/features/cases/components/cases-track";
 import { DitherImage } from "@/features/dither-image";
 import type { Project } from "@/types/project";
@@ -25,7 +27,10 @@ export function ProjectMoreSection({ project }: ProjectMoreSectionProps) {
       <DitherImage {...PROJECT_END_DITHER} animation="scroll" />
 
       <div className="relative grid px-16 lg:absolute lg:top-32.5 lg:left-300 lg:p-0">
-        <Reveal className="col-start-1 row-start-1 grid grid-cols-2 gap-x-24 lg:flex lg:w-1034 lg:gap-90 lg:p-10">
+        <Reveal
+          blur={6}
+          className="col-start-1 row-start-1 grid grid-cols-2 gap-x-24 lg:flex lg:w-1034 lg:gap-90 lg:p-10"
+        >
           {project.credits.map((column, columnIndex) => (
             <dl
               key={columnIndex}
@@ -47,12 +52,17 @@ export function ProjectMoreSection({ project }: ProjectMoreSectionProps) {
             </dl>
           ))}
         </Reveal>
-        <SplitReveal
-          split="chars"
-          className="pointer-events-none col-start-1 row-start-1 mt-auto justify-self-end text-end text-orange lg:mt-55 lg:ml-714 lg:h-334 lg:w-606 lg:justify-self-start"
+        {/* The letters flip up with the scroll (React Bits ScrollFloat), with
+            nothing clipping them on the way. */}
+        <ScrollFloat
+          tag="p"
+          effect="flip"
+          ease={EASE.inOut}
+          stagger={0.08}
+          containerClassName="pointer-events-none overflow-visible col-start-1 row-start-1 mt-auto justify-self-end text-end text-orange lg:mt-55 lg:ml-714 lg:h-334 lg:w-606 lg:justify-self-start"
         >
           {PROJECT_PAGE.end}
-        </SplitReveal>
+        </ScrollFloat>
       </div>
 
       <Reveal className="relative mt-48 lg:absolute lg:inset-x-0 lg:top-504.5 lg:mt-0">
@@ -61,12 +71,12 @@ export function ProjectMoreSection({ project }: ProjectMoreSectionProps) {
           className="gap-32 lg:gap-69.25"
           footerClassName="w-full px-16 lg:ml-318 lg:w-1285 lg:self-start lg:px-0"
           aside={
-            <Link
+            <TransitionLink
               href="/cases/all"
-              className="text-more whitespace-nowrap transition-colors duration-300 ease-power3 hover:text-red-graw"
+              className="group text-more whitespace-nowrap transition-colors duration-300 ease-power3 hover:text-red-graw"
             >
-              {PROJECT_PAGE.viewAll}
-            </Link>
+              <ShuffleText>{PROJECT_PAGE.viewAll}</ShuffleText>
+            </TransitionLink>
           }
         />
       </Reveal>

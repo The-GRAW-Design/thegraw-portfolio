@@ -38,19 +38,24 @@ export function ProjectShowcaseSection({
             image={showcase.card}
             handle={showcase.handle}
           />
-          <Reveal className="flex flex-col gap-32 lg:w-672.75 lg:gap-738.5">
+          <Reveal
+            stagger={0.1}
+            blur={6}
+            className="flex flex-col gap-32 lg:w-672.75 lg:gap-738.5"
+          >
             <div data-reveal>
               <ProjectMeta info={showcase} className="lg:w-514.25" />
             </div>
-            <div
-              data-reveal
-              className="flex flex-col gap-24 lg:flex-row lg:items-end lg:justify-between"
-            >
-              <ProjectBrand
-                info={showcase}
-                className="gap-24 lg:w-226.25 lg:gap-71.5"
-              />
-              <ProjectDisciplines info={showcase} className="lg:w-226.25" />
+            <div className="flex flex-col gap-24 lg:flex-row lg:items-end lg:justify-between">
+              <div data-reveal>
+                <ProjectBrand
+                  info={showcase}
+                  className="gap-24 lg:w-226.25 lg:gap-71.5"
+                />
+              </div>
+              <div data-reveal>
+                <ProjectDisciplines info={showcase} className="lg:w-226.25" />
+              </div>
             </div>
           </Reveal>
         </div>

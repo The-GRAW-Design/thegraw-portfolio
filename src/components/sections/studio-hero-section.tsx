@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { TransitionLink } from "@/features/page-transition";
 import { useState } from "react";
 import { ParallaxImage } from "@/components/ui/parallax-image";
+import { GlareHover } from "@/components/ui/react-bits/glare-hover";
+import { Magnet } from "@/components/ui/react-bits/magnet";
 import { SplitReveal } from "@/components/ui/split-reveal";
 import { STUDIO_DITHER } from "@/constants/dither";
 import { STUDIO_PAGE, TEAM_MEMBERS } from "@/constants/pages";
@@ -35,6 +37,7 @@ export function StudioHeroSection() {
           priority
           sizes="(min-width: 1024px) 47vw, 100vw"
           imageClassName="object-[50%_30%]"
+          settle="load"
         />
       </div>
 
@@ -45,35 +48,40 @@ export function StudioHeroSection() {
         aria-label="Equipe"
         className="relative flex flex-col gap-24 px-16 pt-32 lg:absolute lg:top-88 lg:left-960 lg:w-556 lg:gap-37 lg:p-0"
       >
+        {/* The arrows pull toward the cursor (React Bits Magnet). */}
         <div className="flex gap-11">
-          <button
-            type="button"
-            aria-label="Pessoa anterior"
-            className="transition-transform duration-300 ease-power3 hover:-translate-x-3"
-            onClick={() => go(-1)}
-          >
-            <Image
-              src={asset("/icons/arrow-prev.svg")}
-              alt=""
-              width={48}
-              height={48}
-              className="size-40 rotate-180 lg:size-48"
-            />
-          </button>
-          <button
-            type="button"
-            aria-label="Próxima pessoa"
-            className="transition-transform duration-300 ease-power3 hover:translate-x-3"
-            onClick={() => go(1)}
-          >
-            <Image
-              src={asset("/icons/arrow-next.svg")}
-              alt=""
-              width={48}
-              height={48}
-              className="size-40 lg:size-48"
-            />
-          </button>
+          <Magnet padding={36} magnetStrength={3} maxOffset={10}>
+            <button
+              type="button"
+              aria-label="Pessoa anterior"
+              className="block transition-[scale] duration-300 ease-power3 active:scale-90"
+              onClick={() => go(-1)}
+            >
+              <Image
+                src={asset("/icons/arrow-prev.svg")}
+                alt=""
+                width={48}
+                height={48}
+                className="size-40 rotate-180 lg:size-48"
+              />
+            </button>
+          </Magnet>
+          <Magnet padding={36} magnetStrength={3} maxOffset={10}>
+            <button
+              type="button"
+              aria-label="Próxima pessoa"
+              className="block transition-[scale] duration-300 ease-power3 active:scale-90"
+              onClick={() => go(1)}
+            >
+              <Image
+                src={asset("/icons/arrow-next.svg")}
+                alt=""
+                width={48}
+                height={48}
+                className="size-40 lg:size-48"
+              />
+            </button>
+          </Magnet>
         </div>
         <div key={index} className="flex flex-col gap-15">
           <SplitReveal
@@ -97,7 +105,7 @@ export function StudioHeroSection() {
 
       <div className="relative flex flex-col gap-12 px-16 pt-32 lg:absolute lg:top-[50.46%] lg:left-1475 lg:p-0">
         <p className="text-label">{STUDIO_PAGE.projectsLead}</p>
-        <Link
+        <TransitionLink
           href={getProjectHref(FEATURED_PROJECT)}
           className="group flex items-center"
         >
@@ -109,6 +117,15 @@ export function StudioHeroSection() {
               sizes="(min-width: 1024px) 14vw, 160px"
               className="object-cover transition-transform duration-500 ease-power3 group-hover:scale-105"
             />
+            <GlareHover
+              borderRadius="0"
+              glareOpacity={0.3}
+              glareAngle={-35}
+              glareSize={45}
+              rimGlint={false}
+              transitionDuration={800}
+              className="absolute inset-0 border-0"
+            />
           </span>
           <span className="flex h-90 w-56 items-center justify-center bg-wine lg:h-150 lg:w-93">
             <Image
@@ -119,7 +136,7 @@ export function StudioHeroSection() {
               className="size-24 transition-transform duration-300 ease-power3 group-hover:translate-x-3 lg:size-36.5"
             />
           </span>
-        </Link>
+        </TransitionLink>
       </div>
 
       {/* Scaled with the section (not the viewport) and its Figma side margin,

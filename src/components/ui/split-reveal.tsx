@@ -1,79 +1,59 @@
 "use client";
 
-import { useRef, type ElementType, type ReactNode } from "react";
-import { EASE, gsap, SplitText, useGSAP } from "@/lib/gsap";
-import { cn } from "@/utils/cn";
+import { SplitText } from "@/components/ui/react-bits/split-text";
+import { EASE } from "@/lib/gsap";
 import { MASK_ROOM } from "@/utils/mask-room";
 
 type SplitRevealProps = {
-  as?: ElementType;
-  children: ReactNode;
-  /** Unit that slides up from under its line mask. */
+  as?: "h1" | "h2" | "h3" | "p" | "span";
+  children: string;
+  /** Unit that slides up from under its mask. */
   split?: "chars" | "words" | "lines";
   /** Play on mount or when the element scrolls into view. */
   trigger?: "load" | "scroll";
+  /** Seconds before the first unit moves. */
   delay?: number;
   className?: string;
 };
 
-const STAGGER = { chars: 0.025, words: 0.06, lines: 0.1 } as const;
+/** Milliseconds between units. */
+const STAGGER = { chars: 25, words: 60, lines: 100 } as const;
+/** Letters tip into place as they rise; words and lines rise straight. */
+const TILT = { chars: 7, words: 0, lines: 0 } as const;
 
-/** Text revealed by chars, words or lines, masked per line (GSAP SplitText). */
+/**
+ * Text revealed by chars, words or lines rising from under their masks
+ * (React Bits SplitText), the letters tipping upright on the way. The masks keep room around the glyphs, so tight
+ * line heights and negative tracking are not cut.
+ */
 export function SplitReveal({
-  as: Tag = "p",
+  as = "p",
   children,
   split = "words",
   trigger = "scroll",
   delay = 0,
   className,
 }: SplitRevealProps) {
-  const ref = useRef<HTMLElement>(null);
-
-  useGSAP(
-    () => {
-      const element = ref.current;
-      if (!element) return;
-
-      const media = gsap.matchMedia();
-      media.add(
-        {
-          motion: "(prefers-reduced-motion: no-preference)",
-          reduced: "(prefers-reduced-motion: reduce)",
-        },
-        (context) => {
-          gsap.set(element, { visibility: "visible" });
-          if (context.conditions?.reduced) return;
-
-          const instance = SplitText.create(element, {
-            type: split === "lines" ? "lines" : `lines,${split}`,
-            mask: "lines",
-            autoSplit: true,
-            onSplit: (self) => {
-              gsap.set(self.masks, MASK_ROOM);
-              return gsap.from(self[split], {
-                yPercent: 110,
-                duration: split === "chars" ? 1.1 : 1,
-                ease: EASE.expo,
-                stagger: STAGGER[split],
-                delay,
-                scrollTrigger:
-                  trigger === "scroll"
-                    ? { trigger: element, start: "top 88%", once: true }
-                    : undefined,
-              });
-            },
-          });
-          return () => instance.revert();
-        },
-      );
-      return () => media.revert();
-    },
-    { scope: ref },
-  );
-
   return (
-    <Tag ref={ref} className={cn("invisible", className)}>
-      {children}
-    </Tag>
+    <SplitText
+      tag={as}
+      text={children}
+      splitType={split}
+      mask
+      maskStyle={MASK_ROOM}
+      from={{
+        yPercent: 110,
+        rotation: TILT[split],
+        transformOrigin: "0% 100%",
+      }}
+      to={{ yPercent: 0, rotation: 0, delay }}
+      ease={EASE.expo}
+      duration={split === "chars" ? 1.1 : 1}
+      delay={STAGGER[split]}
+      trigger={trigger === "load" ? "load" : "view"}
+      threshold={0.12}
+      rootMargin="0px"
+      className={className}
+    />
   );
 }

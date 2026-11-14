@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { TransitionLink } from "@/features/page-transition";
 import { useRef, type ReactNode } from "react";
 import { ComingSoon } from "@/components/ui/coming-soon";
+import { GlareHover } from "@/components/ui/react-bits/glare-hover";
 import { getProjectHref } from "@/constants/projects";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { gsap, useGSAP } from "@/lib/gsap";
@@ -149,7 +150,7 @@ export function CasesTrack({
               data-track-item
               className="w-[72vw] shrink-0 lg:w-568"
             >
-              <Link
+              <TransitionLink
                 href={getProjectHref(project)}
                 draggable={false}
                 className="group relative block aspect-[568/320] overflow-hidden bg-gray-graw"
@@ -169,7 +170,16 @@ export function CasesTrack({
                     <span className="sr-only">{project.name}</span>
                   </>
                 )}
-              </Link>
+                <GlareHover
+                  borderRadius="0"
+                  glareOpacity={0.25}
+                  glareAngle={-35}
+                  glareSize={40}
+                  rimGlint={false}
+                  transitionDuration={800}
+                  className="absolute inset-0 border-0"
+                />
+              </TransitionLink>
             </li>
           ))}
         </ul>

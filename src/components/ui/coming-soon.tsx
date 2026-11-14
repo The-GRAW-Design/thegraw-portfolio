@@ -1,4 +1,5 @@
 import { ParallaxImage } from "@/components/ui/parallax-image";
+import { ShinyText } from "@/components/ui/react-bits/shiny-text";
 import { COMING_SOON_IMAGE } from "@/constants/projects";
 import { cn } from "@/utils/cn";
 
@@ -44,8 +45,17 @@ export function ComingSoon({
         <div className="absolute -top-[10.38%] -left-[10.38%] h-[120.75%] w-[120.77%] blur-soon">
           <ParallaxImage src={image} alt="" sizes={sizes} amount={3} />
         </div>
+        {/* A sheen sweeps the label now and then (React Bits ShinyText). */}
         <p className="relative flex h-full items-center justify-center text-soon font-medium whitespace-nowrap text-white">
-          {COMING_SOON_LABEL}
+          <ShinyText
+            text={COMING_SOON_LABEL}
+            color="var(--color-white-graw)"
+            shineColor="var(--color-white)"
+            speed={2.4}
+            delay={1.6}
+            shineWidth={30}
+            glow={0.5}
+          />
         </p>
       </div>
     </div>
