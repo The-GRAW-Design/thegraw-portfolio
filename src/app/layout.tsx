@@ -14,10 +14,10 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_CONFIG.name}`,
   },
   description: SITE_CONFIG.description,
-  // The header logo (THE GRAW + DESIGN) on RED GRAW; PNG and ICO fallbacks.
+  // The THE GRAW sword mark on RED GRAW, with an ICO for the small sizes.
   icons: {
     icon: [
-      { url: asset("/favicon.svg"), type: "image/svg+xml" },
+      { url: asset("/favicon.png"), type: "image/png", sizes: "192x192" },
       { url: asset("/favicon.ico"), sizes: "16x16 32x32 48x48" },
     ],
     apple: asset("/apple-touch-icon.png"),
