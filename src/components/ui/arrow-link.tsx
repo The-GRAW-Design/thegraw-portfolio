@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { RollText } from "@/components/ui/roll-text";
+import { ShuffleText } from "@/components/ui/shuffle-text";
 import { cn } from "@/utils/cn";
 import { asset } from "@/utils/asset";
 
@@ -19,6 +19,13 @@ const TONES = {
   red: { text: "text-red-graw", icon: asset("/icons/arrow-up-right-red.svg") },
 } as const;
 
+const ARROW =
+  "absolute inset-0 size-20 transition-transform duration-500 ease-expo motion-reduce:transition-none";
+const ARROW_OUT =
+  "group-hover:translate-x-full group-hover:-translate-y-full group-focus-visible:translate-x-full group-focus-visible:-translate-y-full";
+const ARROW_IN =
+  "-translate-x-full translate-y-full group-hover:translate-x-0 group-hover:translate-y-0 group-focus-visible:translate-x-0 group-focus-visible:translate-y-0";
+
 /** Uppercase CTA with the Figma "arrow-up-right" icon. */
 export function ArrowLink({
   href,
@@ -35,14 +42,24 @@ export function ArrowLink({
         className,
       )}
     >
-      <RollText>{children}</RollText>
-      <Image
-        src={TONES[tone].icon}
-        alt=""
-        width={20}
-        height={20}
-        className="size-20 transition-transform duration-300 ease-power3 group-hover:translate-x-3 group-hover:-translate-y-3 motion-reduce:transition-none"
-      />
+      <ShuffleText>{children}</ShuffleText>
+      {/* The arrow leaves through its corner and a copy takes its place. */}
+      <span className="relative block size-20 overflow-hidden">
+        <Image
+          src={TONES[tone].icon}
+          alt=""
+          width={20}
+          height={20}
+          className={cn(ARROW, ARROW_OUT)}
+        />
+        <Image
+          src={TONES[tone].icon}
+          alt=""
+          width={20}
+          height={20}
+          className={cn(ARROW, ARROW_IN)}
+        />
+      </span>
     </a>
   );
 }

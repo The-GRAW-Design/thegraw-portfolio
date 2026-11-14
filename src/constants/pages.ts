@@ -34,9 +34,12 @@ export const PROJECT_PAGE = {
 const TEAM_BIO =
   "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when";
 
+/** Figma team photo of a member, cropped to the 897×1080 photo box. */
+const teamPhoto = (slug: string) => asset(`/images/studio/team-${slug}.webp`);
+
 /**
- * Figma team frames (André, Alan, Erick, Tatá): one portrait placeholder,
- * each with its own headline, sized to fill the frame width and placed as a
+ * Figma team frames (André, Alan, Erick, Tatá): each with its photo, its card
+ * width and its own headline, sized to fill the frame width and placed as a
  * share of its 1080px height.
  */
 export const TEAM_MEMBERS = [
@@ -44,24 +47,32 @@ export const TEAM_MEMBERS = [
     name: "André Gonçalves",
     role: "CREATIVE DIRECTOR",
     bio: TEAM_BIO,
+    photo: teamPhoto("andre-goncalves"),
+    cardClassName: "lg:w-556",
     roleClassName: "text-role-director lg:top-[72.34%] lg:left-51",
   },
   {
     name: "Alan Erick",
     role: "MOTION DESIGNER",
     bio: TEAM_BIO,
+    photo: teamPhoto("alan-erick"),
+    cardClassName: "lg:w-556",
     roleClassName: "text-role-motion lg:top-[71.61%] lg:left-51",
   },
   {
     name: "Erik Elias",
     role: "DEVELOPER",
     bio: TEAM_BIO,
-    roleClassName: "text-giant lg:top-[71.13%] lg:left-640",
+    photo: teamPhoto("erik-elias"),
+    cardClassName: "lg:w-556",
+    roleClassName: "text-giant lg:top-[71.13%] lg:left-43",
   },
   {
     name: "Tatá Gomes",
     role: "PROJECT MANAGER",
     bio: TEAM_BIO,
+    photo: teamPhoto("tata-gomes"),
+    cardClassName: "lg:w-582",
     roleClassName: "text-role-manager lg:top-[72.39%] lg:left-51",
   },
 ] as const;
@@ -69,7 +80,6 @@ export const TEAM_MEMBERS = [
 export const STUDIO_PAGE = {
   title: "Studio",
   projectsLead: "Projects Lead",
-  portrait: asset("/images/studio/portrait.webp"),
   projectsLeadImage: asset("/images/studio/projects-lead.webp"),
   /** Shown one at a time while scrolling, each with its Figma photo. */
   sections: [

@@ -1,13 +1,14 @@
 import Image from "next/image";
-import Link from "next/link";
-import { RollText } from "@/components/ui/roll-text";
+import { TransitionLink } from "@/features/page-transition";
+import { GlareHover } from "@/components/ui/react-bits/glare-hover";
+import { ShuffleText } from "@/components/ui/shuffle-text";
 import { HOME_PAGE } from "@/constants/pages";
 
 /** Figma "Frame 35025": a 56px band over a heavily blurred photo, to the cases. */
 export function ViewAllCasesSection() {
   return (
     <section data-header-theme="light" className="relative bg-black-graw">
-      <Link
+      <TransitionLink
         href="/cases"
         className="group relative flex h-56 items-center justify-center overflow-hidden text-white"
       >
@@ -18,10 +19,20 @@ export function ViewAllCasesSection() {
           height={360}
           className="absolute top-[-33vw] -left-[14vw] h-[70vw] w-[125vw] max-w-none blur-band transition-transform duration-700 ease-power3 group-hover:scale-110 lg:-top-629 lg:-left-262 lg:h-1345 lg:w-2390"
         />
+        {/* A streak runs along the band on hover (React Bits GlareHover). */}
+        <GlareHover
+          borderRadius="0"
+          glareOpacity={0.35}
+          glareAngle={-70}
+          glareSize={18}
+          rimGlint={false}
+          transitionDuration={1100}
+          className="absolute inset-0 border-0"
+        />
         <span className="relative text-body leading-normal">
-          <RollText>{HOME_PAGE.viewAllCases}</RollText>
+          <ShuffleText>{HOME_PAGE.viewAllCases}</ShuffleText>
         </span>
-      </Link>
+      </TransitionLink>
     </section>
   );
 }

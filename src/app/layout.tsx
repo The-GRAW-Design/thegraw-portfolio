@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Header } from "@/components/layout/header";
 import { SkipLink } from "@/components/layout/skip-link";
 import { SITE_CONFIG } from "@/constants/site";
+import { PageTransition } from "@/features/page-transition";
 import { seagram, sfPro } from "@/lib/fonts";
 import { SmoothScrollProvider } from "@/lib/smooth-scroll-provider";
 import { asset } from "@/utils/asset";
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <SkipLink />
           <Header />
           {children}
+          <PageTransition />
         </SmoothScrollProvider>
       </body>
     </html>

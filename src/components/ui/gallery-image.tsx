@@ -28,14 +28,17 @@ function LogoPanel({ logo, box }: { logo: ProjectLogo; box: ProjectMedia }) {
   );
 }
 
-/** Project gallery box: an image drifting against the scroll, or a logo panel. */
+/**
+ * Project gallery box: an image that settles from a zoom as it is unveiled
+ * and drifts against the scroll, or a logo panel.
+ */
 export function GalleryImage({
   media,
   sizes = "(min-width: 1024px) 80vw, 100vw",
   className,
 }: GalleryImageProps) {
   return (
-    <Reveal className={cn("p-10 lg:p-11", className)}>
+    <Reveal wipe="up" className={cn("p-10 lg:p-11", className)}>
       <div
         className="relative w-full overflow-hidden bg-coal"
         style={{ aspectRatio: `${media.width} / ${media.height}` }}
@@ -43,7 +46,7 @@ export function GalleryImage({
         {media.logo ? (
           <LogoPanel logo={media.logo} box={media} />
         ) : (
-          <ParallaxImage src={media.src} alt="" sizes={sizes} />
+          <ParallaxImage src={media.src} alt="" sizes={sizes} settle="scroll" />
         )}
       </div>
     </Reveal>

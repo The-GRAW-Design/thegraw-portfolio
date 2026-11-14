@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { TransitionLink } from "@/features/page-transition";
 import { useRef } from "react";
-import { RollText } from "@/components/ui/roll-text";
+import { GlareHover } from "@/components/ui/react-bits/glare-hover";
+import { ShuffleText } from "@/components/ui/shuffle-text";
 import { SHOWCASE_LABELS } from "@/constants/projects";
 import { EASE, gsap, useGSAP } from "@/lib/gsap";
 import { asset } from "@/utils/asset";
@@ -61,7 +62,7 @@ export function ShowcaseCard({
   );
 
   return (
-    <Link
+    <TransitionLink
       ref={ref}
       href={href}
       className={cn(
@@ -69,19 +70,30 @@ export function ShowcaseCard({
         className,
       )}
     >
-      <span data-card-image className="absolute inset-0">
-        <Image
-          src={image}
-          alt=""
-          fill
-          sizes="(min-width: 1024px) 24vw, 90vw"
-          className="object-cover transition-transform duration-700 ease-power3 group-hover:scale-[1.04]"
-        />
-      </span>
+      {/* A light streak sweeps the shot on hover (React Bits GlareHover). */}
+      <GlareHover
+        borderRadius="0"
+        glareOpacity={0.3}
+        glareAngle={-35}
+        glareSize={40}
+        rimGlint={false}
+        transitionDuration={900}
+        className="absolute inset-0 border-0"
+      >
+        <span data-card-image className="absolute inset-0">
+          <Image
+            src={image}
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 24vw, 90vw"
+            className="object-cover transition-transform duration-700 ease-power3 group-hover:scale-[1.04]"
+          />
+        </span>
+      </GlareHover>
       <span className="relative flex">
         <span className="flex h-48 min-w-0 flex-1 items-center gap-24 bg-night pl-16 whitespace-nowrap lg:h-54 lg:gap-48.25 lg:pl-19.25">
           <span className="text-lead">
-            <RollText>{SHOWCASE_LABELS.explore}</RollText>
+            <ShuffleText>{SHOWCASE_LABELS.explore}</ShuffleText>
           </span>
           <span className="text-fine uppercase">{handle}</span>
         </span>
@@ -93,6 +105,6 @@ export function ShowcaseCard({
           className="h-48 w-44.5 shrink-0 lg:h-54 lg:w-50.25"
         />
       </span>
-    </Link>
+    </TransitionLink>
   );
 }

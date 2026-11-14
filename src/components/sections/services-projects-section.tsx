@@ -1,14 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { TransitionLink } from "@/features/page-transition";
 import { useRef } from "react";
-import { EdgeFades } from "@/components/ui/edge-fades";
 import {
   ProjectBrand,
   ProjectDisciplines,
   ProjectMeta,
 } from "@/components/ui/project-meta";
+import { GradualBlur } from "@/components/ui/react-bits/gradual-blur";
+import { Magnet } from "@/components/ui/react-bits/magnet";
+import { SplitReveal } from "@/components/ui/split-reveal";
 import { getProjectHref, PROJECT_SHOWCASE } from "@/constants/projects";
 import { SERVICES_PAGE } from "@/constants/services";
 import { useLenis } from "@/hooks/use-lenis";
@@ -20,6 +22,10 @@ type ServicesProjectsSectionProps = {
   /** Re-runs the entrance when the service changes. */
   serviceId: string;
 };
+
+/** Figma side fades: 222px wide, blurred up to the 13.05px of `--blur-fade` (12 × 1.09). */
+const EDGES = ["left", "right"] as const;
+const EDGE_BLUR = 1.09;
 
 const SLIDES = Array.from(
   { length: SERVICES_PAGE.slidesPerService },
@@ -135,7 +141,7 @@ export function ServicesProjectsSection({
               data-slide
               className="relative h-full w-[100cqw] shrink-0 snap-start overflow-hidden"
             >
-              <Link
+              <TransitionLink
                 href={getProjectHref(PROJECT_SHOWCASE)}
                 className="group absolute inset-0 block focus-visible:outline-offset-[-4px]"
               >
@@ -168,26 +174,43 @@ export function ServicesProjectsSection({
                     className="lg:w-146"
                   />
                 </div>
-              </Link>
+              </TransitionLink>
             </li>
           ))}
         </ul>
       </div>
 
-      <EdgeFades tone="dark" className="hidden w-222 lg:block" />
+      {/* Progressive blur and tint on both edges (React Bits GradualBlur). */}
+      {EDGES.map((edge) => (
+        <GradualBlur
+          key={edge}
+          position={edge}
+          width="calc(var(--spacing) * 222)"
+          strength={EDGE_BLUR}
+          layers={6}
+          tint="var(--color-fade-dark)"
+          zIndex={10}
+          className="hidden lg:block"
+        />
+      ))}
 
-      <p className="pointer-events-none absolute top-72 left-1/2 z-20 -translate-x-1/2 text-section whitespace-nowrap text-red-graw lg:top-31">
+      {/* The label rises letter by letter whenever the service changes. */}
+      <SplitReveal
+        key={label}
+        split="chars"
+        className="pointer-events-none absolute top-72 left-1/2 z-20 -translate-x-1/2 text-section whitespace-nowrap text-red-graw lg:top-31"
+      >
         {label}
-      </p>
+      </SplitReveal>
 
       <button
         type="button"
-        className="group absolute bottom-24 left-1/2 z-20 flex h-48 w-96 -translate-x-1/2 items-center justify-center bg-coal text-back text-red-graw lg:bottom-45 lg:h-59 lg:w-118"
+        className="group absolute bottom-24 left-1/2 z-20 flex h-48 w-96 -translate-x-1/2 items-center justify-center bg-coal text-back text-red-graw transition-[scale] duration-300 ease-power3 active:scale-95 lg:bottom-45 lg:h-59 lg:w-118"
         onClick={backToTop}
       >
-        <span className="transition-transform duration-300 ease-power3 group-hover:-translate-y-3">
+        <Magnet as="span" padding={40} magnetStrength={3} maxOffset={8}>
           {SERVICES_PAGE.back}
-        </span>
+        </Magnet>
       </button>
     </section>
   );

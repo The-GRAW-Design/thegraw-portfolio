@@ -34,23 +34,6 @@ export function ServicesHeroSection({
   /** Where each item was before the list turned (FLIP). */
   const lastTops = useRef<Map<ServiceId, number> | null>(null);
 
-  useGSAP(
-    () => {
-      const media = gsap.matchMedia();
-      media.add("(prefers-reduced-motion: no-preference)", () => {
-        gsap.from("[data-service-word]", {
-          yPercent: 110,
-          duration: 1.1,
-          ease: EASE.expo,
-          stagger: 0.1,
-          delay: 0.2,
-        });
-      });
-      return () => media.revert();
-    },
-    { scope: listRef },
-  );
-
   // Each item glides from where it was to its new line.
   useGSAP(
     () => {
@@ -99,6 +82,7 @@ export function ServicesHeroSection({
             "transition-opacity duration-800 ease-power3",
             service.id === active ? "opacity-100" : "opacity-0",
           )}
+          settle="load"
         />
       ))}
       {/* Figma: a 41.6 background blur growing along the darkening gradient. */}
@@ -113,7 +97,7 @@ export function ServicesHeroSection({
       <div className="relative flex flex-col items-end text-right lg:absolute lg:top-[max(calc(var(--spacing)*120),calc((100svh-var(--spacing)*712)/2))] lg:left-1036 lg:w-747">
         <h1 className="sr-only">{SERVICES_PAGE.title}</h1>
         <ul ref={listRef} aria-label={SERVICES_PAGE.title}>
-          {serviceOrder(active).map((service) => {
+          {serviceOrder(active).map((service, index) => {
             const pressed = service.id === active;
             return (
               <li
@@ -126,7 +110,6 @@ export function ServicesHeroSection({
               >
                 <button
                   type="button"
-                  data-service-word
                   aria-pressed={pressed}
                   className={cn(
                     "block text-title whitespace-nowrap transition-colors duration-300 ease-power3",
@@ -136,7 +119,16 @@ export function ServicesHeroSection({
                   )}
                   onClick={() => select(service.id)}
                 >
-                  {service.title}
+                  {/* Each word rises from under its line, one after the other. */}
+                  <SplitReveal
+                    as="span"
+                    split="lines"
+                    trigger="load"
+                    delay={0.2 + index * 0.1}
+                    className="block whitespace-nowrap"
+                  >
+                    {service.title}
+                  </SplitReveal>
                 </button>
               </li>
             );
