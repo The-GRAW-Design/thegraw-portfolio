@@ -30,15 +30,22 @@ export function StudioHeroSection() {
     >
       <DitherImage {...STUDIO_DITHER} animation="intro" />
 
+      {/* Each member's photo, the current one faded in over the others. */}
       <div className="relative h-[60svh] w-full lg:absolute lg:inset-y-0 lg:left-0 lg:h-auto lg:w-897">
-        <ParallaxImage
-          src={STUDIO_PAGE.portrait}
-          alt=""
-          priority
-          sizes="(min-width: 1024px) 47vw, 100vw"
-          imageClassName="object-[50%_30%]"
-          settle="load"
-        />
+        {TEAM_MEMBERS.map((person, personIndex) => (
+          <ParallaxImage
+            key={person.name}
+            src={person.photo}
+            alt=""
+            priority={personIndex === 0}
+            sizes="(min-width: 1024px) 47vw, 100vw"
+            className={cn(
+              "transition-opacity duration-800 ease-power3",
+              personIndex === index ? "opacity-100" : "opacity-0",
+            )}
+            settle="load"
+          />
+        ))}
       </div>
 
       <h1 className="sr-only">{STUDIO_PAGE.title}</h1>
@@ -46,7 +53,10 @@ export function StudioHeroSection() {
       <div
         aria-roledescription="carrossel"
         aria-label="Equipe"
-        className="relative flex flex-col gap-24 px-16 pt-32 lg:absolute lg:top-88 lg:left-960 lg:w-556 lg:gap-37 lg:p-0"
+        className={cn(
+          "relative flex flex-col gap-24 px-16 pt-32 lg:absolute lg:top-88 lg:left-960 lg:gap-37 lg:p-0",
+          member.cardClassName,
+        )}
       >
         {/* The arrows pull toward the cursor (React Bits Magnet). */}
         <div className="flex gap-11">
