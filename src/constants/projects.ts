@@ -241,7 +241,7 @@ export const PROJECTS: readonly Project[] = [
     credits: credits(
       { label: "Project director", value: DIRECTOR },
       "E2 Company",
-      { label: "Dev", value: DIRECTOR },
+      { label: "Dev", value: "Erik Elias" },
       "2025",
     ),
     gallery: {
