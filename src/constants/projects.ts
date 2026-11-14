@@ -47,6 +47,15 @@ const ALLCE_WIDE = (file: string) => image("allce", file, 1507, 848);
 /** Figma "Grupo Penguin" project page (3023:1085). */
 const PENGUIN_WIDE = (file: string) => image("grupo-penguin", file, 1507, 850);
 
+/** Figma gallery boxes of the project pages (1517.428 frame minus its 11.109 padding). */
+const FIGMA_WIDE = { width: 1495.21, height: 829.81 } as const;
+const FIGMA_SPLIT = { width: 867.58, height: 829.81 } as const;
+const FIGMA_FINAL = { width: 1900, height: 799 } as const;
+
+/** Figma "Lorena Lourenço" project page (3023:1263). */
+const LORENA_WIDE = (file: string) =>
+  image("lorena-lourenco", file, FIGMA_WIDE.width, FIGMA_WIDE.height);
+
 /** Screens of the live E² Company site, captured at 1920×1080. */
 const E2_SCREEN = (file: string) => image("e2-company", file, 1507, 848);
 
@@ -123,7 +132,8 @@ const PENGUIN_SPLIT: ProjectMedia = {
 
 /**
  * The ten Figma project pages, in canvas order, and the home-only Gilberto do
- * Acordeon. Allce and Grupo Penguin have their Figma galleries; e2 company,
+ * Acordeon. Allce, Grupo Penguin and Lorena Lourenço have their Figma
+ * galleries; e2 company,
  * Site Naturallis and Elle Fanning have screens and texts of their live
  * sites; the others have names, credits and the photos of the "all projects" grid and of the
  * home slides, and show {EM BREVE} where the case study will go.
@@ -286,6 +296,28 @@ export const PROJECTS: readonly Project[] = [
       "2026",
     ),
     logo: LORENA_LOGO,
+    // The Figma page has two boxes after "results" (its third one is empty).
+    gallery: {
+      lead: [LORENA_WIDE("logo-light")],
+      split: image(
+        "lorena-lourenco",
+        "logo-dark",
+        FIGMA_SPLIT.width,
+        FIGMA_SPLIT.height,
+      ),
+      middle: [
+        [LORENA_WIDE("about")],
+        [LORENA_WIDE("gilroy")],
+        [LORENA_WIDE("cavas")],
+      ],
+      closing: [LORENA_WIDE("versions"), LORENA_WIDE("palette")],
+      final: image(
+        "lorena-lourenco",
+        "portraits",
+        FIGMA_FINAL.width,
+        FIGMA_FINAL.height,
+      ),
+    },
   },
   {
     slug: "site-naturallis",
