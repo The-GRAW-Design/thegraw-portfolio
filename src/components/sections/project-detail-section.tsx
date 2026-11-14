@@ -5,7 +5,7 @@ import { ScrollReveal } from "@/components/ui/react-bits/scroll-reveal";
 import { Reveal } from "@/components/ui/reveal";
 import { SplitReveal } from "@/components/ui/split-reveal";
 import { LOREM_LONG, PROJECT_PAGE } from "@/constants/pages";
-import type { Project, ProjectGallery } from "@/types/project";
+import type { Project, ProjectCopy, ProjectGallery } from "@/types/project";
 
 type ProjectDetailSectionProps = {
   project: Project;
@@ -38,7 +38,13 @@ function Copy({
 const WIDE_BOX = { width: 1495.21, height: 829.81 } as const;
 
 /** Figma gallery: lead boxes, split row with "Solution", story, closing boxes. */
-function Gallery({ gallery }: { gallery: ProjectGallery }) {
+function Gallery({
+  gallery,
+  copy,
+}: {
+  gallery: ProjectGallery;
+  copy?: ProjectCopy;
+}) {
   return (
     <>
       <div className="flex w-full flex-col gap-10">
@@ -55,7 +61,7 @@ function Gallery({ gallery }: { gallery: ProjectGallery }) {
             <SplitReveal as="h2" split="chars" className="text-chapter">
               {PROJECT_PAGE.solution}
             </SplitReveal>
-            <Copy className="text-copy">{LOREM_LONG}</Copy>
+            <Copy className="text-copy">{copy?.solution ?? LOREM_LONG}</Copy>
           </div>
         </div>
         {gallery.middle.map((group) => (
@@ -79,13 +85,15 @@ function Gallery({ gallery }: { gallery: ProjectGallery }) {
           <SplitReveal as="h2" split="chars" className="text-chapter">
             {PROJECT_PAGE.process}
           </SplitReveal>
-          <Copy className="text-copy">{LOREM_LONG}</Copy>
+          <Copy className="text-copy">{copy?.process ?? LOREM_LONG}</Copy>
         </div>
         <div className="flex flex-col gap-6.75 lg:w-571">
           <SplitReveal as="h2" split="chars" className="text-chapter">
             {PROJECT_PAGE.results}
           </SplitReveal>
-          <Copy className="text-copy">{PROJECT_PAGE.resultsBody}</Copy>
+          <Copy className="text-copy">
+            {copy?.results ?? PROJECT_PAGE.resultsBody}
+          </Copy>
         </div>
       </div>
 
@@ -150,12 +158,16 @@ export function ProjectDetailSection({ project }: ProjectDetailSectionProps) {
               {project.category}
             </SplitReveal>
           </div>
-          {gallery && <Copy className="text-body lg:w-1037">{LOREM_LONG}</Copy>}
+          {gallery && (
+            <Copy className="text-body lg:w-1037">
+              {project.copy?.intro ?? LOREM_LONG}
+            </Copy>
+          )}
         </div>
 
         <div className="flex w-full flex-col items-center gap-64 px-6 lg:w-1517.5 lg:gap-62 lg:px-0">
           {gallery ? (
-            <Gallery gallery={gallery} />
+            <Gallery gallery={gallery} copy={project.copy} />
           ) : (
             <div className="flex w-full flex-col gap-10">
               {project.logo && (
