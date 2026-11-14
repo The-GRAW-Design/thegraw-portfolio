@@ -2,6 +2,7 @@ import type {
   Credit,
   LogoArt,
   Project,
+  ProjectCollage,
   ProjectLogo,
   ProjectMedia,
   ShowcaseInfo,
@@ -33,6 +34,16 @@ const hero = (slug: string, position?: string) => ({
 
 const cover = (slug: string) => asset(`/images/cases/covers/${slug}.webp`);
 
+/** A Figma "Projeto" collage variant, each image cropped to its box. */
+const figmaCollage = (slug: string): ProjectCollage => {
+  const piece = (name: string) =>
+    asset(`/images/projects/${slug}/collage-${name}.webp`);
+  return {
+    main: piece("main"),
+    pieces: [piece("bottom"), piece("top"), piece("right"), piece("left")],
+  };
+};
+
 const logoLayer = (file: string, inset: string) => ({
   src: asset(`/images/logos/${file}.svg`),
   inset,
@@ -46,6 +57,19 @@ const ALLCE_WIDE = (file: string) => image("allce", file, 1507, 848);
 
 /** Figma "Grupo Penguin" project page (3023:1085). */
 const PENGUIN_WIDE = (file: string) => image("grupo-penguin", file, 1507, 850);
+
+/** Figma gallery boxes of the project pages (1517.428 frame minus its 11.109 padding). */
+const FIGMA_WIDE = { width: 1495.21, height: 829.81 } as const;
+const FIGMA_SPLIT = { width: 867.58, height: 829.81 } as const;
+const FIGMA_FINAL = { width: 1900, height: 799 } as const;
+
+/** Figma "Lorena Lourenço" project page (3023:1263). */
+const LORENA_WIDE = (file: string) =>
+  image("lorena-lourenco", file, FIGMA_WIDE.width, FIGMA_WIDE.height);
+
+/** Figma "Conexão Duo" project page (3023:1441). */
+const CONEXAO_WIDE = (file: string) =>
+  image("conexao-duo", file, FIGMA_WIDE.width, FIGMA_WIDE.height);
 
 /** Screens of the live E² Company site, captured at 1920×1080. */
 const E2_SCREEN = (file: string) => image("e2-company", file, 1507, 848);
@@ -123,10 +147,11 @@ const PENGUIN_SPLIT: ProjectMedia = {
 
 /**
  * The ten Figma project pages, in canvas order, and the home-only Gilberto do
- * Acordeon. Allce and Grupo Penguin have their Figma galleries; e2 company,
- * Site Naturallis and Elle Fanning have screens and texts of their live
- * sites; the others have names, credits and the photos of the "all projects" grid and of the
- * home slides, and show {EM BREVE} where the case study will go.
+ * Acordeon. Allce, Grupo Penguin, Lorena Lourenço and Conexão Duo have their
+ * Figma galleries; e2 company, Site Naturallis and Elle Fanning have screens
+ * and texts of their live sites; the others have names, credits and the
+ * photos of the "all projects" grid and of the home slides, and show
+ * {EM BREVE} where the case study will go.
  */
 export const PROJECTS: readonly Project[] = [
   {
@@ -185,15 +210,8 @@ export const PROJECTS: readonly Project[] = [
     services: ["branding"],
     cover: cover("grupo-penguin"),
     hero: hero("grupo-penguin"),
-    collage: {
-      main: asset("/images/projects/grupo-penguin/magazine.webp"),
-      pieces: [
-        asset("/images/projects/grupo-penguin/bags.webp"),
-        asset("/images/projects/grupo-penguin/palette.webp"),
-        asset("/images/projects/grupo-penguin/keys.webp"),
-        asset("/images/projects/grupo-penguin/signage.webp"),
-      ],
-    },
+    // Figma "Projeto" variant "Projeto 1".
+    collage: figmaCollage("grupo-penguin"),
     credits: credits(
       { label: "Project director", value: DIRECTOR },
       "Poliana Fernandes",
@@ -278,7 +296,8 @@ export const PROJECTS: readonly Project[] = [
     services: ["branding"],
     cover: cover("lorena-lourenco"),
     hero: hero("lorena-lourenco"),
-    collage: { main: asset("/images/projects/lorena-lourenco/hero.webp") },
+    // Figma "Projeto" variant "Projeto 2".
+    collage: figmaCollage("lorena-lourenco"),
     credits: credits(
       { label: "Project director", value: DIRECTOR },
       "Lorena Lourenço",
@@ -286,6 +305,28 @@ export const PROJECTS: readonly Project[] = [
       "2026",
     ),
     logo: LORENA_LOGO,
+    // The Figma page has two boxes after "results" (its third one is empty).
+    gallery: {
+      lead: [LORENA_WIDE("logo-light")],
+      split: image(
+        "lorena-lourenco",
+        "logo-dark",
+        FIGMA_SPLIT.width,
+        FIGMA_SPLIT.height,
+      ),
+      middle: [
+        [LORENA_WIDE("about")],
+        [LORENA_WIDE("gilroy")],
+        [LORENA_WIDE("cavas")],
+      ],
+      closing: [LORENA_WIDE("versions"), LORENA_WIDE("palette")],
+      final: image(
+        "lorena-lourenco",
+        "portraits",
+        FIGMA_FINAL.width,
+        FIGMA_FINAL.height,
+      ),
+    },
   },
   {
     slug: "site-naturallis",
@@ -353,6 +394,31 @@ export const PROJECTS: readonly Project[] = [
       "2026",
     ),
     logo: CONEXAO_LOGO,
+    gallery: {
+      lead: [CONEXAO_WIDE("flag")],
+      split: image(
+        "conexao-duo",
+        "symbol",
+        FIGMA_SPLIT.width,
+        FIGMA_SPLIT.height,
+      ),
+      middle: [
+        [CONEXAO_WIDE("colors")],
+        [CONEXAO_WIDE("inegociavel")],
+        [CONEXAO_WIDE("campaign")],
+      ],
+      closing: [
+        CONEXAO_WIDE("bags"),
+        CONEXAO_WIDE("posts"),
+        CONEXAO_WIDE("seo"),
+      ],
+      final: image(
+        "conexao-duo",
+        "stamp",
+        FIGMA_FINAL.width,
+        FIGMA_FINAL.height,
+      ),
+    },
     showcase: {
       background: asset("/images/projects/conexao-duo/hero.webp"),
       card: asset("/images/projects/conexao-duo/card.webp"),
