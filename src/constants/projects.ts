@@ -2,6 +2,7 @@ import type {
   Credit,
   LogoArt,
   Project,
+  ProjectCollage,
   ProjectLogo,
   ProjectMedia,
   ShowcaseInfo,
@@ -33,6 +34,16 @@ const hero = (slug: string, position?: string) => ({
 
 const cover = (slug: string) => asset(`/images/cases/covers/${slug}.webp`);
 
+/** A Figma "Projeto" collage variant, each image cropped to its box. */
+const figmaCollage = (slug: string): ProjectCollage => {
+  const piece = (name: string) =>
+    asset(`/images/projects/${slug}/collage-${name}.webp`);
+  return {
+    main: piece("main"),
+    pieces: [piece("bottom"), piece("top"), piece("right"), piece("left")],
+  };
+};
+
 const logoLayer = (file: string, inset: string) => ({
   src: asset(`/images/logos/${file}.svg`),
   inset,
@@ -46,6 +57,29 @@ const ALLCE_WIDE = (file: string) => image("allce", file, 1507, 848);
 
 /** Figma "Grupo Penguin" project page (3023:1085). */
 const PENGUIN_WIDE = (file: string) => image("grupo-penguin", file, 1507, 850);
+
+/** Figma gallery boxes of the project pages (1517.428 frame minus its 11.109 padding). */
+const FIGMA_WIDE = { width: 1495.21, height: 829.81 } as const;
+const FIGMA_SPLIT = { width: 867.58, height: 829.81 } as const;
+const FIGMA_FINAL = { width: 1900, height: 799 } as const;
+
+/** Figma "Lorena Lourenço" project page (3023:1263). */
+const LORENA_WIDE = (file: string) =>
+  image("lorena-lourenco", file, FIGMA_WIDE.width, FIGMA_WIDE.height);
+
+/** Figma "Conexão Duo" project page (3023:1441). */
+const CONEXAO_WIDE = (file: string) =>
+  image("conexao-duo", file, FIGMA_WIDE.width, FIGMA_WIDE.height);
+
+/** Screens of the live E² Company site, captured at 1920×1080. */
+const E2_SCREEN = (file: string) => image("e2-company", file, 1507, 848);
+
+/** Screens of the live Elle Fanning site, captured at 1920×1080. */
+const ELLE_SCREEN = (file: string) => image("elle-fanning", file, 1507, 848);
+
+/** Screens of the live Naturallis site, captured at 1920×1080. */
+const NATURALLIS_SCREEN = (file: string) =>
+  image("site-naturallis", file, 1507, 848);
 
 const PENGUIN_LOGO: ProjectLogo = {
   width: 595.22,
@@ -113,9 +147,11 @@ const PENGUIN_SPLIT: ProjectMedia = {
 
 /**
  * The ten Figma project pages, in canvas order, and the home-only Gilberto do
- * Acordeon. Allce and Grupo Penguin have their galleries; the others have
- * names, credits and the photos of the "all projects" grid and of the home
- * slides, and show {EM BREVE} where the case study will go.
+ * Acordeon. Allce, Grupo Penguin, Lorena Lourenço and Conexão Duo have their
+ * Figma galleries; e2 company, Site Naturallis and Elle Fanning have screens
+ * and texts of their live sites; the others have names, credits and the
+ * photos of the "all projects" grid and of the home slides, and show
+ * {EM BREVE} where the case study will go.
  */
 export const PROJECTS: readonly Project[] = [
   {
@@ -174,15 +210,8 @@ export const PROJECTS: readonly Project[] = [
     services: ["branding"],
     cover: cover("grupo-penguin"),
     hero: hero("grupo-penguin"),
-    collage: {
-      main: asset("/images/projects/grupo-penguin/magazine.webp"),
-      pieces: [
-        asset("/images/projects/grupo-penguin/bags.webp"),
-        asset("/images/projects/grupo-penguin/palette.webp"),
-        asset("/images/projects/grupo-penguin/keys.webp"),
-        asset("/images/projects/grupo-penguin/signage.webp"),
-      ],
-    },
+    // Figma "Projeto" variant "Projeto 1".
+    collage: figmaCollage("grupo-penguin"),
     credits: credits(
       { label: "Project director", value: DIRECTOR },
       "Poliana Fernandes",
@@ -222,13 +251,42 @@ export const PROJECTS: readonly Project[] = [
     services: ["web-design"],
     cover: cover("e2-company"),
     hero: hero("e2-company", "object-[50%_30%]"),
-    collage: { main: asset("/images/projects/e2-company/hero.webp") },
+    collage: {
+      main: asset("/images/projects/e2-company/home.webp"),
+      pieces: [
+        asset("/images/projects/e2-company/form.webp"),
+        asset("/images/projects/e2-company/method.webp"),
+        asset("/images/projects/e2-company/faq.webp"),
+        asset("/images/projects/e2-company/purpose.webp"),
+      ],
+    },
     credits: credits(
       { label: "Project director", value: DIRECTOR },
       "E2 Company",
-      { label: "Dev", value: DIRECTOR },
+      { label: "Dev", value: "Erik Elias" },
       "2025",
     ),
+    gallery: {
+      lead: [image("e2-company", "home", 1496, 844)],
+      split: image("e2-company", "overview", 868, 847),
+      middle: [
+        [E2_SCREEN("consultancy"), E2_SCREEN("form")],
+        [E2_SCREEN("method")],
+        [E2_SCREEN("diagnosis")],
+      ],
+      closing: [E2_SCREEN("purpose"), E2_SCREEN("growth"), E2_SCREEN("faq")],
+      final: { ...image("e2-company", "cta", 1920, 822), bleed: true },
+    },
+    copy: {
+      intro:
+        "The one-page institutional site of E² Company, built from the studio's Figma design. From the first free consultancy to the method, the diagnosis and the team's purpose, the page walks the visitor through how the company turns businesses into strong, profitable brands, with the contact form always one step away.",
+      solution:
+        "A dark page lit in blue and orange, where each section has its own movement: light rays behind the team in the hero, cards that answer the pointer, a form with an electric border and a checklist that springs when ticked. Decorative elements follow the 1920 px Figma frame at any desktop width, and below it the sections rearrange for mobile.",
+      process:
+        "Built with Next.js, Tailwind CSS, GSAP with ScrollTrigger and Lenis on the same clock, with every animation coming from React Bits components. The four WebGL backgrounds mount only when their section gets close to the screen and pause outside it, and reduced motion turns them and the smooth scroll off.",
+      results:
+        "A static site published on GitHub Pages at every push: one screen, nine sections and four WebGL backgrounds, with photos in WebP at display size. The form validates on the client and is ready to be connected to an e-mail or CRM service.",
+    },
   },
   {
     slug: "lorena-lourenco",
@@ -238,7 +296,8 @@ export const PROJECTS: readonly Project[] = [
     services: ["branding"],
     cover: cover("lorena-lourenco"),
     hero: hero("lorena-lourenco"),
-    collage: { main: asset("/images/projects/lorena-lourenco/hero.webp") },
+    // Figma "Projeto" variant "Projeto 2".
+    collage: figmaCollage("lorena-lourenco"),
     credits: credits(
       { label: "Project director", value: DIRECTOR },
       "Lorena Lourenço",
@@ -246,6 +305,28 @@ export const PROJECTS: readonly Project[] = [
       "2026",
     ),
     logo: LORENA_LOGO,
+    // The Figma page has two boxes after "results" (its third one is empty).
+    gallery: {
+      lead: [LORENA_WIDE("logo-light")],
+      split: image(
+        "lorena-lourenco",
+        "logo-dark",
+        FIGMA_SPLIT.width,
+        FIGMA_SPLIT.height,
+      ),
+      middle: [
+        [LORENA_WIDE("about")],
+        [LORENA_WIDE("gilroy")],
+        [LORENA_WIDE("cavas")],
+      ],
+      closing: [LORENA_WIDE("versions"), LORENA_WIDE("palette")],
+      final: image(
+        "lorena-lourenco",
+        "portraits",
+        FIGMA_FINAL.width,
+        FIGMA_FINAL.height,
+      ),
+    },
   },
   {
     slug: "site-naturallis",
@@ -255,13 +336,46 @@ export const PROJECTS: readonly Project[] = [
     services: ["web-design"],
     cover: cover("site-naturallis"),
     hero: hero("site-naturallis", "object-[50%_45%]"),
-    collage: { main: asset("/images/projects/site-naturallis/hero.webp") },
+    collage: {
+      main: asset("/images/projects/site-naturallis/home.webp"),
+      pieces: [
+        asset("/images/projects/site-naturallis/skin-line.webp"),
+        asset("/images/projects/site-naturallis/products.webp"),
+        asset("/images/projects/site-naturallis/before-after.webp"),
+        asset("/images/projects/site-naturallis/cta.webp"),
+      ],
+    },
     credits: credits(
       { label: "Project director", value: DIRECTOR },
       "Naturallis",
-      { label: "Dev", value: "Eric Elias" },
+      { label: "Dev", value: "Erik Elias" },
       "2026",
     ),
+    gallery: {
+      lead: [image("site-naturallis", "home", 1496, 844)],
+      split: image("site-naturallis", "product", 868, 847),
+      middle: [
+        [NATURALLIS_SCREEN("products"), NATURALLIS_SCREEN("skin-line")],
+        [NATURALLIS_SCREEN("care")],
+        [NATURALLIS_SCREEN("shop")],
+      ],
+      closing: [
+        NATURALLIS_SCREEN("before-after"),
+        NATURALLIS_SCREEN("testimonials"),
+        NATURALLIS_SCREEN("cta"),
+      ],
+      final: { ...image("site-naturallis", "footer", 1920, 822), bleed: true },
+    },
+    copy: {
+      intro:
+        "The institutional site and storefront of Naturallis, a compounding pharmacy with more than thirty years in business. Custom formulas, supplements and care products share one calm system of green and white pages, from the home to the catalogue, the product page, the ingredients and the formula request.",
+      solution:
+        "The home opens inside the pharmacy, with the numbers of the house counting up beside the portrait, and moves through the best sellers, the skin line, the care pillars, the ingredients and a before and after slider. Products come in carousels and in a catalogue with categories and filters, and each one has its own page with sizes, details, how to use and a cart.",
+      process:
+        "Built with Next.js, Tailwind CSS, GSAP with ScrollTrigger and Lenis. The hero and skin line photos become a Three.js distortion scene when WebGL is available, and stay as plain images when it is not or when reduced motion is on. A preloader, page transitions, a custom cursor and magnetic buttons tie the pages together.",
+      results:
+        "A static site published on GitHub Pages at every push, with home, catalogue, product, formulas, ingredients, about, contact, cart and account pages. The cart and the formula request hand the order over to the pharmacy's WhatsApp, so the store works with no server behind it.",
+    },
   },
   {
     slug: "conexao-duo",
@@ -280,6 +394,31 @@ export const PROJECTS: readonly Project[] = [
       "2026",
     ),
     logo: CONEXAO_LOGO,
+    gallery: {
+      lead: [CONEXAO_WIDE("flag")],
+      split: image(
+        "conexao-duo",
+        "symbol",
+        FIGMA_SPLIT.width,
+        FIGMA_SPLIT.height,
+      ),
+      middle: [
+        [CONEXAO_WIDE("colors")],
+        [CONEXAO_WIDE("inegociavel")],
+        [CONEXAO_WIDE("campaign")],
+      ],
+      closing: [
+        CONEXAO_WIDE("bags"),
+        CONEXAO_WIDE("posts"),
+        CONEXAO_WIDE("seo"),
+      ],
+      final: image(
+        "conexao-duo",
+        "stamp",
+        FIGMA_FINAL.width,
+        FIGMA_FINAL.height,
+      ),
+    },
     showcase: {
       background: asset("/images/projects/conexao-duo/hero.webp"),
       card: asset("/images/projects/conexao-duo/card.webp"),
@@ -335,13 +474,42 @@ export const PROJECTS: readonly Project[] = [
     services: ["branding"],
     cover: cover("elle-fanning"),
     hero: hero("elle-fanning", "object-[50%_35%]"),
-    collage: { main: asset("/images/projects/elle-fanning/hero.webp") },
+    collage: {
+      main: asset("/images/projects/elle-fanning/home.webp"),
+      pieces: [
+        asset("/images/projects/elle-fanning/editorial.webp"),
+        asset("/images/projects/elle-fanning/maleficent.webp"),
+        asset("/images/projects/elle-fanning/now.webp"),
+        asset("/images/projects/elle-fanning/characters.webp"),
+      ],
+    },
     credits: credits(
       { label: "Designer", value: DIRECTOR },
       "The Graw",
-      { label: "Dev", value: "Eric Elias" },
+      { label: "Dev", value: "Erik Elias" },
       "2026",
     ),
+    gallery: {
+      lead: [image("elle-fanning", "home", 1496, 844)],
+      split: image("elle-fanning", "portrait", 868, 847),
+      middle: [
+        [ELLE_SCREEN("maleficent"), ELLE_SCREEN("the-great")],
+        [ELLE_SCREEN("characters")],
+        [ELLE_SCREEN("editorial")],
+      ],
+      closing: [ELLE_SCREEN("name"), ELLE_SCREEN("now"), ELLE_SCREEN("covers")],
+      final: { ...image("elle-fanning", "deck", 1920, 822), bleed: true },
+    },
+    copy: {
+      intro:
+        "A fan-made editorial portfolio for Elle Fanning that is also a creative front-end lab. Sixteen films, eight characters and ten magazine covers gathered with the care of a magazine editorial, in a fully static site where the shaders, the spring physics, the choreographed scroll and the sound were all written by hand.",
+      solution:
+        "Every section is a stage of its own. The hero is a pink field of thousands of 3D blocks, drawn in a single draw call, that ripples under the cursor around her portrait. In Filmography the word opens in half and the posters run between FILMO and GRAPHY like a film reel, while Characters fans eight roles out in a 3D arc that turns with the scroll.",
+      process:
+        "No template and no visual builder: each effect was written by hand on Next.js, Three.js, GSAP and Lenis, plus what the browser already offers. The choreography lives in pure functions that take a progress and return a pose, so one ticker moves the scroll, the cursor, the stages and the shaders in the same frame. A Web Audio engine adds the ambient track and a sound to every block and poster.",
+      results:
+        "A 100% static site, published on GitHub Pages at every push. It goes from phone to 4K, with its own composition for each section below 1024 px, respects reduced motion and stays light: WebP images, Three.js loaded on demand and WebGL paused off screen.",
+    },
   },
   {
     slug: "tati-hotelzinho-pet",

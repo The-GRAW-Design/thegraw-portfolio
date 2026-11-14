@@ -1,5 +1,6 @@
 export const STUDIO_INFO = {
   founder: "André Gonçalves",
+  developer: "Erik Elias",
   tagline: [
     "São Paulo Design &",
     "Digital Product Studio founded by Visual Director André Gonçalves",

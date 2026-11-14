@@ -14,16 +14,45 @@ export const LETS_WORK = {
   ],
 } as const;
 
-/** Figma "Services": the three services, top to bottom as in the hero. */
-export const SERVICE_OFFER: readonly { id: ServiceId; title: string }[] = [
-  { id: "packpaging", title: "Packpaging" },
-  { id: "web-design", title: "Web design" },
-  { id: "branding", title: "Branding" },
+export type ServiceOffer = {
+  id: ServiceId;
+  title: string;
+  /** Hero photo of the service, cropped to the 1920×1400 Figma frame. */
+  image: string;
+};
+
+/**
+ * Figma "Services" hero states, in the order the list turns: the selected
+ * service sits at the bottom, in white, under the two that follow it.
+ */
+export const SERVICE_OFFER: readonly ServiceOffer[] = [
+  {
+    id: "branding",
+    title: "Branding",
+    image: asset("/images/services/branding.webp"),
+  },
+  {
+    id: "web-design",
+    title: "Web design",
+    image: asset("/images/services/web-design.webp"),
+  },
+  {
+    id: "packpaging",
+    title: "Packpaging",
+    image: asset("/images/services/packpaging.webp"),
+  },
 ];
+
+/** The hero list for a service: the two after it, then the service itself. */
+export function serviceOrder(active: ServiceId) {
+  const index = SERVICE_OFFER.findIndex((service) => service.id === active);
+  return SERVICE_OFFER.map(
+    (_, step) => SERVICE_OFFER[(index + step + 1) % SERVICE_OFFER.length],
+  );
+}
 
 export const SERVICES_PAGE = {
   title: "Services",
-  heroImage: asset("/images/services/branding.webp"),
   defaultService: "branding",
   /** Three slides per service in the Figma. */
   slidesPerService: 3,

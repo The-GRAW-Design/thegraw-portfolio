@@ -4,6 +4,7 @@ import { SkipLink } from "@/components/layout/skip-link";
 import { SITE_CONFIG } from "@/constants/site";
 import { seagram, sfPro } from "@/lib/fonts";
 import { SmoothScrollProvider } from "@/lib/smooth-scroll-provider";
+import { asset } from "@/utils/asset";
 import "lenis/dist/lenis.css";
 import "@/styles/globals.css";
 
@@ -13,6 +14,14 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_CONFIG.name}`,
   },
   description: SITE_CONFIG.description,
+  // The THE GRAW sword mark on RED GRAW, with an ICO for the small sizes.
+  icons: {
+    icon: [
+      { url: asset("/favicon.png"), type: "image/png", sizes: "192x192" },
+      { url: asset("/favicon.ico"), sizes: "16x16 32x32 48x48" },
+    ],
+    apple: asset("/apple-touch-icon.png"),
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

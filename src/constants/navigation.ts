@@ -1,14 +1,20 @@
 import { asset } from "@/utils/asset";
 
+/** Each link carries the thumbnail the menu opens beside it. */
 export const NAV_LINKS = [
-  { label: "home", href: "/" },
-  { label: "cases", href: "/cases" },
-  { label: "studio", href: "/studio" },
-  { label: "services", href: "/services" },
+  { label: "home", href: "/", visual: asset("/images/menu/home.webp") },
+  { label: "cases", href: "/cases", visual: asset("/images/menu/cases.webp") },
+  {
+    label: "studio",
+    href: "/studio",
+    visual: asset("/images/menu/studio.webp"),
+  },
+  {
+    label: "services",
+    href: "/services",
+    visual: asset("/images/menu/services.webp"),
+  },
 ] as const;
-
-/** Menu link thumbnail: the placeholder project image until there is video. */
-export const MENU_VISUAL = asset("/images/shared/menu-visual.webp");
 
 export const FOOTER_LINKS = [
   { label: "Work", href: "/cases" },

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, type KeyboardEvent, type RefObject } from "react";
 import { RollText } from "@/components/ui/roll-text";
-import { MENU_VISUAL, NAV_LINKS } from "@/constants/navigation";
+import { NAV_LINKS } from "@/constants/navigation";
 import { useMenuKnockout } from "@/hooks/use-menu-knockout";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { DURATION, EASE, gsap, useGSAP } from "@/lib/gsap";
@@ -210,7 +210,7 @@ export function SiteMenu({ open, onClose, returnFocusRef }: SiteMenuProps) {
                     className="relative mr-5 h-36 w-0 shrink-0 overflow-hidden rounded-[0.2rem] md:mr-8 md:h-46 md:rounded-[0.3rem] lg:h-112 lg:rounded-[calc(var(--spacing)*4.8)] lg:transition-[width] lg:duration-800 lg:ease-menu-visual lg:group-hover:w-168 lg:group-focus-visible:w-168"
                   >
                     <Image
-                      src={MENU_VISUAL}
+                      src={link.visual}
                       alt=""
                       fill
                       sizes="(min-width: 64rem) 9vw, 67px"
