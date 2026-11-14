@@ -72,8 +72,11 @@ export function Footer({ tone = "red" }: FooterProps) {
           </p>
 
           <div className="grid grid-cols-2 gap-x-24 gap-y-32 text-small lg:contents">
+            {/* Figma "by André Gonçalves", with the site's dev credit under it. */}
             <p className="leading-[1.2] lg:absolute lg:top-413 lg:left-886">
               by {STUDIO_INFO.founder}
+              <br />
+              development by {STUDIO_INFO.developer}
             </p>
             <p className="leading-[1.2] lg:absolute lg:top-413 lg:left-1522">
               {STUDIO_INFO.code}
