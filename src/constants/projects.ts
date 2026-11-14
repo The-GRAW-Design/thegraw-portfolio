@@ -2,6 +2,7 @@ import type {
   Credit,
   LogoArt,
   Project,
+  ProjectCollage,
   ProjectLogo,
   ProjectMedia,
   ShowcaseInfo,
@@ -32,6 +33,16 @@ const hero = (slug: string, position?: string) => ({
 });
 
 const cover = (slug: string) => asset(`/images/cases/covers/${slug}.webp`);
+
+/** A Figma "Projeto" collage variant, each image cropped to its box. */
+const figmaCollage = (slug: string): ProjectCollage => {
+  const piece = (name: string) =>
+    asset(`/images/projects/${slug}/collage-${name}.webp`);
+  return {
+    main: piece("main"),
+    pieces: [piece("bottom"), piece("top"), piece("right"), piece("left")],
+  };
+};
 
 const logoLayer = (file: string, inset: string) => ({
   src: asset(`/images/logos/${file}.svg`),
@@ -199,15 +210,8 @@ export const PROJECTS: readonly Project[] = [
     services: ["branding"],
     cover: cover("grupo-penguin"),
     hero: hero("grupo-penguin"),
-    collage: {
-      main: asset("/images/projects/grupo-penguin/magazine.webp"),
-      pieces: [
-        asset("/images/projects/grupo-penguin/bags.webp"),
-        asset("/images/projects/grupo-penguin/palette.webp"),
-        asset("/images/projects/grupo-penguin/keys.webp"),
-        asset("/images/projects/grupo-penguin/signage.webp"),
-      ],
-    },
+    // Figma "Projeto" variant "Projeto 1".
+    collage: figmaCollage("grupo-penguin"),
     credits: credits(
       { label: "Project director", value: DIRECTOR },
       "Poliana Fernandes",
@@ -292,7 +296,8 @@ export const PROJECTS: readonly Project[] = [
     services: ["branding"],
     cover: cover("lorena-lourenco"),
     hero: hero("lorena-lourenco"),
-    collage: { main: asset("/images/projects/lorena-lourenco/hero.webp") },
+    // Figma "Projeto" variant "Projeto 2".
+    collage: figmaCollage("lorena-lourenco"),
     credits: credits(
       { label: "Project director", value: DIRECTOR },
       "Lorena Lourenço",
