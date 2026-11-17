@@ -25,6 +25,8 @@ export type ShowcaseInfo = {
   handle: string;
   logo?: LogoArt;
   description: string;
+  /** Width of the description in Figma px, when it is not the usual 226. */
+  descriptionWidth?: number;
   disciplines: readonly string[];
 };
 

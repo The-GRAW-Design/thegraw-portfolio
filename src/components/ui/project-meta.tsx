@@ -41,7 +41,16 @@ export function ProjectBrand({ info, className }: ShowcaseProps) {
           style={{ width: `calc(var(--spacing) * ${info.logo.width})` }}
         />
       )}
-      <p className="max-w-226 text-lead">{info.description}</p>
+      <p
+        className="max-w-226 text-lead"
+        style={
+          info.descriptionWidth
+            ? { maxWidth: `calc(var(--spacing) * ${info.descriptionWidth})` }
+            : undefined
+        }
+      >
+        {info.description}
+      </p>
     </div>
   );
 }
