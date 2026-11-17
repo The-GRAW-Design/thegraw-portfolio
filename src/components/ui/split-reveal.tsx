@@ -2,7 +2,7 @@
 
 import { SplitText } from "@/components/ui/react-bits/split-text";
 import { EASE } from "@/lib/gsap";
-import { MASK_ROOM } from "@/utils/mask-room";
+import { LINE_MASK_ROOM, MASK_ROOM } from "@/utils/mask-room";
 
 type SplitRevealProps = {
   as?: "h1" | "h2" | "h3" | "p" | "span";
@@ -40,7 +40,7 @@ export function SplitReveal({
       text={children}
       splitType={split}
       mask
-      maskStyle={MASK_ROOM}
+      maskStyle={split === "lines" ? LINE_MASK_ROOM : MASK_ROOM}
       from={{
         yPercent: 110,
         rotation: TILT[split],

@@ -106,7 +106,9 @@ export function StudioHeroSection() {
             split="lines"
             trigger="load"
             delay={0.15}
-            className="text-nav leading-[1.03] text-white-graw lg:h-271"
+            // 2 design px of slack: the browser measures some lines a hair
+            // wider than the Figma box (0.4px on André's first line).
+            className="text-nav leading-[1.03] text-white-graw lg:h-271 lg:w-[calc(100%+var(--spacing)*2)]"
           >
             {member.bio}
           </SplitReveal>
