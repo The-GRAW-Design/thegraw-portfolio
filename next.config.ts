@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   agentRules: false,
+  experimental: {
+    agentUpgrade: "security",
+  },
   turbopack: {
     rules: {
       "*.css": {
