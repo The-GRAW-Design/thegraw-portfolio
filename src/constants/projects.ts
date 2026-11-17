@@ -74,8 +74,25 @@ const CONEXAO_WIDE = (file: string) =>
 /** Screens of the live E² Company site, captured at 1920×1080. */
 const E2_SCREEN = (file: string) => image("e2-company", file, 1507, 848);
 
-/** Screens of the live Elle Fanning site, captured at 1920×1080. */
-const ELLE_SCREEN = (file: string) => image("elle-fanning", file, 1507, 848);
+/**
+ * Figma "Elle Fanning" page (3023:1708): screens of the site composed in the
+ * design, each box rendered from the Figma at 2x.
+ */
+const ELLE_BOX = (file: string, width: number, height: number) =>
+  image("elle-fanning", file, width, height);
+
+/** Figma "ELLE FANNING" logo over the hero (group 3298:3859). */
+const ELLE_HERO_LOGO: LogoArt = {
+  width: 1489.82,
+  height: 126.633,
+  layers: [logoLayer("elle-fanning", "0% 0% 0% 0%")],
+};
+
+/** Figma "Tati Hotelzinho Pet" page (3023:1797): its photos, as boxes. */
+const TATI_WIDE = (file: string) =>
+  image("tati-hotelzinho-pet", file, FIGMA_WIDE.width, FIGMA_WIDE.height);
+const TATI_HALF = (file: string) =>
+  image("tati-hotelzinho-pet", file, 742.05, 829.81);
 
 /** Screens of the live Naturallis site, captured at 1920×1080. */
 const NATURALLIS_SCREEN = (file: string) =>
@@ -147,11 +164,13 @@ const PENGUIN_SPLIT: ProjectMedia = {
 
 /**
  * The ten Figma project pages, in canvas order, and the home-only Gilberto do
- * Acordeon. Allce, Grupo Penguin, Lorena Lourenço and Conexão Duo have their
- * Figma galleries; e2 company, Site Naturallis and Elle Fanning have screens
- * and texts of their live sites; the others have names, credits and the
- * photos of the "all projects" grid and of the home slides, and show
- * {EM BREVE} where the case study will go.
+ * Acordeon. Allce, Grupo Penguin, Lorena Lourenço, Conexão Duo, Elle Fanning
+ * and Tati Hotelzinho Pet have their Figma galleries (Allce, Grupo Penguin and
+ * Conexão Duo with their Figma texts too); e2 company and Site Naturallis have
+ * screens and texts of their live sites, and Elle Fanning keeps the texts
+ * written from its site; the others have names, credits and the photos of the
+ * "all projects" grid and of the home slides, and show {EM BREVE} where the
+ * case study will go.
  */
 export const PROJECTS: readonly Project[] = [
   {
@@ -191,6 +210,16 @@ export const PROJECTS: readonly Project[] = [
         image("allce", "news", 1507, 847),
       ],
       final: image("allce", "stage", 1920, 822),
+    },
+    copy: {
+      intro:
+        "A Allce nasce da conexão entre movimento, bem-estar e estilo de vida. Uma marca que acredita que o conforto e a autenticidade devem acompanhar cada pessoa em sua jornada. O projeto busca construir uma identidade visual contemporânea, capaz de transmitir energia, liberdade e personalidade, conectando o universo esportivo ao cotidiano.",
+      solution:
+        "A solução foi desenvolver uma identidade que traduzisse a essência da marca por meio de uma linguagem visual forte e versátil. O logotipo, a paleta de cores e os elementos gráficos foram pensados para criar reconhecimento e consistência em diferentes pontos de contato, desde peças de vestuário até materiais promocionais e ambientes físicos.",
+      process:
+        "O processo criativo partiu da exploração de referências ligadas ao esporte, à moda e ao comportamento contemporâneo. A partir disso, foram desenvolvidos os elementos da identidade, explorando tipografia, composição e aplicações em diferentes superfícies. Cada detalhe foi pensado para manter uma comunicação visual coerente, equilibrando funcionalidade e expressão estética.",
+      results:
+        "O resultado é uma identidade visual marcante, que aproxima o universo fitness do lifestyle. A marca ganha presença em diferentes formatos, mantendo sua personalidade em produtos, materiais gráficos, comunicação digital e experiências físicas. Uma linguagem visual construída para acompanhar o movimento e transmitir a essência da Allce.",
     },
     showcase: {
       ...showcaseImages("allce"),
@@ -232,6 +261,16 @@ export const PROJECTS: readonly Project[] = [
         image("grupo-penguin", "signage", 1507, 846),
       ],
       final: { ...image("grupo-penguin", "basket", 1920, 800), bleed: true },
+    },
+    copy: {
+      intro:
+        "O Grupo Penguin apresenta um universo visual construído a partir da criatividade, da comunicação e da identidade. O projeto explora uma linguagem gráfica expressiva, utilizando o universo do pinguim como elemento central para desenvolver uma marca reconhecível, dinâmica e cheia de personalidade.",
+      solution:
+        "A proposta foi desenvolver uma identidade visual capaz de se adaptar a diferentes contextos e materiais. A combinação de cores vibrantes, elementos gráficos marcantes e uma tipografia característica estabelece uma comunicação visual consistente. O sistema foi pensado para funcionar tanto em materiais editoriais quanto em aplicações institucionais, promocionais e digitais.",
+      process:
+        "O processo criativo começou pela definição do conceito visual e pela exploração de elementos que representassem a personalidade do grupo. Foram desenvolvidas aplicações em publicações, materiais impressos, sinalização, produtos personalizados e peças de comunicação, explorando diferentes formatos sem perder a unidade visual.",
+      results:
+        "O resultado é um universo de marca versátil e expressivo, que conecta identidade, comunicação e aplicações físicas. A linguagem desenvolvida proporciona reconhecimento visual e permite que o Grupo Penguin mantenha uma presença consistente em diferentes ambientes, reforçando sua personalidade em cada ponto de contato.",
     },
     showcase: {
       ...showcaseImages("grupo-penguin"),
@@ -419,6 +458,16 @@ export const PROJECTS: readonly Project[] = [
         FIGMA_FINAL.height,
       ),
     },
+    copy: {
+      intro:
+        "A Conexão Duo representa o encontro entre estratégia, relacionamento e novas possibilidades. Inspirado na força das conexões e na construção de oportunidades, o projeto propõe uma identidade visual que une elementos clássicos e contemporâneos, transmitindo solidez, confiança e personalidade.",
+      solution:
+        "O desenvolvimento da identidade buscou traduzir visualmente o conceito de conexão por meio de formas geométricas, símbolos e uma linguagem gráfica de forte presença. A combinação entre referências históricas e elementos modernos cria um universo visual próprio, permitindo que a marca se destaque e mantenha consistência em diferentes aplicações.",
+      process:
+        "A construção do projeto envolveu pesquisas visuais, exploração de conceitos e desenvolvimento de elementos gráficos que representassem a essência da marca. A identidade foi aplicada em materiais institucionais, peças promocionais, produtos personalizados e comunicação digital, criando uma experiência visual integrada.",
+      results:
+        "O resultado é uma identidade com personalidade e posicionamento bem definidos. A combinação de elementos visuais, materiais e aplicações fortalece a presença da Conexão Duo, transmitindo profissionalismo e criando uma comunicação consistente em diferentes plataformas e experiências de marca.",
+    },
     showcase: {
       background: asset("/images/projects/conexao-duo/hero.webp"),
       card: asset("/images/projects/conexao-duo/card.webp"),
@@ -473,7 +522,10 @@ export const PROJECTS: readonly Project[] = [
     category: "brand identy",
     services: ["branding"],
     cover: cover("elle-fanning"),
-    hero: hero("elle-fanning", "object-[50%_35%]"),
+    hero: {
+      ...hero("elle-fanning"),
+      overlay: { logo: ELLE_HERO_LOGO, left: 215, top: 252 },
+    },
     collage: {
       main: asset("/images/projects/elle-fanning/home.webp"),
       pieces: [
@@ -489,16 +541,21 @@ export const PROJECTS: readonly Project[] = [
       { label: "Dev", value: "Erik Elias" },
       "2026",
     ),
+    // Several boxes run to the right edge of their frame, as in the Figma.
     gallery: {
-      lead: [image("elle-fanning", "home", 1496, 844)],
-      split: image("elle-fanning", "portrait", 868, 847),
+      lead: [{ ...ELLE_BOX("characters-arc", 1506.32, 1122.89), flush: true }],
+      split: { ...ELLE_BOX("loading", 878.6, 829.81), flush: true },
       middle: [
-        [ELLE_SCREEN("maleficent"), ELLE_SCREEN("the-great")],
-        [ELLE_SCREEN("characters")],
-        [ELLE_SCREEN("editorial")],
+        [ELLE_BOX("filmography", 1495.21, 822)],
+        [ELLE_BOX("phones", 1495.6, 934.75)],
+        [ELLE_BOX("character-open", 1495.21, 1089.48)],
       ],
-      closing: [ELLE_SCREEN("name"), ELLE_SCREEN("now"), ELLE_SCREEN("covers")],
-      final: { ...image("elle-fanning", "deck", 1920, 822), bleed: true },
+      closing: [
+        { ...ELLE_BOX("now-showing", 1506.32, 661.49), flush: true },
+        { ...ELLE_BOX("home-cover", 1506.32, 1568.6), flush: true },
+        ELLE_BOX("people", 1495.21, 1108.17),
+      ],
+      final: { ...ELLE_BOX("loader", 1910, 1083), flush: true },
     },
     copy: {
       intro:
@@ -518,7 +575,7 @@ export const PROJECTS: readonly Project[] = [
     category: "brand identy",
     services: ["branding"],
     cover: cover("tati-hotelzinho-pet"),
-    hero: hero("tati-hotelzinho-pet", "object-[50%_30%]"),
+    hero: { src: asset("/images/projects/tati-hotelzinho-pet/hero-dog.webp") },
     collage: { main: asset("/images/projects/tati-hotelzinho-pet/hero.webp") },
     credits: credits(
       { label: "Project director", value: DIRECTOR },
@@ -526,6 +583,28 @@ export const PROJECTS: readonly Project[] = [
       { label: "Motion Designer", value: "Alan Erick" },
       "2024",
     ),
+    // The Figma closing frames touch; two rows hold a pair of photos each.
+    gallery: {
+      lead: [TATI_WIDE("logo-patterns")],
+      split: image(
+        "tati-hotelzinho-pet",
+        "logo",
+        FIGMA_SPLIT.width,
+        FIGMA_SPLIT.height,
+      ),
+      middle: [
+        { row: [TATI_HALF("ribbon"), TATI_HALF("tape")] },
+        [TATI_WIDE("versions")],
+        [TATI_WIDE("tshirt")],
+      ],
+      closing: [
+        TATI_WIDE("backpack"),
+        TATI_WIDE("laptop"),
+        { row: [TATI_HALF("dogs"), TATI_HALF("cape")] },
+      ],
+      closingJoined: true,
+      final: image("tati-hotelzinho-pet", "poster", 1900, 1049),
+    },
   },
   {
     // Only on the home (Figma "Projeto Allce" variant "projeto").
