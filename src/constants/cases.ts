@@ -63,5 +63,4 @@ export const ALL_PROJECTS_ORDER = [
   "site-naturallis",
   "gilberto-do-acordeon",
   "rotulos-naturallis",
-  "maria-clara-lopes",
 ] as const;

@@ -178,8 +178,9 @@ const PENGUIN_SPLIT: ProjectMedia = {
 };
 
 /**
- * The ten Figma project pages, in canvas order, and Gilberto do Acordeon (its
- * Figma page is still a placeholder). Allce, Grupo Penguin, Lorena Lourenço,
+ * The Figma project pages, in canvas order (Maria Clara Lopes left out at the
+ * user's request), and Gilberto do Acordeon (its Figma page is still a
+ * placeholder). Allce, Grupo Penguin, Lorena Lourenço,
  * Conexão Duo, Elle Fanning and Tati Hotelzinho Pet have their Figma galleries
  * and texts; e2 company and Site Naturallis have screens and texts of their
  * live sites; the others have names, credits and the photos of the "all
@@ -532,22 +533,6 @@ export const PROJECTS: readonly Project[] = [
       "Naturallis",
       { label: "Designer", value: DIRECTOR },
       "2024-2026",
-    ),
-  },
-  {
-    slug: "maria-clara-lopes",
-    name: "Maria Clara Lopes",
-    title: "Maria Clara Lopes",
-    category: "Design",
-    services: ["branding"],
-    cover: null,
-    hero: null,
-    collage: null,
-    credits: credits(
-      { label: "Designer", value: DIRECTOR },
-      "Maria Clara",
-      { label: "Copie", value: DIRECTOR },
-      "2025",
     ),
   },
   {
