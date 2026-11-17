@@ -9,14 +9,11 @@ export const HOME_PAGE = {
     title: ["case", "studies"],
     body: "A closer look at how strategy, design, and development shape each project.",
   },
-  /** The five "Projeto Allce" slides of the Figma home, in order. */
-  showcases: [
-    "allce",
-    "grupo-penguin",
-    "conexao-duo",
-    "gilberto-do-acordeon",
-    "elle-fanning",
-  ],
+  /**
+   * The "Projeto Allce" slides of the Figma home, in order; its "projeto"
+   * variant (Gilberto do Acordeon) is off the site for now.
+   */
+  showcases: ["allce", "grupo-penguin", "conexao-duo", "elle-fanning"],
   viewAllCases: "View All Cases",
   viewAllImage: asset("/images/home/view-all-band.webp"),
 } as const;
