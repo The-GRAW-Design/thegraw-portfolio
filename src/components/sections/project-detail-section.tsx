@@ -5,7 +5,14 @@ import { ScrollReveal } from "@/components/ui/react-bits/scroll-reveal";
 import { Reveal } from "@/components/ui/reveal";
 import { SplitReveal } from "@/components/ui/split-reveal";
 import { LOREM_LONG, PROJECT_PAGE } from "@/constants/pages";
-import type { Project, ProjectCopy, ProjectGallery } from "@/types/project";
+import { LogoLayers } from "@/components/ui/logo-layers";
+import type {
+  Project,
+  ProjectCopy,
+  ProjectGallery,
+  ProjectRow,
+} from "@/types/project";
+import { cn } from "@/utils/cn";
 
 type ProjectDetailSectionProps = {
   project: Project;
@@ -37,6 +44,22 @@ function Copy({
 /** Gallery box under the intro: 1517.428 wide minus the 11.109px frame. */
 const WIDE_BOX = { width: 1495.21, height: 829.81 } as const;
 
+/** A frame with its boxes side by side (one under the other on phones). */
+function GalleryRow({ row }: { row: ProjectRow }) {
+  return (
+    <div className="flex flex-col gap-10 p-10 lg:flex-row lg:gap-11 lg:p-11">
+      {row.row.map((media) => (
+        <GalleryImage
+          key={media.src}
+          media={media}
+          sizes="(min-width: 1024px) 40vw, 100vw"
+          className="p-0 lg:flex-1 lg:p-0"
+        />
+      ))}
+    </div>
+  );
+}
+
 /** Figma gallery: lead boxes, split row with "Solution", story, closing boxes. */
 function Gallery({
   gallery,
@@ -64,20 +87,24 @@ function Gallery({
             <Copy className="text-copy">{copy?.solution ?? LOREM_LONG}</Copy>
           </div>
         </div>
-        {gallery.middle.map((group) => (
-          <div
-            key={group[0].src}
-            className="flex flex-col gap-10 p-10 lg:gap-11 lg:p-11"
-          >
-            {group.map((media) => (
-              <GalleryImage
-                key={media.src}
-                media={media}
-                className="p-0 lg:p-0"
-              />
-            ))}
-          </div>
-        ))}
+        {gallery.middle.map((group) =>
+          "row" in group ? (
+            <GalleryRow key={group.row[0].src} row={group} />
+          ) : (
+            <div
+              key={group[0].src}
+              className="flex flex-col gap-10 p-10 lg:gap-11 lg:p-11"
+            >
+              {group.map((media) => (
+                <GalleryImage
+                  key={media.src}
+                  media={media}
+                  className="p-0 lg:p-0"
+                />
+              ))}
+            </div>
+          ),
+        )}
       </div>
 
       <div className="flex flex-col gap-32 px-10 lg:w-1490 lg:flex-row lg:items-start lg:gap-33.25 lg:px-0">
@@ -97,10 +124,19 @@ function Gallery({
         </div>
       </div>
 
-      <div className="flex w-full flex-col gap-24 lg:gap-45.5">
-        {gallery.closing.map((media) => (
-          <GalleryImage key={media.src} media={media} />
-        ))}
+      <div
+        className={cn(
+          "flex w-full flex-col",
+          !gallery.closingJoined && "gap-24 lg:gap-45.5",
+        )}
+      >
+        {gallery.closing.map((frame) =>
+          "row" in frame ? (
+            <GalleryRow key={frame.row[0].src} row={frame} />
+          ) : (
+            <GalleryImage key={frame.src} media={frame} />
+          ),
+        )}
       </div>
     </>
   );
@@ -123,12 +159,29 @@ export function ProjectDetailSection({ project }: ProjectDetailSectionProps) {
           className="relative h-[60svh] w-full bg-coal lg:h-692"
         >
           {project.hero ? (
-            <ParallaxImage
-              src={project.hero.src}
-              alt=""
-              priority
-              imageClassName={project.hero.position}
-            />
+            <>
+              <ParallaxImage
+                src={project.hero.src}
+                alt=""
+                priority
+                imageClassName={project.hero.position}
+              />
+              {project.hero.overlay && (
+                // Figma place in the 1920×692 hero, as shares of the box.
+                <div
+                  className="absolute"
+                  style={{
+                    left: `${(project.hero.overlay.left / 1920) * 100}%`,
+                    top: `${(project.hero.overlay.top / 692) * 100}%`,
+                    width: `${(project.hero.overlay.logo.width / 1920) * 100}%`,
+                  }}
+                >
+                  <Reveal blur={8} delay={0.3}>
+                    <LogoLayers logo={project.hero.overlay.logo} />
+                  </Reveal>
+                </div>
+              )}
+            </>
           ) : (
             <ComingSoon scale="page" sizes="100vw" />
           )}

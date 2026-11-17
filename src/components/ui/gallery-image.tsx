@@ -38,7 +38,10 @@ export function GalleryImage({
   className,
 }: GalleryImageProps) {
   return (
-    <Reveal wipe="up" className={cn("p-10 lg:p-11", className)}>
+    <Reveal
+      wipe="up"
+      className={cn("p-10 lg:p-11", className, media.flush && "lg:pr-0")}
+    >
       <div
         className="relative w-full overflow-hidden bg-coal"
         style={{ aspectRatio: `${media.width} / ${media.height}` }}
