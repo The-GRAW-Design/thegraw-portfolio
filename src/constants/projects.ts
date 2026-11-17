@@ -5,7 +5,6 @@ import type {
   ProjectCollage,
   ProjectLogo,
   ProjectMedia,
-  ShowcaseInfo,
 } from "@/types/project";
 import { asset } from "@/utils/asset";
 
@@ -74,8 +73,25 @@ const CONEXAO_WIDE = (file: string) =>
 /** Screens of the live E² Company site, captured at 1920×1080. */
 const E2_SCREEN = (file: string) => image("e2-company", file, 1507, 848);
 
-/** Screens of the live Elle Fanning site, captured at 1920×1080. */
-const ELLE_SCREEN = (file: string) => image("elle-fanning", file, 1507, 848);
+/**
+ * Figma "Elle Fanning" page (3023:1708): screens of the site composed in the
+ * design, each box rendered from the Figma at 2x.
+ */
+const ELLE_BOX = (file: string, width: number, height: number) =>
+  image("elle-fanning", file, width, height);
+
+/** Figma "ELLE FANNING" logo over the hero (group 3298:3859). */
+const ELLE_HERO_LOGO: LogoArt = {
+  width: 1489.82,
+  height: 126.633,
+  layers: [logoLayer("elle-fanning", "0% 0% 0% 0%")],
+};
+
+/** Figma "Tati Hotelzinho Pet" page (3023:1797): its photos, as boxes. */
+const TATI_WIDE = (file: string) =>
+  image("tati-hotelzinho-pet", file, FIGMA_WIDE.width, FIGMA_WIDE.height);
+const TATI_HALF = (file: string) =>
+  image("tati-hotelzinho-pet", file, 742.05, 829.81);
 
 /** Screens of the live Naturallis site, captured at 1920×1080. */
 const NATURALLIS_SCREEN = (file: string) =>
@@ -128,9 +144,25 @@ const PENGUIN_LOGO_LIGHT: LogoArt = {
   layers: [logoLayer("grupo-penguin", "0% 0% 0% 0%")],
 };
 
-/** Figma copy of the slides, written for Grupo Penguin and kept on all of them. */
-const SHOWCASE_DESCRIPTION = "A calm, editorial, website for a wellness brand";
-const SHOWCASE_DISCIPLINES = ["branding", "web design", "development"];
+/** Figma "Isolation_Mode" (3298:1047): Gilberto do Acordeon's logo on its slide. */
+const GILBERTO_LOGO_LIGHT: LogoArt = {
+  width: 131,
+  height: 39,
+  layers: [logoLayer("gilberto-do-acordeon", "0% 0% 0% 0%")],
+};
+
+/** Figma "Elle fanning" slide logo: "ELLE" over "FANNING." (3309:4947). */
+const ELLE_LOGO_LIGHT: LogoArt = {
+  width: 112.776,
+  height: 49.742,
+  layers: [
+    logoLayer("elle-fanning-slide-elle", "0% 57.86% 54.17% 0%"),
+    logoLayer("elle-fanning-slide-fanning", "52.15% 0% 0% 0%"),
+  ],
+};
+
+/** Disciplines of the branding slides, as written in the Figma. */
+const VISUAL_IDENTITY = ["branding", "Visual Identy"];
 
 /** Home slide images, cropped to the frame and to the card. */
 const showcaseImages = (slug: string) => ({
@@ -146,14 +178,16 @@ const PENGUIN_SPLIT: ProjectMedia = {
 };
 
 /**
- * The ten Figma project pages, in canvas order, and the home-only Gilberto do
- * Acordeon. Allce, Grupo Penguin, Lorena Lourenço and Conexão Duo have their
- * Figma galleries; e2 company, Site Naturallis and Elle Fanning have screens
- * and texts of their live sites; the others have names, credits and the
- * photos of the "all projects" grid and of the home slides, and show
- * {EM BREVE} where the case study will go.
+ * The Figma project pages, in canvas order (Maria Clara Lopes left out at the
+ * user's request), and Gilberto do Acordeon (its Figma page is still a
+ * placeholder). Allce, Grupo Penguin, Lorena Lourenço,
+ * Conexão Duo, Elle Fanning and Tati Hotelzinho Pet have their Figma galleries
+ * and texts; e2 company and Site Naturallis have screens and texts of their
+ * live sites; the others have names, credits and the photos of the "all
+ * projects" grid and of the home slides, and show {EM BREVE} where the case
+ * study will go.
  */
-export const PROJECTS: readonly Project[] = [
+const ALL_PROJECTS: readonly Project[] = [
   {
     slug: "allce",
     name: "Allce",
@@ -192,13 +226,23 @@ export const PROJECTS: readonly Project[] = [
       ],
       final: image("allce", "stage", 1920, 822),
     },
+    copy: {
+      intro:
+        "A Allce nasce da conexão entre movimento, bem-estar e estilo de vida. Uma marca que acredita que o conforto e a autenticidade devem acompanhar cada pessoa em sua jornada. O projeto busca construir uma identidade visual contemporânea, capaz de transmitir energia, liberdade e personalidade, conectando o universo esportivo ao cotidiano.",
+      solution:
+        "A solução foi desenvolver uma identidade que traduzisse a essência da marca por meio de uma linguagem visual forte e versátil. O logotipo, a paleta de cores e os elementos gráficos foram pensados para criar reconhecimento e consistência em diferentes pontos de contato, desde peças de vestuário até materiais promocionais e ambientes físicos.",
+      process:
+        "O processo criativo partiu da exploração de referências ligadas ao esporte, à moda e ao comportamento contemporâneo. A partir disso, foram desenvolvidos os elementos da identidade, explorando tipografia, composição e aplicações em diferentes superfícies. Cada detalhe foi pensado para manter uma comunicação visual coerente, equilibrando funcionalidade e expressão estética.",
+      results:
+        "O resultado é uma identidade visual marcante, que aproxima o universo fitness do lifestyle. A marca ganha presença em diferentes formatos, mantendo sua personalidade em produtos, materiais gráficos, comunicação digital e experiências físicas. Uma linguagem visual construída para acompanhar o movimento e transmitir a essência da Allce.",
+    },
     showcase: {
       ...showcaseImages("allce"),
-      client: "Allce. Co",
+      client: "RH SPORTS",
       year: "2024",
       handle: "/allce",
       logo: ALLCE_LOGO_LIGHT,
-      description: SHOWCASE_DESCRIPTION,
+      description: "A fashion brand for sport life style",
       disciplines: ["branding", "Visual identy"],
     },
   },
@@ -233,18 +277,31 @@ export const PROJECTS: readonly Project[] = [
       ],
       final: { ...image("grupo-penguin", "basket", 1920, 800), bleed: true },
     },
+    copy: {
+      intro:
+        "O Grupo Penguin apresenta um universo visual construído a partir da criatividade, da comunicação e da identidade. O projeto explora uma linguagem gráfica expressiva, utilizando o universo do pinguim como elemento central para desenvolver uma marca reconhecível, dinâmica e cheia de personalidade.",
+      solution:
+        "A proposta foi desenvolver uma identidade visual capaz de se adaptar a diferentes contextos e materiais. A combinação de cores vibrantes, elementos gráficos marcantes e uma tipografia característica estabelece uma comunicação visual consistente. O sistema foi pensado para funcionar tanto em materiais editoriais quanto em aplicações institucionais, promocionais e digitais.",
+      process:
+        "O processo criativo começou pela definição do conceito visual e pela exploração de elementos que representassem a personalidade do grupo. Foram desenvolvidas aplicações em publicações, materiais impressos, sinalização, produtos personalizados e peças de comunicação, explorando diferentes formatos sem perder a unidade visual.",
+      results:
+        "O resultado é um universo de marca versátil e expressivo, que conecta identidade, comunicação e aplicações físicas. A linguagem desenvolvida proporciona reconhecimento visual e permite que o Grupo Penguin mantenha uma presença consistente em diferentes ambientes, reforçando sua personalidade em cada ponto de contato.",
+    },
     showcase: {
       ...showcaseImages("grupo-penguin"),
-      client: "Poliana Fernandes",
+      client: "grupo penguin",
       year: "2025",
       handle: "/grupopenguin",
       logo: PENGUIN_LOGO_LIGHT,
-      description: SHOWCASE_DESCRIPTION,
-      disciplines: SHOWCASE_DISCIPLINES,
+      description: "A youthful brand for digital marketing consultancies",
+      descriptionWidth: 287,
+      disciplines: VISUAL_IDENTITY,
     },
   },
   {
     slug: "e2-company",
+    // Taken off the site for now at the user's request (hidden in the Figma grid).
+    hidden: true,
     name: "e2 company",
     title: "E2 Company",
     category: "Web",
@@ -304,6 +361,16 @@ export const PROJECTS: readonly Project[] = [
       { label: "Motion Designer", value: "Alan Erick" },
       "2026",
     ),
+    copy: {
+      intro:
+        "O projeto Lorena Lourenço nasce da proposta de construir uma identidade visual que traduza personalidade, elegância e posicionamento profissional. Uma marca que une sofisticação e autenticidade, refletindo a essência de uma presença feminina contemporânea. A proposta é transformar sua imagem em uma identidade consistente, capaz de comunicar confiança, exclusividade e profissionalismo.",
+      solution:
+        "A solução foi desenvolver uma identidade visual minimalista e atemporal, explorando uma combinação de tipografias sofisticadas, formas delicadas e uma paleta de cores neutras. Os tons de verde-oliva, off-white e preto reforçam a sensação de equilíbrio e requinte, enquanto a construção do logotipo estabelece uma assinatura visual elegante e reconhecível.",
+      process:
+        "O processo criativo partiu da construção de um universo visual alinhado à personalidade e ao posicionamento da marca. Foram exploradas diferentes composições tipográficas, aplicações do logotipo, variações cromáticas e elementos gráficos. A identidade foi desdobrada em materiais institucionais, comunicação digital e peças promocionais, mantendo uma linguagem visual uniforme e sofisticada.",
+      results:
+        "O resultado é uma identidade visual que traduz profissionalismo e elegância por meio de uma estética limpa e refinada. A combinação entre tipografia, cores e fotografia constrói uma presença marcante, fortalecendo o reconhecimento da marca e criando uma comunicação visual coerente em todos os seus pontos de contato.",
+    },
     logo: LORENA_LOGO,
     // The Figma page has two boxes after "results" (its third one is empty).
     gallery: {
@@ -330,6 +397,8 @@ export const PROJECTS: readonly Project[] = [
   },
   {
     slug: "site-naturallis",
+    // Taken off the site for now at the user's request (hidden in the Figma grid).
+    hidden: true,
     name: "Site Naturallis",
     title: "Web Naturallis",
     category: "Web",
@@ -386,7 +455,16 @@ export const PROJECTS: readonly Project[] = [
     // The "Delete This" medal of the grid is this case's (home slide).
     cover: asset("/images/projects/conexao-duo/hero.webp"),
     hero: hero("conexao-duo"),
-    collage: { main: asset("/images/projects/conexao-duo/hero.webp") },
+    // Figma has no pieces for it yet (HYRO placeholder): pieces from its gallery.
+    collage: {
+      main: asset("/images/projects/conexao-duo/hero.webp"),
+      pieces: [
+        asset("/images/projects/conexao-duo/bags.webp"),
+        asset("/images/projects/conexao-duo/flag.webp"),
+        asset("/images/projects/conexao-duo/campaign.webp"),
+        asset("/images/projects/conexao-duo/inegociavel.webp"),
+      ],
+    },
     credits: credits(
       { label: "Project director", value: DIRECTOR },
       "Conexão Duo",
@@ -419,10 +497,20 @@ export const PROJECTS: readonly Project[] = [
         FIGMA_FINAL.height,
       ),
     },
+    copy: {
+      intro:
+        "A Conexão Duo representa o encontro entre estratégia, relacionamento e novas possibilidades. Inspirado na força das conexões e na construção de oportunidades, o projeto propõe uma identidade visual que une elementos clássicos e contemporâneos, transmitindo solidez, confiança e personalidade.",
+      solution:
+        "O desenvolvimento da identidade buscou traduzir visualmente o conceito de conexão por meio de formas geométricas, símbolos e uma linguagem gráfica de forte presença. A combinação entre referências históricas e elementos modernos cria um universo visual próprio, permitindo que a marca se destaque e mantenha consistência em diferentes aplicações.",
+      process:
+        "A construção do projeto envolveu pesquisas visuais, exploração de conceitos e desenvolvimento de elementos gráficos que representassem a essência da marca. A identidade foi aplicada em materiais institucionais, peças promocionais, produtos personalizados e comunicação digital, criando uma experiência visual integrada.",
+      results:
+        "O resultado é uma identidade com personalidade e posicionamento bem definidos. A combinação de elementos visuais, materiais e aplicações fortalece a presença da Conexão Duo, transmitindo profissionalismo e criando uma comunicação consistente em diferentes plataformas e experiências de marca.",
+    },
     showcase: {
       background: asset("/images/projects/conexao-duo/hero.webp"),
       card: asset("/images/projects/conexao-duo/card.webp"),
-      client: "Conexão Duo",
+      client: "Lorera lOURENÇO",
       year: "2026",
       handle: "/conexãoduo",
       logo: {
@@ -430,8 +518,9 @@ export const PROJECTS: readonly Project[] = [
         height: 29,
         layers: [logoLayer("conexao-duo", "0% 0% 0% 0%")],
       },
-      description: SHOWCASE_DESCRIPTION,
-      disciplines: SHOWCASE_DISCIPLINES,
+      description: "A youthful brand for digital solutions for lawyers",
+      descriptionWidth: 276,
+      disciplines: VISUAL_IDENTITY,
     },
   },
   {
@@ -451,29 +540,16 @@ export const PROJECTS: readonly Project[] = [
     ),
   },
   {
-    slug: "maria-clara-lopes",
-    name: "Maria Clara Lopes",
-    title: "Maria Clara Lopes",
-    category: "Design",
-    services: ["branding"],
-    cover: null,
-    hero: null,
-    collage: null,
-    credits: credits(
-      { label: "Designer", value: DIRECTOR },
-      "Maria Clara",
-      { label: "Copie", value: DIRECTOR },
-      "2025",
-    ),
-  },
-  {
     slug: "elle-fanning",
     name: "Elle Fanning",
     title: "Elle Fanning",
-    category: "brand identy",
-    services: ["branding"],
+    category: "Web",
+    services: ["web-design"],
     cover: cover("elle-fanning"),
-    hero: hero("elle-fanning", "object-[50%_35%]"),
+    hero: {
+      ...hero("elle-fanning"),
+      overlay: { logo: ELLE_HERO_LOGO, left: 215, top: 252 },
+    },
     collage: {
       main: asset("/images/projects/elle-fanning/home.webp"),
       pieces: [
@@ -489,26 +565,40 @@ export const PROJECTS: readonly Project[] = [
       { label: "Dev", value: "Erik Elias" },
       "2026",
     ),
+    // Several boxes run to the right edge of their frame, as in the Figma.
     gallery: {
-      lead: [image("elle-fanning", "home", 1496, 844)],
-      split: image("elle-fanning", "portrait", 868, 847),
+      lead: [{ ...ELLE_BOX("characters-arc", 1506.32, 1122.89), flush: true }],
+      split: { ...ELLE_BOX("loading", 878.6, 829.81), flush: true },
       middle: [
-        [ELLE_SCREEN("maleficent"), ELLE_SCREEN("the-great")],
-        [ELLE_SCREEN("characters")],
-        [ELLE_SCREEN("editorial")],
+        [ELLE_BOX("filmography", 1495.21, 822)],
+        [ELLE_BOX("phones", 1495.6, 934.75)],
+        [ELLE_BOX("character-open", 1495.21, 1089.48)],
       ],
-      closing: [ELLE_SCREEN("name"), ELLE_SCREEN("now"), ELLE_SCREEN("covers")],
-      final: { ...image("elle-fanning", "deck", 1920, 822), bleed: true },
+      closing: [
+        { ...ELLE_BOX("now-showing", 1506.32, 661.49), flush: true },
+        { ...ELLE_BOX("home-cover", 1506.32, 1568.6), flush: true },
+        ELLE_BOX("people", 1495.21, 1108.17),
+      ],
+      final: { ...ELLE_BOX("loader", 1910, 1083), flush: true },
     },
     copy: {
       intro:
-        "A fan-made editorial portfolio for Elle Fanning that is also a creative front-end lab. Sixteen films, eight characters and ten magazine covers gathered with the care of a magazine editorial, in a fully static site where the shaders, the spring physics, the choreographed scroll and the sound were all written by hand.",
+        "Um projeto visual inspirado na trajetória e na versatilidade de Elle Fanning, explorando sua presença no cinema, suas diferentes interpretações e sua identidade artística. A proposta é construir um universo editorial que conecta fotografia, tipografia e narrativa cinematográfica, transformando sua carreira em uma experiência visual contemporânea e expressiva.",
       solution:
-        "Every section is a stage of its own. The hero is a pink field of thousands of 3D blocks, drawn in a single draw call, that ripples under the cursor around her portrait. In Filmography the word opens in half and the posters run between FILMO and GRAPHY like a film reel, while Characters fans eight roles out in a 3D arc that turns with the scroll.",
+        "A solução criativa parte de uma identidade editorial que combina elegância, personalidade e referências cinematográficas. A direção de arte explora contrastes tipográficos, composições fotográficas e uma paleta marcada pelo rosa, criando uma linguagem visual que equilibra delicadeza e força. O conceito se estende por diferentes formatos, mantendo unidade e reconhecimento em cada aplicação.",
       process:
-        "No template and no visual builder: each effect was written by hand on Next.js, Three.js, GSAP and Lenis, plus what the browser already offers. The choreography lives in pure functions that take a progress and return a pose, so one ticker moves the scroll, the cursor, the stages and the shaders in the same frame. A Web Audio engine adds the ambient track and a sound to every block and poster.",
+        "O desenvolvimento envolveu pesquisa de referências visuais, seleção de imagens e exploração de diferentes linguagens editoriais. Foram construídas composições para capas, publicações, peças digitais e materiais promocionais, utilizando a fotografia como elemento central da narrativa. Cada aplicação foi pensada para destacar diferentes fases e personagens da carreira da atriz.",
       results:
-        "A 100% static site, published on GitHub Pages at every push. It goes from phone to 4K, with its own composition for each section below 1024 px, respects reduced motion and stays light: WebP images, Three.js loaded on demand and WebGL paused off screen.",
+        "O resultado é um projeto editorial que traduz a versatilidade artística de Elle Fanning em uma identidade visual marcante. A combinação entre fotografia, tipografia e composição cria uma narrativa consistente, explorando diferentes perspectivas de sua trajetória e transformando sua imagem em um universo gráfico próprio.",
+    },
+    showcase: {
+      ...showcaseImages("elle-fanning"),
+      client: "THE GRAW",
+      year: "2026",
+      handle: "/ellefanning",
+      logo: ELLE_LOGO_LIGHT,
+      description: "A fashion brand for sport life style",
+      disciplines: ["WebSite"],
     },
   },
   {
@@ -518,17 +608,50 @@ export const PROJECTS: readonly Project[] = [
     category: "brand identy",
     services: ["branding"],
     cover: cover("tati-hotelzinho-pet"),
-    hero: hero("tati-hotelzinho-pet", "object-[50%_30%]"),
-    collage: { main: asset("/images/projects/tati-hotelzinho-pet/hero.webp") },
+    hero: { src: asset("/images/projects/tati-hotelzinho-pet/hero-dog.webp") },
+    // Figma "Projeto" variant "Projeto 3".
+    collage: figmaCollage("tati-hotelzinho-pet"),
     credits: credits(
       { label: "Project director", value: DIRECTOR },
-      "Tati Hotelzinho Pet",
-      { label: "Motion Designer", value: "Alan Erick" },
-      "2024",
+      "Tati Sousa",
+      { label: "Motion Designer", value: "Julio Victor" },
+      "2023",
     ),
+    copy: {
+      intro:
+        "A Tati Hotelzinho Pet nasce com a proposta de transformar o cuidado com os animais em uma experiência acolhedora, divertida e cheia de personalidade. O projeto busca traduzir o carinho e a atenção dedicados aos pets por meio de uma identidade visual alegre, descontraída e facilmente reconhecível, aproximando a marca de tutores e seus companheiros.",
+      solution:
+        "A solução foi desenvolver uma identidade visual vibrante, construída a partir de cores intensas, formas orgânicas e um mascote que representa o universo dos animais de estimação. A combinação entre roxo, rosa e amarelo cria uma comunicação energética e amigável, enquanto o logotipo e os elementos gráficos garantem versatilidade em diferentes aplicações da marca.",
+      process:
+        "O processo criativo começou pela construção de um conceito visual que transmitisse diversão, confiança e acolhimento. A partir dele, foram desenvolvidos o logotipo, a paleta cromática, os elementos gráficos e suas aplicações em materiais institucionais, uniformes, embalagens, acessórios, comunicação digital e publicidade. Cada peça foi pensada para manter a identidade consistente e presente em diferentes pontos de contato.",
+      results:
+        "O resultado é uma marca expressiva e cheia de personalidade, que transforma o universo pet em uma experiência visual divertida e memorável. A identidade se adapta a diferentes produtos, ambientes e plataformas, fortalecendo o reconhecimento da Tati Hotelzinho Pet e transmitindo seus valores de carinho, cuidado e proximidade.",
+    },
+    // The Figma closing frames touch; two rows hold a pair of photos each.
+    gallery: {
+      lead: [TATI_WIDE("logo-patterns")],
+      split: image(
+        "tati-hotelzinho-pet",
+        "logo",
+        FIGMA_SPLIT.width,
+        FIGMA_SPLIT.height,
+      ),
+      middle: [
+        { row: [TATI_HALF("ribbon"), TATI_HALF("tape")] },
+        [TATI_WIDE("versions")],
+        [TATI_WIDE("tshirt")],
+      ],
+      closing: [
+        TATI_WIDE("backpack"),
+        TATI_WIDE("laptop"),
+        { row: [TATI_HALF("dogs"), TATI_HALF("cape")] },
+      ],
+      closingJoined: true,
+      final: image("tati-hotelzinho-pet", "poster", 1900, 1049),
+    },
   },
   {
-    // Only on the home (Figma "Projeto Allce" variant "projeto").
+    // Home slide "projeto"; its Figma page (3309:5006) is still a placeholder.
     slug: "gilberto-do-acordeon",
     name: "Gilberto do Acordeon",
     title: "Gilberto do Acordeon",
@@ -543,37 +666,24 @@ export const PROJECTS: readonly Project[] = [
     showcase: {
       background: asset("/images/projects/gilberto-do-acordeon/hero.webp"),
       card: asset("/images/projects/gilberto-do-acordeon/card.webp"),
-      client: "Gilberto do Acordeon",
+      client: "Gilberto do acordeon",
       year: "2026",
       handle: "/gilbertodoacordeon",
-      description: SHOWCASE_DESCRIPTION,
-      disciplines: SHOWCASE_DISCIPLINES,
+      logo: GILBERTO_LOGO_LIGHT,
+      description: "A singer and accordion player from the south",
+      disciplines: VISUAL_IDENTITY,
     },
   },
 ];
-
-/**
- * Figma "Projeto view Services" slides: every variant shows this Grupo
- * Penguin placeholder.
- */
-export const PROJECT_SHOWCASE = {
-  slug: "grupo-penguin",
-  image: asset("/images/services/project-slide.webp"),
-  info: {
-    client: "grupo penguin",
-    year: "2026",
-    handle: "/grupopenguin",
-    logo: PENGUIN_LOGO_LIGHT,
-    description: SHOWCASE_DESCRIPTION,
-    disciplines: SHOWCASE_DISCIPLINES,
-  } satisfies ShowcaseInfo,
-} as const;
 
 export const SHOWCASE_LABELS = {
   client: "Client",
   year: "year",
   explore: "Explore project",
 } as const;
+
+/** The cases on the site: every project but the hidden ones. */
+export const PROJECTS = ALL_PROJECTS.filter((project) => !project.hidden);
 
 export function getProjectHref(project: Pick<Project, "slug">) {
   return `/cases/${project.slug}`;
@@ -582,6 +692,3 @@ export function getProjectHref(project: Pick<Project, "slug">) {
 export function findProject(slug: string) {
   return PROJECTS.find((project) => project.slug === slug);
 }
-
-/** Studio "Projects Lead" card. */
-export const FEATURED_PROJECT = PROJECTS[0];

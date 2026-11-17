@@ -9,8 +9,14 @@ export const HOME_PAGE = {
     title: ["case", "studies"],
     body: "A closer look at how strategy, design, and development shape each project.",
   },
-  /** The four "Projeto Allce" slides of the Figma home, in order. */
-  showcases: ["allce", "grupo-penguin", "conexao-duo", "gilberto-do-acordeon"],
+  /** The five "Projeto Allce" slides of the Figma home, in order. */
+  showcases: [
+    "allce",
+    "grupo-penguin",
+    "conexao-duo",
+    "gilberto-do-acordeon",
+    "elle-fanning",
+  ],
   viewAllCases: "View All Cases",
   viewAllImage: asset("/images/home/view-all-band.webp"),
 } as const;
@@ -31,9 +37,6 @@ export const PROJECT_PAGE = {
   end: "END",
 } as const;
 
-const TEAM_BIO =
-  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when";
-
 /** Figma team photo of a member, cropped to the 897×1080 photo box. */
 const teamPhoto = (slug: string) => asset(`/images/studio/team-${slug}.webp`);
 
@@ -46,41 +49,39 @@ export const TEAM_MEMBERS = [
   {
     name: "André Gonçalves",
     role: "CREATIVE DIRECTOR",
-    bio: TEAM_BIO,
+    bio: "À frente da direção criativa do estúdio, conduz conceitos, define linguagens visuais e transforma ideias em projetos com identidade. Responsável por conectar criatividade, estratégia e design em cada entrega.",
     photo: teamPhoto("andre-goncalves"),
-    cardClassName: "lg:w-556",
+    cardClassName: "lg:w-594",
     roleClassName: "text-role-director lg:top-[72.34%] lg:left-51",
   },
   {
     name: "Alan Erick",
     role: "MOTION DESIGNER",
-    bio: TEAM_BIO,
+    bio: "Responsável por dar movimento às ideias, transformando conceitos em experiências visuais dinâmicas. Une criatividade e técnica para construir narrativas que prendem a atenção.",
     photo: teamPhoto("alan-erick"),
-    cardClassName: "lg:w-556",
+    cardClassName: "lg:w-600",
     roleClassName: "text-role-motion lg:top-[71.61%] lg:left-51",
   },
   {
     name: "Erik Elias",
     role: "DEVELOPER",
-    bio: TEAM_BIO,
+    bio: "Responsável por transformar ideias em experiências digitais. Conecta tecnologia, funcionalidade e criatividade para desenvolver soluções que dão vida aos projetos da THE GRAW.",
     photo: teamPhoto("erik-elias"),
-    cardClassName: "lg:w-556",
+    cardClassName: "lg:w-554",
     roleClassName: "text-giant lg:top-[71.13%] lg:left-43",
   },
   {
     name: "Tatá Gomes",
     role: "PROJECT MANAGER",
-    bio: TEAM_BIO,
+    bio: "Conecta pessoas, ideias e processos para fazer tudo acontecer. À frente da gestão de projetos, organiza fluxos, coordena equipes e garante que cada projeto siga seu caminho com propósito.",
     photo: teamPhoto("tata-gomes"),
-    cardClassName: "lg:w-582",
+    cardClassName: "lg:w-637",
     roleClassName: "text-role-manager lg:top-[72.39%] lg:left-51",
   },
 ] as const;
 
 export const STUDIO_PAGE = {
   title: "Studio",
-  projectsLead: "Projects Lead",
-  projectsLeadImage: asset("/images/studio/projects-lead.webp"),
   /** Shown one at a time while scrolling, each with its Figma photo. */
   sections: [
     {

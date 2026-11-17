@@ -11,10 +11,11 @@ import {
 import { GradualBlur } from "@/components/ui/react-bits/gradual-blur";
 import { Magnet } from "@/components/ui/react-bits/magnet";
 import { SplitReveal } from "@/components/ui/split-reveal";
-import { getProjectHref, PROJECT_SHOWCASE } from "@/constants/projects";
+import { findProject, getProjectHref } from "@/constants/projects";
 import { SERVICES_PAGE } from "@/constants/services";
 import { useLenis } from "@/hooks/use-lenis";
 import { EASE, gsap, useGSAP } from "@/lib/gsap";
+import type { Project, ProjectShowcase } from "@/types/project";
 
 type ServicesProjectsSectionProps = {
   /** "projects <branding>": the label of the selected service. */
@@ -27,13 +28,16 @@ type ServicesProjectsSectionProps = {
 const EDGES = ["left", "right"] as const;
 const EDGE_BLUR = 1.09;
 
-const SLIDES = Array.from(
-  { length: SERVICES_PAGE.slidesPerService },
-  (_, index) => index,
-);
+const SLIDES = SERVICES_PAGE.slides
+  .map((slug) => findProject(slug))
+  .filter(
+    (project): project is Project & { showcase: ProjectShowcase } =>
+      project?.showcase !== undefined,
+  );
 
 /**
- * Figma "Projetos" (5760×1080): three full-screen project slides side by side.
+ * Figma "Projetos" (7656×1080): the "Project view" slides side by side, each a
+ * home slide ("Projeto Allce") without its card.
  * The section pins and the vertical scroll moves the slides sideways; without
  * motion it is a plain horizontal scroller.
  */
@@ -135,14 +139,15 @@ export function ServicesProjectsSection({
         className="absolute inset-0 snap-x snap-mandatory [scrollbar-width:none] overflow-x-auto"
       >
         <ul ref={trackRef} className="flex h-full w-max">
-          {SLIDES.map((index) => (
+          {SLIDES.map((project) => (
             <li
-              key={`${serviceId}-${index}`}
+              key={`${serviceId}-${project.slug}`}
               data-slide
               className="relative h-full w-[100cqw] shrink-0 snap-start overflow-hidden"
             >
               <TransitionLink
-                href={getProjectHref(PROJECT_SHOWCASE)}
+                href={getProjectHref(project)}
+                aria-label={project.name}
                 className="group absolute inset-0 block focus-visible:outline-offset-[-4px]"
               >
                 <div
@@ -150,29 +155,33 @@ export function ServicesProjectsSection({
                   className="absolute inset-y-0 -left-[6%] w-[112%]"
                 >
                   <Image
-                    src={PROJECT_SHOWCASE.image}
+                    src={project.showcase.background}
                     alt=""
                     fill
                     sizes="112vw"
                     className="object-cover transition-transform duration-700 ease-power3 group-hover:scale-[1.02]"
                   />
                 </div>
+                {/* Figma: the meta at the top, brand and disciplines at the bottom (63px margins). */}
                 <div
                   data-slide-content
-                  className="absolute inset-x-16 bottom-104 flex flex-col gap-20 lg:inset-x-auto lg:top-115 lg:bottom-auto lg:left-218 lg:flex-row lg:items-start lg:gap-271"
+                  className="absolute inset-x-16 bottom-104 flex flex-col gap-32 lg:inset-x-auto lg:top-63 lg:bottom-63 lg:left-177 lg:w-672.75 lg:justify-between lg:gap-0"
                 >
-                  <ProjectBrand
-                    info={PROJECT_SHOWCASE.info}
-                    className="gap-24 lg:w-226.25 lg:gap-71.5"
-                  />
                   <ProjectMeta
-                    info={PROJECT_SHOWCASE.info}
+                    info={project.showcase}
                     className="w-full lg:w-514.25"
                   />
-                  <ProjectDisciplines
-                    info={PROJECT_SHOWCASE.info}
-                    className="lg:w-146"
-                  />
+                  <div className="flex flex-col gap-24 lg:flex-row lg:items-end lg:justify-between">
+                    <ProjectBrand
+                      info={project.showcase}
+                      name={project.name}
+                      className="gap-24 lg:gap-71.5"
+                    />
+                    <ProjectDisciplines
+                      info={project.showcase}
+                      className="lg:w-226.25"
+                    />
+                  </div>
                 </div>
               </TransitionLink>
             </li>

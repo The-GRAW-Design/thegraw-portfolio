@@ -56,11 +56,8 @@ export const ALL_PROJECTS_ORDER = [
   "lorena-lourenco",
   "allce",
   "tati-hotelzinho-pet",
-  "e2-company",
   "elle-fanning",
-  "site-naturallis",
   "conexao-duo",
   "gilberto-do-acordeon",
   "rotulos-naturallis",
-  "maria-clara-lopes",
 ] as const;
