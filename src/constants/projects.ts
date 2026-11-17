@@ -425,7 +425,16 @@ export const PROJECTS: readonly Project[] = [
     // The "Delete This" medal of the grid is this case's (home slide).
     cover: asset("/images/projects/conexao-duo/hero.webp"),
     hero: hero("conexao-duo"),
-    collage: { main: asset("/images/projects/conexao-duo/hero.webp") },
+    // Figma has no pieces for it yet (HYRO placeholder): pieces from its gallery.
+    collage: {
+      main: asset("/images/projects/conexao-duo/hero.webp"),
+      pieces: [
+        asset("/images/projects/conexao-duo/bags.webp"),
+        asset("/images/projects/conexao-duo/flag.webp"),
+        asset("/images/projects/conexao-duo/campaign.webp"),
+        asset("/images/projects/conexao-duo/inegociavel.webp"),
+      ],
+    },
     credits: credits(
       { label: "Project director", value: DIRECTOR },
       "Conexão Duo",
@@ -576,7 +585,16 @@ export const PROJECTS: readonly Project[] = [
     services: ["branding"],
     cover: cover("tati-hotelzinho-pet"),
     hero: { src: asset("/images/projects/tati-hotelzinho-pet/hero-dog.webp") },
-    collage: { main: asset("/images/projects/tati-hotelzinho-pet/hero.webp") },
+    // Figma has no pieces for it yet (HYRO placeholder): pieces from its gallery.
+    collage: {
+      main: asset("/images/projects/tati-hotelzinho-pet/hero.webp"),
+      pieces: [
+        asset("/images/projects/tati-hotelzinho-pet/backpack.webp"),
+        asset("/images/projects/tati-hotelzinho-pet/laptop.webp"),
+        asset("/images/projects/tati-hotelzinho-pet/tshirt.webp"),
+        asset("/images/projects/tati-hotelzinho-pet/versions.webp"),
+      ],
+    },
     credits: credits(
       { label: "Project director", value: DIRECTOR },
       "Tati Hotelzinho Pet",
