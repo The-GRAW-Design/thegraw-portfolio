@@ -29,14 +29,18 @@ export function ProjectMeta({ info, className }: ShowcaseProps) {
   );
 }
 
-/** Figma showcase brand: the client logo over a two-line description. */
-export function ProjectBrand({ info, className }: ShowcaseProps) {
+/** Figma showcase brand: the project logo over a two-line description. */
+export function ProjectBrand({
+  info,
+  name,
+  className,
+}: ShowcaseProps & { name: string }) {
   return (
     <div className={cn("flex flex-col items-start", className)}>
       {info.logo && (
         <LogoLayers
           logo={info.logo}
-          alt={info.client}
+          alt={name}
           className="max-w-[80vw]"
           style={{ width: `calc(var(--spacing) * ${info.logo.width})` }}
         />
