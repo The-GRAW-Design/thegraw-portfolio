@@ -4,7 +4,6 @@ import { useRef } from "react";
 import { ParallaxImage } from "@/components/ui/parallax-image";
 import { ProgressiveBlur } from "@/components/ui/progressive-blur";
 import { SplitReveal } from "@/components/ui/split-reveal";
-import { LOREM_LONG } from "@/constants/pages";
 import {
   SERVICE_OFFER,
   SERVICES_PAGE,
@@ -91,12 +90,23 @@ export function ServicesHeroSection({
         aria-hidden
         className="absolute inset-0 bg-[linear-gradient(149.38deg,transparent_42.738%,var(--color-dusk)_103.51%)]"
       />
+      {/* Figma: the same gradient turned 180°, darkening the top-left corner
+          behind the text (no blur). */}
+      <div
+        aria-hidden
+        className="absolute inset-0 rotate-180 bg-[linear-gradient(149.38deg,transparent_42.738%,var(--color-dusk)_103.51%)]"
+      />
 
-      {/* Higher than the Figma 386: centered in the first screen (the block
-          is 712 design px tall), clear of the header. */}
-      <div className="relative flex flex-col items-end text-right lg:absolute lg:top-[max(calc(var(--spacing)*120),calc((100svh-var(--spacing)*712)/2))] lg:left-1036 lg:w-747">
+      {/* Figma 386, raised on short screens so the text (496 design px from
+          the list top to its bottom) stays in the first screen, clear of the
+          header. */}
+      <div className="relative flex flex-col items-end text-right lg:absolute lg:inset-x-0 lg:top-[max(calc(var(--spacing)*120),min(calc(var(--spacing)*386),calc(100svh-var(--spacing)*594)))]">
         <h1 className="sr-only">{SERVICES_PAGE.title}</h1>
-        <ul ref={listRef} aria-label={SERVICES_PAGE.title}>
+        <ul
+          ref={listRef}
+          aria-label={SERVICES_PAGE.title}
+          className="lg:mr-137"
+        >
           {serviceOrder(active).map((service, index) => {
             const pressed = service.id === active;
             return (
@@ -108,11 +118,13 @@ export function ServicesHeroSection({
                 }}
                 className="-mx-[0.2em] overflow-hidden px-[0.2em]"
               >
+                {/* Right-aligned as in the Figma; the padding takes back the
+                    tracking the browser adds after the last letter. */}
                 <button
                   type="button"
                   aria-pressed={pressed}
                   className={cn(
-                    "block text-title whitespace-nowrap transition-colors duration-300 ease-power3",
+                    "ml-auto block pr-[0.07em] text-title whitespace-nowrap transition-colors duration-300 ease-power3",
                     pressed
                       ? "text-white"
                       : "text-white/54 hover:text-white/80",
@@ -134,14 +146,32 @@ export function ServicesHeroSection({
             );
           })}
         </ul>
-        <SplitReveal
-          split="lines"
-          trigger="load"
-          delay={0.45}
-          className="text-body lg:h-220"
-        >
-          {LOREM_LONG}
-        </SplitReveal>
+        {/* Each service's text, at the left of the frame (Figma x 37, 276
+            below the list top); the selected one fades in with its photo. */}
+        <div className="mt-32 grid self-stretch text-left lg:absolute lg:top-276 lg:left-37 lg:mt-0">
+          {SERVICE_OFFER.map((service) => (
+            <div
+              key={service.id}
+              aria-hidden={service.id !== active}
+              className={cn(
+                "col-start-1 row-start-1 transition-opacity duration-800 ease-power3",
+                service.id === active ? "opacity-100" : "opacity-0",
+              )}
+            >
+              <SplitReveal
+                split="lines"
+                trigger="load"
+                delay={0.45}
+                className={cn(
+                  "text-body lg:h-220",
+                  service.descriptionClassName,
+                )}
+              >
+                {service.description}
+              </SplitReveal>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

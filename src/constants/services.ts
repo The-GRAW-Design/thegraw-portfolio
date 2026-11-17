@@ -19,27 +19,41 @@ export type ServiceOffer = {
   title: string;
   /** Hero photo of the service, cropped to the 1920×1400 Figma frame. */
   image: string;
+  /** Hero text of the service, at the left of the frame. */
+  description: string;
+  /** Its Figma box: width, and drop below the shared top line. */
+  descriptionClassName: string;
 };
 
 /**
- * Figma "Services" hero states, in the order the list turns: the selected
- * service sits at the bottom, in white, under the two that follow it.
+ * Figma "Services" hero states (3071:2068, 3071:2237, 3071:2215), in the order
+ * the list turns: the selected service sits at the bottom, in white, under the
+ * two that follow it.
  */
 export const SERVICE_OFFER: readonly ServiceOffer[] = [
   {
     id: "branding",
     title: "Branding",
     image: asset("/images/services/branding.webp"),
+    description:
+      "Marcas com personalidade, propósito e posicionamento. Desenvolvemos identidades visuais que vão além do logotipo, traduzindo a essência de cada negócio em uma linguagem única e consistente. Criamos sistemas de identidade que conectam pessoas, diferenciam marcas e deixam impressões que permanecem.",
+    descriptionClassName: "lg:w-493",
   },
   {
     id: "web-design",
     title: "Web design",
     image: asset("/images/services/web-design.webp"),
+    description:
+      "Experiências digitais que conectam estética, estratégia e funcionalidade. Desenvolvemos websites que traduzem a essência de cada marca em interfaces intuitivas, marcantes e pensadas para transformar visitantes em clientes. Cada detalhe é projetado para gerar conexão, fortalecer sua presença digital e destacar sua marca.",
+    descriptionClassName: "lg:w-493",
   },
   {
     id: "packpaging",
     title: "Packpaging",
     image: asset("/images/services/packpaging.webp"),
+    description:
+      "Embalagens em experiências de marca. Desenvolvemos soluções que unem criatividade, identidade e estratégia para destacar produtos, despertar desejo e criar conexões com o consumidor. Do conceito ao acabamento, cada detalhe importa na construção de uma embalagem que comunica antes mesmo de ser aberta.",
+    descriptionClassName: "lg:mt-18 lg:w-534",
   },
 ];
 

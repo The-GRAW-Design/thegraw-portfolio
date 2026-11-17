@@ -40,7 +40,12 @@ export type ProjectShowcase = ShowcaseInfo & {
 export type ProjectMedia = {
   width: number;
   height: number;
+  /** The box runs to the right edge of its frame (no right padding). */
+  flush?: boolean;
 } & ({ src: string; logo?: never } | { logo: ProjectLogo; src?: never });
+
+/** Boxes side by side in one frame (stacked on small screens). */
+export type ProjectRow = { row: readonly ProjectMedia[] };
 
 /** The Figma "Project Open" gallery, in the order of the page. */
 export type ProjectGallery = {
@@ -48,12 +53,22 @@ export type ProjectGallery = {
   lead: readonly ProjectMedia[];
   /** The box next to "Solution". */
   split: ProjectMedia;
-  /** Frames after the split row, each with one or more boxes. */
-  middle: readonly (readonly ProjectMedia[])[];
-  /** The boxes after "process" and "results". */
-  closing: readonly ProjectMedia[];
+  /** Frames after the split row: boxes one under the other, or a row. */
+  middle: readonly (readonly ProjectMedia[] | ProjectRow)[];
+  /** The frames after "process" and "results": a box, or a row. */
+  closing: readonly (ProjectMedia | ProjectRow)[];
+  /** The closing frames touch, with no gap between them. */
+  closingJoined?: boolean;
   /** The full-width image before the credits; `bleed` drops the frame padding. */
   final: ProjectMedia & { bleed?: boolean };
+};
+
+/** A logo laid over the project hero, at its Figma place in the 1920×692 box. */
+export type HeroOverlay = {
+  logo: LogoArt;
+  /** Left and top of the logo, in Figma px. */
+  left: number;
+  top: number;
 };
 
 /** Case study texts, in the order of the page. */
@@ -85,7 +100,7 @@ export type Project = {
    * Project page hero, with its focal point as an `object-[x_y]` class;
    * `null` shows the {EM BREVE} glass there instead.
    */
-  hero: { src: string; position?: string } | null;
+  hero: { src: string; position?: string; overlay?: HeroOverlay } | null;
   /** Cases page collage; `null` shows the {EM BREVE} card there too. */
   collage: ProjectCollage | null;
   /** Credits, in two columns of two. */
