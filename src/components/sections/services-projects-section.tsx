@@ -174,6 +174,7 @@ export function ServicesProjectsSection({
                   <div className="flex flex-col gap-24 lg:flex-row lg:items-end lg:justify-between">
                     <ProjectBrand
                       info={project.showcase}
+                      name={project.name}
                       className="gap-24 lg:gap-71.5"
                     />
                     <ProjectDisciplines

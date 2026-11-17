@@ -187,7 +187,7 @@ const PENGUIN_SPLIT: ProjectMedia = {
  * projects" grid and of the home slides, and show {EM BREVE} where the case
  * study will go.
  */
-export const PROJECTS: readonly Project[] = [
+const ALL_PROJECTS: readonly Project[] = [
   {
     slug: "allce",
     name: "Allce",
@@ -238,7 +238,7 @@ export const PROJECTS: readonly Project[] = [
     },
     showcase: {
       ...showcaseImages("allce"),
-      client: "Allce. Co",
+      client: "RH SPORTS",
       year: "2024",
       handle: "/allce",
       logo: ALLCE_LOGO_LIGHT,
@@ -289,7 +289,7 @@ export const PROJECTS: readonly Project[] = [
     },
     showcase: {
       ...showcaseImages("grupo-penguin"),
-      client: "Poliana Fernandes",
+      client: "grupo penguin",
       year: "2025",
       handle: "/grupopenguin",
       logo: PENGUIN_LOGO_LIGHT,
@@ -300,6 +300,8 @@ export const PROJECTS: readonly Project[] = [
   },
   {
     slug: "e2-company",
+    // Taken off the site for now at the user's request (hidden in the Figma grid).
+    hidden: true,
     name: "e2 company",
     title: "E2 Company",
     category: "Web",
@@ -395,6 +397,8 @@ export const PROJECTS: readonly Project[] = [
   },
   {
     slug: "site-naturallis",
+    // Taken off the site for now at the user's request (hidden in the Figma grid).
+    hidden: true,
     name: "Site Naturallis",
     title: "Web Naturallis",
     category: "Web",
@@ -506,7 +510,7 @@ export const PROJECTS: readonly Project[] = [
     showcase: {
       background: asset("/images/projects/conexao-duo/hero.webp"),
       card: asset("/images/projects/conexao-duo/card.webp"),
-      client: "Conexão Duo",
+      client: "Lorera lOURENÇO",
       year: "2026",
       handle: "/conexãoduo",
       logo: {
@@ -589,7 +593,7 @@ export const PROJECTS: readonly Project[] = [
     },
     showcase: {
       ...showcaseImages("elle-fanning"),
-      client: "The Graw",
+      client: "THE GRAW",
       year: "2026",
       handle: "/ellefanning",
       logo: ELLE_LOGO_LIGHT,
@@ -662,7 +666,7 @@ export const PROJECTS: readonly Project[] = [
     showcase: {
       background: asset("/images/projects/gilberto-do-acordeon/hero.webp"),
       card: asset("/images/projects/gilberto-do-acordeon/card.webp"),
-      client: "Gilberto do Acordeon",
+      client: "Gilberto do acordeon",
       year: "2026",
       handle: "/gilbertodoacordeon",
       logo: GILBERTO_LOGO_LIGHT,
@@ -677,6 +681,9 @@ export const SHOWCASE_LABELS = {
   year: "year",
   explore: "Explore project",
 } as const;
+
+/** The cases on the site: every project but the hidden ones. */
+export const PROJECTS = ALL_PROJECTS.filter((project) => !project.hidden);
 
 export function getProjectHref(project: Pick<Project, "slug">) {
   return `/cases/${project.slug}`;

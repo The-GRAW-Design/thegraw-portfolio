@@ -115,4 +115,6 @@ export type Project = {
   copy?: ProjectCopy;
   /** Home slide (Figma "Projeto Allce" variants). */
   showcase?: ProjectShowcase;
+  /** Kept in the data but left out of the site for now (no page, tab or card). */
+  hidden?: boolean;
 };
