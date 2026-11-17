@@ -79,7 +79,7 @@ export const TEAM_MEMBERS = [
 
 export const STUDIO_PAGE = {
   title: "Studio",
-  /** Shown one at a time while scrolling, each with its Figma photo. */
+  /** Shown one at a time while scrolling, each with its Figma knight (groups 3120:922/928/933, dither baked in). */
   sections: [
     {
       heading: "Purpose",
