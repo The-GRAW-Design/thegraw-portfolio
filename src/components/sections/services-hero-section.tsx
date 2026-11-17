@@ -105,7 +105,7 @@ export function ServicesHeroSection({
         <ul
           ref={listRef}
           aria-label={SERVICES_PAGE.title}
-          className="lg:mr-137 lg:w-747"
+          className="lg:mr-137"
         >
           {serviceOrder(active).map((service, index) => {
             const pressed = service.id === active;
@@ -118,11 +118,13 @@ export function ServicesHeroSection({
                 }}
                 className="-mx-[0.2em] overflow-hidden px-[0.2em]"
               >
+                {/* Right-aligned as in the Figma; the padding takes back the
+                    tracking the browser adds after the last letter. */}
                 <button
                   type="button"
                   aria-pressed={pressed}
                   className={cn(
-                    "block text-title whitespace-nowrap transition-colors duration-300 ease-power3",
+                    "ml-auto block pr-[0.07em] text-title whitespace-nowrap transition-colors duration-300 ease-power3",
                     pressed
                       ? "text-white"
                       : "text-white/54 hover:text-white/80",
