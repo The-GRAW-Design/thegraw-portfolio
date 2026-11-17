@@ -1,22 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { TransitionLink } from "@/features/page-transition";
 import { useState } from "react";
 import { ParallaxImage } from "@/components/ui/parallax-image";
-import { GlareHover } from "@/components/ui/react-bits/glare-hover";
 import { Magnet } from "@/components/ui/react-bits/magnet";
 import { SplitReveal } from "@/components/ui/split-reveal";
 import { STUDIO_DITHER } from "@/constants/dither";
 import { STUDIO_PAGE, TEAM_MEMBERS } from "@/constants/pages";
-import { FEATURED_PROJECT, getProjectHref } from "@/constants/projects";
 import { DitherImage } from "@/features/dither-image";
 import { asset } from "@/utils/asset";
 import { cn } from "@/utils/cn";
 
 const MEMBER_COUNT = TEAM_MEMBERS.length;
 
-/** Figma "Studio" hero: portrait, team member, project lead card and headline. */
+/** Figma "Studio" hero: portrait, team member and headline. */
 export function StudioHeroSection() {
   const [index, setIndex] = useState(0);
   const member = TEAM_MEMBERS[index];
@@ -113,42 +110,6 @@ export function StudioHeroSection() {
             {member.bio}
           </SplitReveal>
         </div>
-      </div>
-
-      <div className="relative flex flex-col gap-12 px-16 pt-32 lg:absolute lg:top-[50.46%] lg:left-1475 lg:p-0">
-        <p className="text-label">{STUDIO_PAGE.projectsLead}</p>
-        <TransitionLink
-          href={getProjectHref(FEATURED_PROJECT)}
-          className="group flex items-center"
-        >
-          <span className="relative block h-90 w-160 overflow-hidden lg:h-150 lg:w-267">
-            <Image
-              src={STUDIO_PAGE.projectsLeadImage}
-              alt={FEATURED_PROJECT.name}
-              fill
-              sizes="(min-width: 1024px) 14vw, 160px"
-              className="object-cover transition-transform duration-500 ease-power3 group-hover:scale-105"
-            />
-            <GlareHover
-              borderRadius="0"
-              glareOpacity={0.3}
-              glareAngle={-35}
-              glareSize={45}
-              rimGlint={false}
-              transitionDuration={800}
-              className="absolute inset-0 border-0"
-            />
-          </span>
-          <span className="flex h-90 w-56 items-center justify-center bg-wine lg:h-150 lg:w-93">
-            <Image
-              src={asset("/icons/chevron-right-light.svg")}
-              alt=""
-              width={37}
-              height={37}
-              className="size-24 transition-transform duration-300 ease-power3 group-hover:translate-x-3 lg:size-36.5"
-            />
-          </span>
-        </TransitionLink>
       </div>
 
       {/* Scaled with the section (not the viewport) and its Figma side margin,
