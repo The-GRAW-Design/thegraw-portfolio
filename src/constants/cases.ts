@@ -58,6 +58,5 @@ export const ALL_PROJECTS_ORDER = [
   "tati-hotelzinho-pet",
   "elle-fanning",
   "conexao-duo",
-  "gilberto-do-acordeon",
   "rotulos-naturallis",
 ] as const;

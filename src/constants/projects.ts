@@ -653,6 +653,8 @@ const ALL_PROJECTS: readonly Project[] = [
   {
     // Home slide "projeto"; its Figma page (3309:5006) is still a placeholder.
     slug: "gilberto-do-acordeon",
+    // Taken off the site for now at the user's request.
+    hidden: true,
     name: "Gilberto do Acordeon",
     title: "Gilberto do Acordeon",
     category: "brand identy",
