@@ -48,10 +48,7 @@ export function ProjectShowcaseSection({
             </div>
             <div className="flex flex-col gap-24 lg:flex-row lg:items-end lg:justify-between">
               <div data-reveal>
-                <ProjectBrand
-                  info={showcase}
-                  className="gap-24 lg:w-226.25 lg:gap-71.5"
-                />
+                <ProjectBrand info={showcase} className="gap-24 lg:gap-71.5" />
               </div>
               <div data-reveal>
                 <ProjectDisciplines info={showcase} className="lg:w-226.25" />

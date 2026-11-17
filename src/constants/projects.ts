@@ -5,7 +5,6 @@ import type {
   ProjectCollage,
   ProjectLogo,
   ProjectMedia,
-  ShowcaseInfo,
 } from "@/types/project";
 import { asset } from "@/utils/asset";
 
@@ -145,9 +144,25 @@ const PENGUIN_LOGO_LIGHT: LogoArt = {
   layers: [logoLayer("grupo-penguin", "0% 0% 0% 0%")],
 };
 
-/** Figma copy of the slides, written for Grupo Penguin and kept on all of them. */
-const SHOWCASE_DESCRIPTION = "A calm, editorial, website for a wellness brand";
-const SHOWCASE_DISCIPLINES = ["branding", "web design", "development"];
+/** Figma "Isolation_Mode" (3298:1047): Gilberto do Acordeon's logo on its slide. */
+const GILBERTO_LOGO_LIGHT: LogoArt = {
+  width: 131,
+  height: 39,
+  layers: [logoLayer("gilberto-do-acordeon", "0% 0% 0% 0%")],
+};
+
+/** Figma "Elle fanning" slide logo: "ELLE" over "FANNING." (3309:4947). */
+const ELLE_LOGO_LIGHT: LogoArt = {
+  width: 112.776,
+  height: 49.742,
+  layers: [
+    logoLayer("elle-fanning-slide-elle", "0% 57.86% 54.17% 0%"),
+    logoLayer("elle-fanning-slide-fanning", "52.15% 0% 0% 0%"),
+  ],
+};
+
+/** Disciplines of the branding slides, as written in the Figma. */
+const VISUAL_IDENTITY = ["branding", "Visual Identy"];
 
 /** Home slide images, cropped to the frame and to the card. */
 const showcaseImages = (slug: string) => ({
@@ -163,14 +178,13 @@ const PENGUIN_SPLIT: ProjectMedia = {
 };
 
 /**
- * The ten Figma project pages, in canvas order, and the home-only Gilberto do
- * Acordeon. Allce, Grupo Penguin, Lorena Lourenço, Conexão Duo, Elle Fanning
- * and Tati Hotelzinho Pet have their Figma galleries (Allce, Grupo Penguin and
- * Conexão Duo with their Figma texts too); e2 company and Site Naturallis have
- * screens and texts of their live sites, and Elle Fanning keeps the texts
- * written from its site; the others have names, credits and the photos of the
- * "all projects" grid and of the home slides, and show {EM BREVE} where the
- * case study will go.
+ * The ten Figma project pages, in canvas order, and Gilberto do Acordeon (its
+ * Figma page is still a placeholder). Allce, Grupo Penguin, Lorena Lourenço,
+ * Conexão Duo, Elle Fanning and Tati Hotelzinho Pet have their Figma galleries
+ * and texts; e2 company and Site Naturallis have screens and texts of their
+ * live sites; the others have names, credits and the photos of the "all
+ * projects" grid and of the home slides, and show {EM BREVE} where the case
+ * study will go.
  */
 export const PROJECTS: readonly Project[] = [
   {
@@ -227,7 +241,7 @@ export const PROJECTS: readonly Project[] = [
       year: "2024",
       handle: "/allce",
       logo: ALLCE_LOGO_LIGHT,
-      description: SHOWCASE_DESCRIPTION,
+      description: "A fashion brand for sport life style",
       disciplines: ["branding", "Visual identy"],
     },
   },
@@ -278,8 +292,9 @@ export const PROJECTS: readonly Project[] = [
       year: "2025",
       handle: "/grupopenguin",
       logo: PENGUIN_LOGO_LIGHT,
-      description: SHOWCASE_DESCRIPTION,
-      disciplines: SHOWCASE_DISCIPLINES,
+      description: "A youthful brand for digital marketing consultancies",
+      descriptionWidth: 287,
+      disciplines: VISUAL_IDENTITY,
     },
   },
   {
@@ -343,6 +358,16 @@ export const PROJECTS: readonly Project[] = [
       { label: "Motion Designer", value: "Alan Erick" },
       "2026",
     ),
+    copy: {
+      intro:
+        "O projeto Lorena Lourenço nasce da proposta de construir uma identidade visual que traduza personalidade, elegância e posicionamento profissional. Uma marca que une sofisticação e autenticidade, refletindo a essência de uma presença feminina contemporânea. A proposta é transformar sua imagem em uma identidade consistente, capaz de comunicar confiança, exclusividade e profissionalismo.",
+      solution:
+        "A solução foi desenvolver uma identidade visual minimalista e atemporal, explorando uma combinação de tipografias sofisticadas, formas delicadas e uma paleta de cores neutras. Os tons de verde-oliva, off-white e preto reforçam a sensação de equilíbrio e requinte, enquanto a construção do logotipo estabelece uma assinatura visual elegante e reconhecível.",
+      process:
+        "O processo criativo partiu da construção de um universo visual alinhado à personalidade e ao posicionamento da marca. Foram exploradas diferentes composições tipográficas, aplicações do logotipo, variações cromáticas e elementos gráficos. A identidade foi desdobrada em materiais institucionais, comunicação digital e peças promocionais, mantendo uma linguagem visual uniforme e sofisticada.",
+      results:
+        "O resultado é uma identidade visual que traduz profissionalismo e elegância por meio de uma estética limpa e refinada. A combinação entre tipografia, cores e fotografia constrói uma presença marcante, fortalecendo o reconhecimento da marca e criando uma comunicação visual coerente em todos os seus pontos de contato.",
+    },
     logo: LORENA_LOGO,
     // The Figma page has two boxes after "results" (its third one is empty).
     gallery: {
@@ -488,8 +513,9 @@ export const PROJECTS: readonly Project[] = [
         height: 29,
         layers: [logoLayer("conexao-duo", "0% 0% 0% 0%")],
       },
-      description: SHOWCASE_DESCRIPTION,
-      disciplines: SHOWCASE_DISCIPLINES,
+      description: "A youthful brand for digital solutions for lawyers",
+      descriptionWidth: 276,
+      disciplines: VISUAL_IDENTITY,
     },
   },
   {
@@ -528,8 +554,8 @@ export const PROJECTS: readonly Project[] = [
     slug: "elle-fanning",
     name: "Elle Fanning",
     title: "Elle Fanning",
-    category: "brand identy",
-    services: ["branding"],
+    category: "Web",
+    services: ["web-design"],
     cover: cover("elle-fanning"),
     hero: {
       ...hero("elle-fanning"),
@@ -568,13 +594,22 @@ export const PROJECTS: readonly Project[] = [
     },
     copy: {
       intro:
-        "A fan-made editorial portfolio for Elle Fanning that is also a creative front-end lab. Sixteen films, eight characters and ten magazine covers gathered with the care of a magazine editorial, in a fully static site where the shaders, the spring physics, the choreographed scroll and the sound were all written by hand.",
+        "Um projeto visual inspirado na trajetória e na versatilidade de Elle Fanning, explorando sua presença no cinema, suas diferentes interpretações e sua identidade artística. A proposta é construir um universo editorial que conecta fotografia, tipografia e narrativa cinematográfica, transformando sua carreira em uma experiência visual contemporânea e expressiva.",
       solution:
-        "Every section is a stage of its own. The hero is a pink field of thousands of 3D blocks, drawn in a single draw call, that ripples under the cursor around her portrait. In Filmography the word opens in half and the posters run between FILMO and GRAPHY like a film reel, while Characters fans eight roles out in a 3D arc that turns with the scroll.",
+        "A solução criativa parte de uma identidade editorial que combina elegância, personalidade e referências cinematográficas. A direção de arte explora contrastes tipográficos, composições fotográficas e uma paleta marcada pelo rosa, criando uma linguagem visual que equilibra delicadeza e força. O conceito se estende por diferentes formatos, mantendo unidade e reconhecimento em cada aplicação.",
       process:
-        "No template and no visual builder: each effect was written by hand on Next.js, Three.js, GSAP and Lenis, plus what the browser already offers. The choreography lives in pure functions that take a progress and return a pose, so one ticker moves the scroll, the cursor, the stages and the shaders in the same frame. A Web Audio engine adds the ambient track and a sound to every block and poster.",
+        "O desenvolvimento envolveu pesquisa de referências visuais, seleção de imagens e exploração de diferentes linguagens editoriais. Foram construídas composições para capas, publicações, peças digitais e materiais promocionais, utilizando a fotografia como elemento central da narrativa. Cada aplicação foi pensada para destacar diferentes fases e personagens da carreira da atriz.",
       results:
-        "A 100% static site, published on GitHub Pages at every push. It goes from phone to 4K, with its own composition for each section below 1024 px, respects reduced motion and stays light: WebP images, Three.js loaded on demand and WebGL paused off screen.",
+        "O resultado é um projeto editorial que traduz a versatilidade artística de Elle Fanning em uma identidade visual marcante. A combinação entre fotografia, tipografia e composição cria uma narrativa consistente, explorando diferentes perspectivas de sua trajetória e transformando sua imagem em um universo gráfico próprio.",
+    },
+    showcase: {
+      ...showcaseImages("elle-fanning"),
+      client: "The Graw",
+      year: "2026",
+      handle: "/ellefanning",
+      logo: ELLE_LOGO_LIGHT,
+      description: "A fashion brand for sport life style",
+      disciplines: ["WebSite"],
     },
   },
   {
@@ -585,22 +620,24 @@ export const PROJECTS: readonly Project[] = [
     services: ["branding"],
     cover: cover("tati-hotelzinho-pet"),
     hero: { src: asset("/images/projects/tati-hotelzinho-pet/hero-dog.webp") },
-    // Figma has no pieces for it yet (HYRO placeholder): pieces from its gallery.
-    collage: {
-      main: asset("/images/projects/tati-hotelzinho-pet/hero.webp"),
-      pieces: [
-        asset("/images/projects/tati-hotelzinho-pet/backpack.webp"),
-        asset("/images/projects/tati-hotelzinho-pet/laptop.webp"),
-        asset("/images/projects/tati-hotelzinho-pet/tshirt.webp"),
-        asset("/images/projects/tati-hotelzinho-pet/versions.webp"),
-      ],
-    },
+    // Figma "Projeto" variant "Projeto 3".
+    collage: figmaCollage("tati-hotelzinho-pet"),
     credits: credits(
       { label: "Project director", value: DIRECTOR },
-      "Tati Hotelzinho Pet",
-      { label: "Motion Designer", value: "Alan Erick" },
-      "2024",
+      "Tati Sousa",
+      { label: "Motion Designer", value: "Julio Victor" },
+      "2023",
     ),
+    copy: {
+      intro:
+        "A Tati Hotelzinho Pet nasce com a proposta de transformar o cuidado com os animais em uma experiência acolhedora, divertida e cheia de personalidade. O projeto busca traduzir o carinho e a atenção dedicados aos pets por meio de uma identidade visual alegre, descontraída e facilmente reconhecível, aproximando a marca de tutores e seus companheiros.",
+      solution:
+        "A solução foi desenvolver uma identidade visual vibrante, construída a partir de cores intensas, formas orgânicas e um mascote que representa o universo dos animais de estimação. A combinação entre roxo, rosa e amarelo cria uma comunicação energética e amigável, enquanto o logotipo e os elementos gráficos garantem versatilidade em diferentes aplicações da marca.",
+      process:
+        "O processo criativo começou pela construção de um conceito visual que transmitisse diversão, confiança e acolhimento. A partir dele, foram desenvolvidos o logotipo, a paleta cromática, os elementos gráficos e suas aplicações em materiais institucionais, uniformes, embalagens, acessórios, comunicação digital e publicidade. Cada peça foi pensada para manter a identidade consistente e presente em diferentes pontos de contato.",
+      results:
+        "O resultado é uma marca expressiva e cheia de personalidade, que transforma o universo pet em uma experiência visual divertida e memorável. A identidade se adapta a diferentes produtos, ambientes e plataformas, fortalecendo o reconhecimento da Tati Hotelzinho Pet e transmitindo seus valores de carinho, cuidado e proximidade.",
+    },
     // The Figma closing frames touch; two rows hold a pair of photos each.
     gallery: {
       lead: [TATI_WIDE("logo-patterns")],
@@ -625,7 +662,7 @@ export const PROJECTS: readonly Project[] = [
     },
   },
   {
-    // Only on the home (Figma "Projeto Allce" variant "projeto").
+    // Home slide "projeto"; its Figma page (3309:5006) is still a placeholder.
     slug: "gilberto-do-acordeon",
     name: "Gilberto do Acordeon",
     title: "Gilberto do Acordeon",
@@ -643,28 +680,12 @@ export const PROJECTS: readonly Project[] = [
       client: "Gilberto do Acordeon",
       year: "2026",
       handle: "/gilbertodoacordeon",
-      description: SHOWCASE_DESCRIPTION,
-      disciplines: SHOWCASE_DISCIPLINES,
+      logo: GILBERTO_LOGO_LIGHT,
+      description: "A singer and accordion player from the south",
+      disciplines: VISUAL_IDENTITY,
     },
   },
 ];
-
-/**
- * Figma "Projeto view Services" slides: every variant shows this Grupo
- * Penguin placeholder.
- */
-export const PROJECT_SHOWCASE = {
-  slug: "grupo-penguin",
-  image: asset("/images/services/project-slide.webp"),
-  info: {
-    client: "grupo penguin",
-    year: "2026",
-    handle: "/grupopenguin",
-    logo: PENGUIN_LOGO_LIGHT,
-    description: SHOWCASE_DESCRIPTION,
-    disciplines: SHOWCASE_DISCIPLINES,
-  } satisfies ShowcaseInfo,
-} as const;
 
 export const SHOWCASE_LABELS = {
   client: "Client",
@@ -679,6 +700,3 @@ export function getProjectHref(project: Pick<Project, "slug">) {
 export function findProject(slug: string) {
   return PROJECTS.find((project) => project.slug === slug);
 }
-
-/** Studio "Projects Lead" card. */
-export const FEATURED_PROJECT = PROJECTS[0];

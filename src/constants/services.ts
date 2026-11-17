@@ -68,8 +68,8 @@ export function serviceOrder(active: ServiceId) {
 export const SERVICES_PAGE = {
   title: "Services",
   defaultService: "branding",
-  /** Three slides per service in the Figma. */
-  slidesPerService: 3,
+  /** Figma "Project view" (3309:5445): the same four slides on every service. */
+  slides: ["allce", "grupo-penguin", "conexao-duo", "elle-fanning"],
   back: "back",
 } as const;
 
