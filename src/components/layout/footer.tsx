@@ -130,8 +130,10 @@ export function Footer({ tone = "red" }: FooterProps) {
               data-reveal
               className="lg:absolute lg:top-446 lg:left-1762 lg:w-57"
             >
+              {/* Figma stacks the number in a 57px column; phones keep it on one line. */}
               {STUDIO_INFO.phone.map((part, index) => (
-                <span key={index} className="block">
+                <span key={index} className="lg:block">
+                  {index > 0 && " "}
                   {part}
                 </span>
               ))}

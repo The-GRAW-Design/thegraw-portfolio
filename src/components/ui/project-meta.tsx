@@ -13,7 +13,8 @@ export function ProjectMeta({ info, className }: ShowcaseProps) {
   return (
     <dl
       className={cn(
-        "flex justify-between text-fine whitespace-nowrap uppercase",
+        // 12px on phones, where the Figma 11.6 would bottom out at 10px.
+        "flex justify-between text-caption whitespace-nowrap uppercase lg:text-fine",
         className,
       )}
     >
