@@ -19,16 +19,21 @@ export function LetsWorkSection() {
         {LETS_WORK.title}
       </ProximityText>
 
-      <Reveal className="flex flex-col items-start gap-32 px-16 lg:absolute lg:top-510 lg:left-1373 lg:w-373 lg:p-0">
+      <Reveal className="flex flex-col items-start gap-20 px-16 lg:absolute lg:top-510 lg:left-1373 lg:w-373 lg:gap-32 lg:p-0">
         <p data-reveal className="text-body leading-[0.93] tracking-snug">
           {LETS_WORK.copy[0]}
           <br />
           {LETS_WORK.copy[1]}
         </p>
         <div data-reveal>
-          {/* The CTA pulls toward the cursor (React Bits Magnet). */}
+          {/* The CTA pulls toward the cursor (React Bits Magnet). On phones
+              it gets a taller tap area, with the same gap above it. */}
           <Magnet padding={70} magnetStrength={4} maxOffset={14}>
-            <ArrowLink href={PROPOSAL_HREF} tone="red">
+            <ArrowLink
+              href={PROPOSAL_HREF}
+              tone="red"
+              className="py-12 lg:py-0"
+            >
               {PROPOSAL_CTA}
             </ArrowLink>
           </Magnet>
