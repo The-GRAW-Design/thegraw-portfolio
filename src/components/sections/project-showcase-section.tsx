@@ -32,11 +32,20 @@ export function ProjectShowcaseSection({
     >
       <UnderReveal className="min-h-svh lg:absolute lg:inset-0 lg:min-h-0">
         <ParallaxImage src={showcase.background} alt="" amount={4} />
-        <div className="relative flex flex-col gap-48 px-16 pt-112 pb-64 lg:absolute lg:top-63 lg:left-177 lg:w-1566 lg:flex-row lg:items-end lg:justify-between lg:p-0">
+        {/* Phones: the details sit low over the photo, so it darkens there
+            (the Figma image shade) to keep them readable on light photos. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%] bg-linear-to-t from-shade to-transparent lg:hidden"
+        />
+        {/* Phones: card and details share one screen, the card shrinking on
+            short screens (down to 240px) to leave room for the details. */}
+        <div className="relative flex min-h-svh flex-col justify-between gap-32 px-16 pt-96 pb-48 lg:absolute lg:top-63 lg:left-177 lg:min-h-0 lg:w-1566 lg:flex-row lg:items-end lg:justify-between lg:gap-48 lg:p-0">
           <ShowcaseCard
             href={getProjectHref(project)}
             image={showcase.card}
             handle={showcase.handle}
+            className="w-[min(100%,max(var(--spacing)*240,(100svh-var(--spacing)*400)*450.45/605.111))]"
           />
           <Reveal
             stagger={0.1}
