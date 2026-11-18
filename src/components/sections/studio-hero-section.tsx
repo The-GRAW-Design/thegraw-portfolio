@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useCallback, useRef, useState, type PointerEvent } from "react";
 import { ParallaxImage } from "@/components/ui/parallax-image";
-import { PixelSwap } from "@/components/ui/pixel-swap";
 import { ProximityText } from "@/components/ui/proximity-text";
 import { Magnet } from "@/components/ui/react-bits/magnet";
 import { SplitReveal } from "@/components/ui/split-reveal";
@@ -19,12 +18,22 @@ const MEMBER_COUNT = TEAM_MEMBERS.length;
 /** Photo hover: how far it pans toward the cursor (px) and how much it zooms. */
 const PAN = 18;
 const PAN_ZOOM = 1.05;
+/** Photo swap: the new photo wipes in over the old one, which drifts away. */
+const SWAP_DURATION = 1.1;
+const SWAP_ZOOM = 1.12;
+/** How far the new photo slides in and the old one drifts out (percent). */
+const SWAP_SHIFT_IN = 8;
+const SWAP_SHIFT_OUT = 12;
+/** How dark the old photo gets as it leaves. */
+const SWAP_SHADE = 0.55;
+/** Clip that hides a photo on the side it comes from. */
+const CLIP_SHOWN = "inset(0% 0% 0% 0%)";
+const clipHidden = (direction: 1 | -1) =>
+  direction === 1 ? "inset(0% 0% 0% 100%)" : "inset(0% 100% 0% 0%)";
 
 /** Figma "Studio" hero: portrait, team member and headline. */
 export function StudioHeroSection() {
   const [index, setIndex] = useState(0);
-  /** The photo on screen: it changes under the pixels, halfway through the swap. */
-  const [shown, setShown] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
   const member = TEAM_MEMBERS[index];
   const go = (step: 1 | -1) => {
@@ -63,6 +72,76 @@ export function StudioHeroSection() {
     { scope: photoRef, dependencies: [reducedMotion] },
   );
 
+  // Swap: the next photo wipes in from the arrow's side, settling from a
+  // slight zoom, while the current one drifts the other way and darkens.
+  const shownRef = useRef(0);
+  const swapRef = useRef<gsap.core.Timeline | null>(null);
+  useGSAP(
+    () => {
+      const from = shownRef.current;
+      if (from === index) return;
+      shownRef.current = index;
+      // A click during a swap finishes it first, so the layers stay in order.
+      swapRef.current?.progress(1).kill();
+
+      const slides = gsap.utils.toArray<HTMLElement>("[data-slide]");
+      const outgoing = slides[from];
+      const incoming = slides[index];
+      slides.forEach((slide) => {
+        if (slide !== outgoing && slide !== incoming)
+          gsap.set(slide, { autoAlpha: 0, zIndex: 0 });
+      });
+      const reset = () => {
+        gsap.set(outgoing, { autoAlpha: 0, zIndex: 0 });
+        gsap.set(outgoing.querySelector("[data-slide-inner]"), {
+          clearProps: "transform",
+        });
+        gsap.set(outgoing.querySelector("[data-slide-shade]"), { opacity: 0 });
+      };
+      gsap.set(incoming, { autoAlpha: 1, zIndex: 2, clipPath: CLIP_SHOWN });
+      gsap.set(outgoing, { zIndex: 1, clipPath: CLIP_SHOWN });
+      if (reducedMotion) {
+        reset();
+        return;
+      }
+
+      const timeline = gsap.timeline({ onComplete: reset });
+      timeline
+        .fromTo(
+          incoming,
+          { clipPath: clipHidden(direction) },
+          { clipPath: CLIP_SHOWN, duration: SWAP_DURATION, ease: EASE.inOut },
+        )
+        .fromTo(
+          incoming.querySelector("[data-slide-inner]"),
+          { scale: SWAP_ZOOM, xPercent: SWAP_SHIFT_IN * direction },
+          {
+            scale: 1,
+            xPercent: 0,
+            duration: SWAP_DURATION * 1.4,
+            ease: EASE.expo,
+          },
+          0,
+        )
+        .to(
+          outgoing.querySelector("[data-slide-inner]"),
+          {
+            xPercent: -SWAP_SHIFT_OUT * direction,
+            duration: SWAP_DURATION,
+            ease: EASE.inOut,
+          },
+          0,
+        )
+        .to(
+          outgoing.querySelector("[data-slide-shade]"),
+          { opacity: SWAP_SHADE, duration: SWAP_DURATION, ease: EASE.inOut },
+          0,
+        );
+      swapRef.current = timeline;
+    },
+    { scope: photoRef, dependencies: [index] },
+  );
+
   // The photo leans toward the cursor and zooms in a little.
   const onPhotoMove = useCallback((event: PointerEvent<HTMLDivElement>) => {
     const pan = panTo.current;
@@ -89,7 +168,7 @@ export function StudioHeroSection() {
     >
       <DitherImage {...STUDIO_DITHER} animation="intro" />
 
-      {/* Each member's photo; a new one comes in under a sweep of pixels. */}
+      {/* Each member's photo; a new one wipes in over the last. */}
       <div
         ref={photoRef}
         onPointerMove={onPhotoMove}
@@ -98,18 +177,31 @@ export function StudioHeroSection() {
       >
         <div data-pan className="absolute inset-0">
           {TEAM_MEMBERS.map((person, personIndex) => (
-            <ParallaxImage
+            <div
               key={person.name}
-              src={person.photo}
-              alt=""
-              priority={personIndex === 0}
-              sizes="(min-width: 1024px) 47vw, 100vw"
-              className={personIndex === shown ? "opacity-100" : "opacity-0"}
-              settle="load"
-            />
+              data-slide
+              className={cn(
+                "absolute inset-0 overflow-hidden",
+                personIndex !== 0 && "invisible",
+              )}
+            >
+              <div data-slide-inner className="absolute inset-0">
+                <ParallaxImage
+                  src={person.photo}
+                  alt=""
+                  priority={personIndex === 0}
+                  sizes="(min-width: 1024px) 47vw, 100vw"
+                  settle="load"
+                />
+              </div>
+              <div
+                data-slide-shade
+                aria-hidden
+                className="pointer-events-none absolute inset-0 bg-black-graw opacity-0"
+              />
+            </div>
           ))}
         </div>
-        <PixelSwap index={index} direction={direction} onSwap={setShown} />
       </div>
 
       <h1 className="sr-only">{STUDIO_PAGE.title}</h1>
