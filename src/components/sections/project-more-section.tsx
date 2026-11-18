@@ -53,13 +53,14 @@ export function ProjectMoreSection({ project }: ProjectMoreSectionProps) {
           ))}
         </Reveal>
         {/* The letters flip up with the scroll (React Bits ScrollFloat), with
-            nothing clipping them on the way. */}
+            nothing clipping them on the way. On phones END gets its own row
+            under the credits instead of covering the last one. */}
         <ScrollFloat
           tag="p"
           effect="flip"
           ease={EASE.inOut}
           stagger={0.08}
-          containerClassName="pointer-events-none overflow-visible col-start-1 row-start-1 mt-auto justify-self-end text-end text-orange lg:mt-55 lg:ml-714 lg:h-334 lg:w-606 lg:justify-self-start"
+          containerClassName="pointer-events-none overflow-visible col-start-1 row-start-2 mt-24 justify-self-end text-end text-orange lg:row-start-1 lg:mt-55 lg:ml-714 lg:h-334 lg:w-606 lg:justify-self-start"
         >
           {PROJECT_PAGE.end}
         </ScrollFloat>
