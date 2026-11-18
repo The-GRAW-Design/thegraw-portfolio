@@ -9,7 +9,8 @@ import { DitherImage } from "@/features/dither-image";
  * The headline scales with the section, not the viewport, so its first and
  * last letters stay clear of the scrollbar. Once that extra 30% is shown it
  * stays put, so the case studies glass slides over it, while the headline
- * keeps drifting up in front of the image.
+ * keeps drifting up in front of the image. On a phone held sideways it also
+ * keeps the Figma proportion to the screen height, so it fits the first screen.
  */
 export function HeroSection() {
   return (
@@ -28,7 +29,7 @@ export function HeroSection() {
           split="chars"
           trigger="load"
           delay={0.35}
-          className="font-blackletter text-hero whitespace-nowrap text-white-graw [--fluid:calc(100cqw/1920)]"
+          className="font-blackletter text-hero whitespace-nowrap text-white-graw [--fluid:calc(100cqw/1920)] max-lg:landscape:[--fluid:min(calc(100cqw/1920),calc(100svh/1080))]"
         >
           Building for victory
         </SplitReveal>
