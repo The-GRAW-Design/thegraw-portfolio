@@ -14,7 +14,7 @@ import { SplitReveal } from "@/components/ui/split-reveal";
 import { findProject, getProjectHref } from "@/constants/projects";
 import { SERVICES_PAGE } from "@/constants/services";
 import { useLenis } from "@/hooks/use-lenis";
-import { EASE, gsap, useGSAP } from "@/lib/gsap";
+import { EASE, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import type { Project, ProjectShowcase } from "@/types/project";
 
 type ServicesProjectsSectionProps = {
@@ -35,11 +35,68 @@ const SLIDES = SERVICES_PAGE.slides
       project?.showcase !== undefined,
   );
 
+/** Pinned scroll with a mouse; native swipe on touch screens. */
+const MOTION = "(prefers-reduced-motion: no-preference)";
+const MOUSE = "(hover: hover) and (pointer: fine)";
+const TOUCH = "(pointer: coarse)";
+/** How far the swipe hint pulls the track, in viewport widths. */
+const SWIPE_HINT = 0.14;
+
+type SlideScroll =
+  | { containerAnimation: gsap.core.Tween }
+  | { scroller: HTMLElement; horizontal: true };
+
+/**
+ * A slide's motion while it crosses the screen sideways: the image drifts
+ * against the movement and the content comes in from the right.
+ */
+function animateSlide(
+  item: HTMLElement,
+  index: number,
+  section: HTMLElement,
+  scroll: SlideScroll,
+) {
+  const image = item.querySelector("[data-slide-image]");
+  const content = item.querySelectorAll("[data-slide-content] > *");
+  gsap.fromTo(
+    image,
+    { xPercent: -5 },
+    {
+      xPercent: 5,
+      ease: "none",
+      scrollTrigger: {
+        ...scroll,
+        trigger: item,
+        start: "left right",
+        end: "right left",
+        scrub: true,
+      },
+    },
+  );
+  gsap.from(content, {
+    x: 140,
+    autoAlpha: 0,
+    duration: 1,
+    ease: EASE.out,
+    stagger: 0.08,
+    scrollTrigger:
+      index === 0
+        ? { trigger: section, start: "top 60%", once: true }
+        : {
+            ...scroll,
+            trigger: item,
+            start: "left 75%",
+            toggleActions: "play none none reverse",
+          },
+  });
+}
+
 /**
  * Figma "Projetos" (7656×1080): the "Project view" slides side by side, each a
  * home slide ("Projeto Allce") without its card.
- * The section pins and the vertical scroll moves the slides sideways; without
- * motion it is a plain horizontal scroller.
+ * With a mouse the section pins and the vertical scroll moves the slides
+ * sideways; on touch screens they are swiped, and without motion it is a
+ * plain horizontal scroller.
  */
 export function ServicesProjectsSection({
   label,
@@ -57,8 +114,11 @@ export function ServicesProjectsSection({
       const track = trackRef.current;
       if (!section || !viewport || !track) return;
 
+      const slides = gsap.utils.toArray<HTMLElement>("[data-slide]", section);
       const media = gsap.matchMedia();
-      media.add("(prefers-reduced-motion: no-preference)", () => {
+
+      // Mouse: the section pins and the vertical scroll moves the slides.
+      media.add(`${MOTION} and ${MOUSE}`, () => {
         viewport.style.overflowX = "hidden";
         const distance = () => track.scrollWidth - viewport.clientWidth;
         const slide = gsap.to(track, {
@@ -74,46 +134,78 @@ export function ServicesProjectsSection({
           },
         });
 
-        gsap.utils
-          .toArray<HTMLElement>("[data-slide]", section)
-          .forEach((item, index) => {
-            const image = item.querySelector("[data-slide-image]");
-            const content = item.querySelectorAll("[data-slide-content] > *");
-            gsap.fromTo(
-              image,
-              { xPercent: -5 },
-              {
-                xPercent: 5,
-                ease: "none",
-                scrollTrigger: {
-                  trigger: item,
-                  containerAnimation: slide,
-                  start: "left right",
-                  end: "right left",
-                  scrub: true,
-                },
-              },
-            );
-            gsap.from(content, {
-              x: 140,
-              autoAlpha: 0,
-              duration: 1,
-              ease: EASE.out,
-              stagger: 0.08,
-              scrollTrigger:
-                index === 0
-                  ? { trigger: section, start: "top 60%", once: true }
-                  : {
-                      trigger: item,
-                      containerAnimation: slide,
-                      start: "left 75%",
-                      toggleActions: "play none none reverse",
-                    },
-            });
-          });
+        slides.forEach((item, index) =>
+          animateSlide(item, index, section, {
+            containerAnimation: slide,
+          }),
+        );
 
         return () => {
           viewport.style.overflowX = "";
+        };
+      });
+
+      // Touch: the slides are swiped sideways (native scroll with snap) and
+      // the same motion follows that scroll. Once the section comes in, the
+      // track nudges sideways so it shows it can be swiped.
+      media.add(`${MOTION} and ${TOUCH}`, () => {
+        slides.forEach((item, index) =>
+          animateSlide(item, index, section, {
+            scroller: viewport,
+            horizontal: true,
+          }),
+        );
+
+        const nudge = { left: 0 };
+        const hint = gsap
+          .timeline({
+            paused: true,
+            onStart: () => {
+              viewport.style.scrollSnapType = "none";
+            },
+            onComplete: () => {
+              viewport.style.scrollSnapType = "";
+            },
+          })
+          .to(nudge, {
+            left: () => viewport.clientWidth * SWIPE_HINT,
+            duration: 0.6,
+            ease: EASE.out,
+            onUpdate: () => {
+              viewport.scrollLeft = nudge.left;
+            },
+          })
+          .to(nudge, {
+            left: 0,
+            duration: 0.6,
+            ease: EASE.inOut,
+            onUpdate: () => {
+              viewport.scrollLeft = nudge.left;
+            },
+          });
+        const start = gsap.delayedCall(0.6, () => hint.play()).pause();
+        const trigger = ScrollTrigger.create({
+          trigger: section,
+          start: "top 40%",
+          once: true,
+          onEnter: () => {
+            if (viewport.scrollLeft === 0) start.restart(true);
+          },
+        });
+        // Touching the slides first (or during the hint) cancels it.
+        const stopHint = () => {
+          start.kill();
+          hint.kill();
+          viewport.style.scrollSnapType = "";
+        };
+        viewport.addEventListener("touchstart", stopHint, { passive: true });
+
+        return () => {
+          trigger.kill();
+          start.kill();
+          hint.kill();
+          viewport.removeEventListener("touchstart", stopHint);
+          viewport.style.scrollSnapType = "";
         };
       });
       return () => media.revert();
@@ -133,10 +225,13 @@ export function ServicesProjectsSection({
       aria-label={label}
       className="@container relative h-svh overflow-hidden bg-black-graw text-white"
     >
+      {/* Lenis contains the overscroll of `data-lenis-prevent-horizontal` on
+          both axes; the vertical one is let through so a vertical swipe over
+          the slides still scrolls the page. */}
       <div
         ref={viewportRef}
         data-lenis-prevent-horizontal
-        className="absolute inset-0 snap-x snap-mandatory [scrollbar-width:none] overflow-x-auto"
+        className="absolute inset-0 snap-x snap-mandatory [scrollbar-width:none] overflow-x-auto overscroll-y-auto!"
       >
         <ul ref={trackRef} className="flex h-full w-max">
           {SLIDES.map((project) => (
