@@ -209,9 +209,11 @@ export function CasesShowcase() {
         const nearest = Math.round(position);
 
         // The cursor in collage design px (the case on stage sits at the
-        // stage center, like the CSS of `COLLAGE_BOX`).
+        // stage center, like the CSS of `COLLAGE_BOX`). Pieces overlap the
+        // main image: with the cursor on one of them nothing makes room, or
+        // the piece would run from the cursor that is hovering it.
         let overMain = false;
-        if (still && pointer.inside) {
+        if (still && pointer.inside && repelRef.current === null) {
           const bounds = stage.getBoundingClientRect();
           const cursorX =
             (pointer.clientX - bounds.left - bounds.width / 2) / unit +
@@ -219,7 +221,21 @@ export function CasesShowcase() {
           const cursorY =
             (pointer.clientY - bounds.top - bounds.height / 2) / unit +
             BOX_FROM_CENTER.y;
+          // Nor where a piece rests: there the room closes again and the
+          // piece comes back under the cursor, instead of backing off as
+          // fast as the cursor reaches for it.
+          const onPiece = CASE_COLLAGE.pieces.some(({ rect }, index) => {
+            const x = cursorX - drift[index].x / unit;
+            const y = cursorY - drift[index].y / unit;
+            return (
+              x >= rect.x &&
+              x <= rect.x + rect.width &&
+              y >= rect.y &&
+              y <= rect.y + rect.height
+            );
+          });
           overMain =
+            !onPiece &&
             cursorX >= MAIN_RECT.x &&
             cursorX <= MAIN_RECT.x + MAIN_RECT.width &&
             cursorY >= MAIN_RECT.y &&
