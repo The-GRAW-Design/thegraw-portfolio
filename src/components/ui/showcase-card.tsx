@@ -91,11 +91,14 @@ export function ShowcaseCard({
         </span>
       </GlareHover>
       <span className="relative flex">
-        <span className="flex h-48 min-w-0 flex-1 items-center gap-24 bg-night pl-16 whitespace-nowrap lg:h-54 lg:gap-48.25 lg:pl-19.25">
+        <span className="flex h-48 min-w-0 flex-1 items-center gap-24 overflow-hidden bg-night pl-16 whitespace-nowrap lg:h-54 lg:gap-48.25 lg:pl-19.25">
           <span className="text-lead">
             <ShuffleText>{SHOWCASE_LABELS.explore}</ShuffleText>
           </span>
-          <span className="text-fine uppercase">{handle}</span>
+          {/* A narrow card on a small phone cuts the handle short. */}
+          <span className="min-w-0 truncate pr-8 text-caption uppercase lg:pr-0 lg:text-fine">
+            {handle}
+          </span>
         </span>
         <Image
           src={asset("/icons/explore-arrow.svg")}
