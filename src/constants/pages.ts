@@ -34,7 +34,11 @@ export const PROJECT_PAGE = {
   end: "END",
 } as const;
 
-/** Figma team photo of a member, cropped to the 897×1080 photo box. */
+/**
+ * Figma team photo of a member, cropped from the Figma original to the
+ * 897×1080 photo box with the face centred, the eyes at 38% of the height and
+ * the heads about the same size, so the photos line up as they swap.
+ */
 const teamPhoto = (slug: string) => asset(`/images/studio/team-${slug}.webp`);
 
 /**
