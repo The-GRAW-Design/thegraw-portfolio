@@ -15,6 +15,8 @@ import { asset } from "@/utils/asset";
 import { cn } from "@/utils/cn";
 
 const MEMBER_COUNT = TEAM_MEMBERS.length;
+/** Parallax travel of the photos, in percent of their height. */
+const PHOTO_DRIFT = 3;
 /** Photo hover: how far it pans toward the cursor (px) and how much it zooms. */
 const PAN = 18;
 const PAN_ZOOM = 1.05;
@@ -168,12 +170,13 @@ export function StudioHeroSection() {
     >
       <DitherImage {...STUDIO_DITHER} animation="intro" />
 
-      {/* Each member's photo; a new one wipes in over the last. */}
+      {/* Each member's photo; a new one wipes in over the last. Isolated, so
+          the stacked slides stay under the role headline. */}
       <div
         ref={photoRef}
         onPointerMove={onPhotoMove}
         onPointerLeave={onPhotoLeave}
-        className="relative h-[60svh] w-full overflow-hidden lg:absolute lg:inset-y-0 lg:left-0 lg:h-auto lg:w-897"
+        className="relative isolate h-[60svh] w-full overflow-hidden lg:absolute lg:inset-y-0 lg:left-0 lg:h-auto lg:w-897"
       >
         <div data-pan className="absolute inset-0">
           {TEAM_MEMBERS.map((person, personIndex) => (
@@ -186,11 +189,17 @@ export function StudioHeroSection() {
               )}
             >
               <div data-slide-inner className="absolute inset-0">
+                {/* A shorter drift than the default, so its zoom keeps the
+                    room above the head. A box wider than the photo (tablets,
+                    wide screens) crops it near the top to keep the hair; the
+                    thin band of a phone held sideways centres on the eyes. */}
                 <ParallaxImage
                   src={person.photo}
                   alt=""
                   priority={personIndex === 0}
                   sizes="(min-width: 1024px) 47vw, 100vw"
+                  amount={PHOTO_DRIFT}
+                  imageClassName="object-[50%_20%] max-lg:landscape:object-[50%_35%]"
                   settle="load"
                 />
               </div>
