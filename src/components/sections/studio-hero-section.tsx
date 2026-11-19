@@ -168,12 +168,13 @@ export function StudioHeroSection() {
     >
       <DitherImage {...STUDIO_DITHER} animation="intro" />
 
-      {/* Each member's photo; a new one wipes in over the last. */}
+      {/* Each member's photo; a new one wipes in over the last. Isolated, so
+          the stacked slides stay under the role headline. */}
       <div
         ref={photoRef}
         onPointerMove={onPhotoMove}
         onPointerLeave={onPhotoLeave}
-        className="relative h-[60svh] w-full overflow-hidden lg:absolute lg:inset-y-0 lg:left-0 lg:h-auto lg:w-897"
+        className="relative isolate h-[60svh] w-full overflow-hidden lg:absolute lg:inset-y-0 lg:left-0 lg:h-auto lg:w-897"
       >
         <div data-pan className="absolute inset-0">
           {TEAM_MEMBERS.map((person, personIndex) => (
