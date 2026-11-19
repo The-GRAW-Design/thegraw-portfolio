@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { ParallaxImage } from "@/components/ui/parallax-image";
 import { ProgressiveBlur } from "@/components/ui/progressive-blur";
 import { SplitReveal } from "@/components/ui/split-reveal";
@@ -23,15 +23,30 @@ type ServicesHeroSectionProps = {
  * and blurred toward the bottom-right corner, and the three services, the
  * selected one at the bottom in white. Picking another one turns the list
  * until it reaches the bottom, and its photo fades in.
+ * Like the home hero it is sticky: once its bottom reaches the bottom of the
+ * screen it stays put, and the projects slide over it.
  */
 export function ServicesHeroSection({
   active,
   onSelect,
 }: ServicesHeroSectionProps) {
+  const sectionRef = useRef<HTMLElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const itemRefs = useRef(new Map<ServiceId, HTMLLIElement>());
   /** Where each item was before the list turned (FLIP). */
   const lastTops = useRef<Map<ServiceId, number> | null>(null);
+
+  // Its height feeds the sticky offset (taller than the screen on desktop,
+  // and on phones whenever the text does not fit).
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const observer = new ResizeObserver(() => {
+      section.style.setProperty("--hero-h", `${section.offsetHeight}px`);
+    });
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
 
   // Each item glides from where it was to its new line.
   useGSAP(
@@ -68,8 +83,9 @@ export function ServicesHeroSection({
 
   return (
     <section
+      ref={sectionRef}
       data-header-theme="light"
-      className="relative flex min-h-svh flex-col justify-end overflow-hidden bg-black-graw px-16 pt-120 pb-64 text-white lg:block lg:h-1400 lg:min-h-0 lg:p-0"
+      className="sticky top-[min(0px,calc(100svh-var(--hero-h,100svh)))] flex min-h-svh flex-col justify-end overflow-hidden bg-black-graw px-16 pt-120 pb-64 text-white lg:block lg:h-1400 lg:min-h-0 lg:p-0"
     >
       {SERVICE_OFFER.map((service) => (
         <ParallaxImage

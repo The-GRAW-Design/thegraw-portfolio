@@ -223,7 +223,7 @@ export function ServicesProjectsSection({
       ref={sectionRef}
       data-header-theme="light"
       aria-label={label}
-      className="@container relative h-svh overflow-hidden bg-black-graw text-white"
+      className="@container relative z-10 h-svh overflow-hidden bg-black-graw text-white"
     >
       {/* Lenis contains the overscroll of `data-lenis-prevent-horizontal` on
           both axes; the vertical one is let through so a vertical swipe over
