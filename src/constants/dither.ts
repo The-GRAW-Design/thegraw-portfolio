@@ -6,9 +6,6 @@ type DitherPreset = Omit<DitherImageProps, "alt" | "animation" | "className">;
 /** Plain cover of the container, used on small screens. */
 const COVER_FRAME: DitherFrame = { x: 0, y: 0, width: 1, height: 1 };
 
-/** The desktop hero runs 30% past the first screen (`lg:h-[130svh]`). */
-const HERO_SCREENS = 1.3;
-
 /**
  * Figma "Desktop - 2" (site 2.0): the knight with the banner, 2500×2276 at
  * (-153, -424) in the 1920×1080 frame; phones: 401×852 at (-6, 0) in the
@@ -38,20 +35,12 @@ export const HERO_DITHER: DitherPreset = {
   levels: 7,
   brightness: 82,
   contrast: 1,
-  // Kept on the first screen: the image already runs past it, into the extra 30%.
-  frame: {
-    ...HERO_FRAME,
-    y: HERO_FRAME.y / HERO_SCREENS,
-    height: HERO_FRAME.height / HERO_SCREENS,
-  },
+  frame: HERO_FRAME,
   mobileFrame: { x: -0.01527, y: 0, width: 1.02036, height: 1 },
 };
 
-/** 404: the home hero on a single screen (the image keeps its Figma frame). */
-export const NOT_FOUND_DITHER: DitherPreset = {
-  ...HERO_DITHER,
-  frame: HERO_FRAME,
-};
+/** 404: the home hero, on a single screen like it. */
+export const NOT_FOUND_DITHER: DitherPreset = HERO_DITHER;
 
 /** Figma "Footer": image at 29% over RED GRAW, offset −15%, scatter 50%, then Pixelate (2px, 16 levels). */
 export const FOOTER_DITHER: DitherPreset = {
