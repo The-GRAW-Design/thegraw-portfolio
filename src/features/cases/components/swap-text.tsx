@@ -32,7 +32,8 @@ export function SwapText({
       // stuck out of its clip).
       gsap.fromTo(
         textRef.current,
-        { yPercent: 110 * direction },
+        // Far enough that accents above the letters stay out of the clip.
+        { yPercent: 200 * direction },
         {
           yPercent: 0,
           duration: DURATION.hover + 0.3,
