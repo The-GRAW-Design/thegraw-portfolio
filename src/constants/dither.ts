@@ -128,6 +128,26 @@ export const PROJECTS_INTRO_DITHER: DitherPreset = {
   mobileFrame: { x: -0.07379, y: 0, width: 1.1145, height: 2.06553 },
 };
 
+/**
+ * Figma home "Frame 81" (1920×788, phones 393×852): the "Projetos" grain on
+ * another photo, 2336×1314 at (-208, -220); phones 1526×858 at (-594, 0).
+ */
+export const CONTACT_DITHER: DitherPreset = {
+  ...PROJECTS_INTRO_DITHER,
+  src: asset("/images/home/contact-texture.webp"),
+  frame: { x: -0.10833, y: -0.27919, width: 1.21667, height: 1.66751 },
+  mobileFrame: { x: -1.5125, y: 0, width: 3.88295, height: 1.00704 },
+};
+
+/**
+ * Site 2.0 footer (Figma home "Footer", 1920×608; phones 393×612): the dark
+ * footer grain, the figure 509×856 at (-55, -4) on phones.
+ */
+export const FOOTER_GRAW_DITHER: DitherPreset = {
+  ...FOOTER_DARK_DITHER,
+  mobileFrame: { x: -0.13995, y: -0.00654, width: 1.29517, height: 1.39869 },
+};
+
 /** Figma "Studio" hero: image at 14% over BLACK GRAW, offset −15%, scatter 50%. */
 export const STUDIO_DITHER: DitherPreset = {
   src: asset("/images/studio/hero-texture.webp"),

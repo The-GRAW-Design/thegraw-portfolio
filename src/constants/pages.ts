@@ -27,6 +27,12 @@ export const HOME_PAGE = {
     "conexao-duo",
   ],
   viewAllCases: "Ver todos os projetos",
+  /** Figma "Frame 81": the call to work together. */
+  contact: {
+    title: "Vamos criar juntos",
+    copy: "Queremos entender os detalhes do seu próximo projeto! Será um prazer co-criar com o seu time.",
+    cta: "Solicite sua proposta",
+  },
   viewAllImage: asset("/images/home/view-all-band.webp"),
 } as const;
 

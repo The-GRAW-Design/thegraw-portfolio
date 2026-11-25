@@ -6,8 +6,10 @@ import { asset } from "@/utils/asset";
 type ArrowLinkProps = {
   href: string;
   children: string;
-  tone?: "light" | "dark" | "red";
+  tone?: keyof typeof TONES;
   className?: string;
+  /** Size of the arrow box (20px by default). */
+  iconClassName?: string;
 };
 
 const TONES = {
@@ -17,10 +19,14 @@ const TONES = {
     icon: asset("/icons/arrow-up-right-dark.svg"),
   },
   red: { text: "text-red-graw", icon: asset("/icons/arrow-up-right-red.svg") },
+  graw: {
+    text: "text-white-graw",
+    icon: asset("/icons/arrow-up-right-graw.svg"),
+  },
 } as const;
 
 const ARROW =
-  "absolute inset-0 size-20 transition-transform duration-500 ease-expo motion-reduce:transition-none";
+  "absolute inset-0 size-full transition-transform duration-500 ease-expo motion-reduce:transition-none";
 const ARROW_OUT =
   "group-hover:translate-x-full group-hover:-translate-y-full group-focus-visible:translate-x-full group-focus-visible:-translate-y-full";
 const ARROW_IN =
@@ -32,6 +38,7 @@ export function ArrowLink({
   children,
   tone = "light",
   className,
+  iconClassName,
 }: ArrowLinkProps) {
   return (
     <a
@@ -44,7 +51,9 @@ export function ArrowLink({
     >
       <ShuffleText>{children}</ShuffleText>
       {/* The arrow leaves through its corner and a copy takes its place. */}
-      <span className="relative block size-20 overflow-hidden">
+      <span
+        className={cn("relative block size-20 overflow-hidden", iconClassName)}
+      >
         <Image
           src={TONES[tone].icon}
           alt=""
