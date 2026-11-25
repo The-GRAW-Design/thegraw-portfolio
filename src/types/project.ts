@@ -84,6 +84,8 @@ export type ProjectCopy = {
 /** The cases page collage of a case: main image and the pieces around it. */
 export type ProjectCollage = {
   main: string;
+  /** The main image for the portrait collage on phones (home); defaults to `main`. */
+  mainPortrait?: string;
   /** Bottom (behind the main), top-left, right and left, as in the Figma. */
   pieces?: readonly [string, string, string, string];
 };

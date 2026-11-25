@@ -255,7 +255,12 @@ const ALL_PROJECTS: readonly Project[] = [
     cover: cover("grupo-penguin"),
     hero: hero("grupo-penguin"),
     // Figma "Projeto" variant "Projeto 1".
-    collage: figmaCollage("grupo-penguin"),
+    collage: {
+      ...figmaCollage("grupo-penguin"),
+      mainPortrait: asset(
+        "/images/projects/grupo-penguin/collage-main-portrait.webp",
+      ),
+    },
     credits: credits(
       { label: "Project director", value: DIRECTOR },
       "Poliana Fernandes",
@@ -678,13 +683,13 @@ const ALL_PROJECTS: readonly Project[] = [
   },
 ];
 
+/** The cases on the site: every project but the hidden ones. */
+/** Labels of the project details (client, year). */
 export const SHOWCASE_LABELS = {
   client: "Client",
   year: "year",
-  explore: "Explore project",
 } as const;
 
-/** The cases on the site: every project but the hidden ones. */
 export const PROJECTS = ALL_PROJECTS.filter((project) => !project.hidden);
 
 export function getProjectHref(project: Pick<Project, "slug">) {

@@ -47,6 +47,32 @@ export const CASE_COLLAGE: CaseCollage = {
 };
 
 /**
+ * Figma "Mobile - home" collage (Group 34963, 354×460): the same pieces, in
+ * the same order, around a portrait main image.
+ */
+export const CASE_COLLAGE_MOBILE: CaseCollage = {
+  main: { rect: { x: 58.88, y: 38.11, width: 246.47, height: 398.51 } },
+  pieces: [
+    {
+      ...CASE_COLLAGE.pieces[0],
+      rect: { x: 202, y: 111, width: 151.09, height: 85.93 },
+    },
+    {
+      ...CASE_COLLAGE.pieces[1],
+      rect: { x: 146, y: 0, width: 136.24, height: 76.27 },
+    },
+    {
+      ...CASE_COLLAGE.pieces[2],
+      rect: { x: 165.32, y: 354, width: 188.66, height: 105.76 },
+    },
+    {
+      ...CASE_COLLAGE.pieces[3],
+      rect: { x: 0, y: 237, width: 113, height: 63.23 },
+    },
+  ],
+};
+
+/**
  * "all projects" grid, in Figma order (its "Delete This" medal is Conexão
  * Duo's), then the cases it does not have yet; the ones without a photo show
  * the {EM BREVE} card.

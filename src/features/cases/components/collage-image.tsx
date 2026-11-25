@@ -5,13 +5,19 @@ import { cn } from "@/utils/cn";
 /** Size of the Figma "Projeto" collage, the base of every rectangle. */
 export const COLLAGE_SIZE = { width: 1276, height: 655 } as const;
 
+/** Size of the phone collage of the home (Figma "Mobile - home"). */
+export const COLLAGE_SIZE_MOBILE = { width: 354, height: 460 } as const;
+
 /** Position and size of a collage rectangle, as % of the collage. */
-export function collageBoxStyle({ rect }: CollageSlot) {
+export function collageBoxStyle(
+  { rect }: CollageSlot,
+  size: { width: number; height: number } = COLLAGE_SIZE,
+) {
   return {
-    left: `${(rect.x / COLLAGE_SIZE.width) * 100}%`,
-    top: `${(rect.y / COLLAGE_SIZE.height) * 100}%`,
-    width: `${(rect.width / COLLAGE_SIZE.width) * 100}%`,
-    height: `${(rect.height / COLLAGE_SIZE.height) * 100}%`,
+    left: `${(rect.x / size.width) * 100}%`,
+    top: `${(rect.y / size.height) * 100}%`,
+    width: `${(rect.width / size.width) * 100}%`,
+    height: `${(rect.height / size.height) * 100}%`,
   };
 }
 
