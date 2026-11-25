@@ -7,11 +7,11 @@ const HERO_COVER = "[data-hero-cover]";
 
 /**
  * Figma "Desktop - 3" then "Desktop - 2" / "Mobile - home": the dithered
- * knight holds still on screen. When the site opens on it, it shows the
- * background alone (the knight forms) and the first scroll brings in the
- * blackletter headline, its two lines and the sword (`HeroSword`), which
- * stirs the dither as it lands; coming back from another page, they come in
- * on load. After a short hold, the white "Projetos" and then the cases slide
+ * knight holds still on screen. When the site opens on it on desktop, it
+ * shows the background alone (the knight forms) and the first scroll brings
+ * in the blackletter headline, its two lines and the sword (`HeroSword`),
+ * which stirs the dither as it lands; otherwise (back from another page, or
+ * on phones) they come in on load. After a short hold, the white "Projetos" and then the cases slide
  * over it.
  * It fills the large viewport, so no gap opens under it when a phone's
  * browser bars hide; the words and the sword are placed on the small one

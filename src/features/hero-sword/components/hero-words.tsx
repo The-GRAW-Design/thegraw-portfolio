@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { SplitReveal } from "@/components/ui/split-reveal";
+import { heroWaitsForScroll } from "@/features/hero-sword/utils/intro";
 import { HERO_REVEAL_SCROLL } from "@/features/hero-sword/utils/reveal";
-import { isOpeningPage } from "@/features/page-transition";
 
 type HeroWordsProps = {
   title: string;
@@ -15,13 +15,14 @@ const DELAYS = { scroll: [0, 0.35, 0.45], load: [0.5, 0.9, 1] } as const;
 
 /**
  * The home headline and its two lines (Figma "Desktop - 2" / "Mobile -
- * home"). When the site opens on the home they wait for the first scroll
- * (the hero shows its background alone until then); coming back to the home
- * from another page, they rise on load as the knight forms.
+ * home"). When the site opens on the home, on desktop, they wait for the
+ * first scroll (the hero shows its background alone until then); otherwise
+ * (back from another page, or on phones) they rise on load as the knight
+ * forms.
  */
 export function HeroWords({ title, lines }: HeroWordsProps) {
   // Decided once per visit of the home; the markup is the same either way.
-  const [onScroll] = useState(isOpeningPage);
+  const [onScroll] = useState(heroWaitsForScroll);
   const delays = DELAYS[onScroll ? "scroll" : "load"];
   const reveal = onScroll
     ? { revealAt: HERO_REVEAL_SCROLL }

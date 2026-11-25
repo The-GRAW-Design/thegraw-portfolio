@@ -1,7 +1,7 @@
 /**
- * When the site opens on the home, its hero shows the background alone: the
- * first scroll (this many px) brings in the words and the sword, while the
- * hero holds still. Coming back from another page, they come in on load.
+ * When the site opens on the home (desktop), its hero shows the background
+ * alone: the first scroll (this many px) brings in the words and the sword,
+ * while the hero holds still. Otherwise they come in on load.
  */
 export const HERO_REVEAL_SCROLL = 8;
 
