@@ -21,6 +21,10 @@ import {
   usePieceVisibility,
 } from "@/features/cases/hooks/use-piece-visibility";
 import { useStepInput } from "@/features/cases/hooks/use-step-input";
+import {
+  createPieceMotion,
+  MAIN_PARALLAX,
+} from "@/features/cases/utils/collage-motion";
 import { openCaseTransition } from "@/features/cases/utils/open-case-transition";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { DURATION, EASE, gsap, useGSAP } from "@/lib/gsap";
@@ -33,30 +37,8 @@ const FOLLOW = 0.18;
 const STACK_GAP = 0.92;
 /** How much a case shrinks while it is away from the center. */
 const AWAY_SCALE = 0.06;
-/** Cursor parallax of the main image and of the pieces, in px. */
-const MAIN_PARALLAX = 16;
-const PIECE_PARALLAX = 70;
-/** A hovered piece pushes the others away: strength and falloff, in px. */
-const REPEL_STRENGTH = 185;
-const REPEL_RANGE = 1000;
-/** Share of the push covered per 60fps frame. */
-const REPEL_FOLLOW = 0.02;
-/**
- * With the cursor over the main image the pieces make room: each one moves
- * this far (design px) away from the cursor, eased in and out.
- */
-const ROOM_PUSH = 110;
-const ROOM_FOLLOW = 0.07;
-/** The main image box, in design px of the collage. */
-const MAIN_RECT = CASE_COLLAGE.main.rect;
 /** Where the collage box sits from the stage center (see `COLLAGE_BOX`), in design px. */
 const BOX_FROM_CENTER = { x: 668, y: 302 };
-
-/** Center of each piece, in Figma px of the collage. */
-const PIECE_CENTERS = CASE_COLLAGE.pieces.map(({ rect }) => ({
-  x: rect.x + rect.width / 2,
-  y: rect.y + rect.height / 2,
-}));
 
 /**
  * The collage box: 1276×655 design px, placed like the Figma frame (its main
@@ -153,11 +135,7 @@ export function CasesShowcase() {
       let position = 0;
       const pointer = { x: 0, y: 0, clientX: 0, clientY: 0, inside: false };
       const smooth = { x: 0, y: 0 };
-      /** 0–1: how much the pieces are making room, and around which point. */
-      let room = 0;
-      const roomFrom = { x: 0, y: 0 };
-      const drift = CASE_COLLAGE.pieces.map(() => ({ x: 0, y: 0 }));
-      const push = CASE_COLLAGE.pieces.map(() => ({ x: 0, y: 0 }));
+      const movePieces = createPieceMotion(CASE_COLLAGE);
 
       const onPointerMove = (event: PointerEvent) => {
         if (event.pointerType !== "mouse") return;
@@ -209,105 +187,30 @@ export function CasesShowcase() {
         const nearest = Math.round(position);
 
         // The cursor in collage design px (the case on stage sits at the
-        // stage center, like the CSS of `COLLAGE_BOX`). Pieces overlap the
-        // main image: with the cursor on one of them nothing makes room, or
-        // the piece would run from the cursor that is hovering it.
-        let overMain = false;
-        if (still && pointer.inside && repelRef.current === null) {
+        // stage center, like the CSS of `COLLAGE_BOX`).
+        let cursor: { x: number; y: number } | null = null;
+        if (still && pointer.inside) {
           const bounds = stage.getBoundingClientRect();
-          const cursorX =
-            (pointer.clientX - bounds.left - bounds.width / 2) / unit +
-            BOX_FROM_CENTER.x;
-          const cursorY =
-            (pointer.clientY - bounds.top - bounds.height / 2) / unit +
-            BOX_FROM_CENTER.y;
-          // Nor where a piece rests: there the room closes again and the
-          // piece comes back under the cursor, instead of backing off as
-          // fast as the cursor reaches for it.
-          const onPiece = CASE_COLLAGE.pieces.some(({ rect }, index) => {
-            const x = cursorX - drift[index].x / unit;
-            const y = cursorY - drift[index].y / unit;
-            return (
-              x >= rect.x &&
-              x <= rect.x + rect.width &&
-              y >= rect.y &&
-              y <= rect.y + rect.height
-            );
-          });
-          overMain =
-            !onPiece &&
-            cursorX >= MAIN_RECT.x &&
-            cursorX <= MAIN_RECT.x + MAIN_RECT.width &&
-            cursorY >= MAIN_RECT.y &&
-            cursorY <= MAIN_RECT.y + MAIN_RECT.height;
-          if (overMain) {
-            roomFrom.x = cursorX;
-            roomFrom.y = cursorY;
-          }
+          cursor = {
+            x:
+              (pointer.clientX - bounds.left - bounds.width / 2) / unit +
+              BOX_FROM_CENTER.x,
+            y:
+              (pointer.clientY - bounds.top - bounds.height / 2) / unit +
+              BOX_FROM_CENTER.y,
+          };
         }
-        const roomLag = 1 - Math.pow(1 - ROOM_FOLLOW, frames);
-        room += ((overMain ? 1 : 0) - room) * roomLag;
-
-        const seconds = time;
-        const source = still ? repelRef.current : null;
-        const pushLag = 1 - Math.pow(1 - REPEL_FOLLOW, frames);
-        CASE_COLLAGE.pieces.forEach((piece, index) => {
-          const [seedX, seedY] = piece.seed;
-          const followX = Math.min(1, (0.045 + 0.12 * seedX) * frames);
-          const followY = Math.min(1, (0.045 + 0.12 * seedY) * frames);
-          const goalX = pointer.x * still * piece.depth * PIECE_PARALLAX;
-          const goalY = pointer.y * still * piece.depth * PIECE_PARALLAX;
-          drift[index].x += (goalX - drift[index].x) * followX;
-          drift[index].y += (goalY - drift[index].y) * followY;
-          const floatX =
-            still *
-            Math.sin(seconds * (0.3 + 0.5 * seedX) + Math.PI * 2 * seedX) *
-            (4 + 9 * seedX);
-          const floatY =
-            still *
-            Math.cos(seconds * (0.28 + 0.5 * seedY) + Math.PI * 2 * seedY) *
-            (4 + 9 * seedY);
-
-          // Away from the hovered piece, harder the closer it is.
-          let pushX = 0;
-          let pushY = 0;
-          if (source !== null && source !== index) {
-            let awayX =
-              (PIECE_CENTERS[index].x - PIECE_CENTERS[source].x) * unit;
-            let awayY =
-              (PIECE_CENTERS[index].y - PIECE_CENTERS[source].y) * unit;
-            let distance = Math.hypot(awayX, awayY);
-            if (distance < 1) {
-              awayX = Math.cos(Math.PI * 2 * seedX);
-              awayY = Math.sin(Math.PI * 2 * seedX);
-              distance = 1;
-            }
-            const force = REPEL_STRENGTH * Math.exp(-distance / REPEL_RANGE);
-            pushX = (awayX / distance) * force;
-            pushY = (awayY / distance) * force;
-          }
-          push[index].x += (pushX - push[index].x) * pushLag;
-          push[index].y += (pushY - push[index].y) * pushLag;
-
-          // Away from the cursor while it is over the main image.
-          let roomX = 0;
-          let roomY = 0;
-          if (room > 0.001) {
-            let awayX = PIECE_CENTERS[index].x - roomFrom.x;
-            let awayY = PIECE_CENTERS[index].y - roomFrom.y;
-            let distance = Math.hypot(awayX, awayY);
-            if (distance < 1) {
-              awayX = Math.cos(Math.PI * 2 * seedX);
-              awayY = Math.sin(Math.PI * 2 * seedX);
-              distance = 1;
-            }
-            const reach = ROOM_PUSH * unit * room;
-            roomX = (awayX / distance) * reach;
-            roomY = (awayY / distance) * reach;
-          }
-
-          const x = drift[index].x + floatX + push[index].x + roomX;
-          const y = drift[index].y + floatY + push[index].y + roomY;
+        const offsets = movePieces({
+          frames,
+          time,
+          still,
+          input: pointer,
+          cursor,
+          unit,
+          amplitude: 1,
+          repel: repelRef.current,
+        });
+        offsets.forEach(({ x, y }, index) => {
           const transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
           // Every case carries its pieces: they move the same way in each.
           pieceRefs.current.forEach((slidePieces) => {

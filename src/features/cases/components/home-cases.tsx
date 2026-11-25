@@ -14,6 +14,15 @@ import {
   COLLAGE_SIZE_MOBILE,
 } from "@/features/cases/components/collage-image";
 import { SwapText } from "@/features/cases/components/swap-text";
+import {
+  REST_OPACITY,
+  usePieceVisibility,
+} from "@/features/cases/hooks/use-piece-visibility";
+import {
+  createPieceMotion,
+  MAIN_PARALLAX,
+  PIECE_PARALLAX,
+} from "@/features/cases/utils/collage-motion";
 import { openCaseTransition } from "@/features/cases/utils/open-case-transition";
 import { useDeviceTilt } from "@/hooks/use-device-tilt";
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -37,12 +46,17 @@ const STACK_GAP = 0.92;
 /** How much a case shrinks while it is away from the center. */
 const AWAY_SCALE = 0.06;
 /**
- * Parallax of the main image and the pieces (× each piece depth), in design
- * px: following the cursor on desktop, the phone tilt on phones.
+ * Parallax of the case and of the pieces (× each piece depth), in design px:
+ * the cases page's on desktop (cursor), a shorter one with the phone tilt.
  */
 const PARALLAX = {
-  desktop: { main: 16, pieces: 70 },
+  desktop: { main: MAIN_PARALLAX, pieces: PIECE_PARALLAX },
   phone: { main: 12, pieces: 48 },
+} as const;
+/** Where the collage box sits from the stage center, in design px (its CSS). */
+const BOX_FROM_CENTER = {
+  desktop: { x: 668, y: 327.5 },
+  phone: { x: 176.5, y: 157 },
 } as const;
 
 const pad = (value: number) => String(value).padStart(2, "0");
@@ -50,8 +64,10 @@ const pad = (value: number) => String(value).padStart(2, "0");
 /**
  * Figma home "Cases" (1920×1080; phones "iPhone 16 - 2"): the collages of
  * the cases page, one at a time, stepped through by the scroll while the
- * section stays pinned. The pieces float and follow the cursor, or the tilt
- * of the phone (left tilts move them left). Phones use the portrait collage
+ * section stays pinned. The collage moves like the cases page's: the pieces
+ * float and follow the cursor, the hovered one pops and pushes the others
+ * away, and they make room for the cursor over the main image; on phones
+ * they follow the tilt (left tilts move them left). Phones use the portrait collage
  * and keep the "Ver todos" band at the bottom of the same screen.
  */
 type HomeCasesProps = {
@@ -63,8 +79,9 @@ export function HomeCases({ band }: HomeCasesProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const mainRefs = useRef<(HTMLElement | null)[]>([]);
   const pieceRefs = useRef<(HTMLElement | null)[][]>([]);
+  /** Per case, the inner box of each piece (the one that fades and pops). */
+  const innerRefs = useRef<(HTMLElement | null)[][]>([]);
   const boxRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [active, setActive] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
@@ -76,6 +93,13 @@ export function HomeCases({ band }: HomeCasesProps) {
   const collage = desktop ? CASE_COLLAGE : CASE_COLLAGE_MOBILE;
   const collageSize = desktop ? COLLAGE_SIZE : COLLAGE_SIZE_MOBILE;
   const current = CASES[active];
+
+  const { repelRef, onPieceEnter, onPieceLeave } = usePieceVisibility({
+    innerRefs,
+    activeIndex: active,
+    caseKey: String(active),
+    reducedMotion,
+  });
 
   // A plain click opens the case with the image growing into its hero.
   const openCase = (
@@ -123,20 +147,27 @@ export function HomeCases({ band }: HomeCasesProps) {
         },
       });
 
-      const pointer = { x: 0, y: 0 };
+      const pointer = { x: 0, y: 0, clientX: 0, clientY: 0, inside: false };
       const onPointerMove = (event: PointerEvent) => {
         if (event.pointerType !== "mouse") return;
         const bounds = stage.getBoundingClientRect();
         pointer.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
         pointer.y = ((event.clientY - bounds.top) / bounds.height) * 2 - 1;
+        pointer.clientX = event.clientX;
+        pointer.clientY = event.clientY;
+        pointer.inside = true;
       };
       const onPointerLeave = () => {
         pointer.x = 0;
         pointer.y = 0;
+        pointer.inside = false;
       };
       const smooth = { x: 0, y: 0 };
-      const drift = collage.pieces.map(() => ({ x: 0, y: 0 }));
+      const movePieces = createPieceMotion(collage);
       const strength = desktop ? PARALLAX.desktop : PARALLAX.phone;
+      const fromCenter = desktop
+        ? BOX_FROM_CENTER.desktop
+        : BOX_FROM_CENTER.phone;
 
       const tick = (time: number, deltaTime: number) => {
         const frames = deltaTime / (1000 / 60);
@@ -156,40 +187,50 @@ export function HomeCases({ band }: HomeCasesProps) {
           collageSize.width;
         const height = stage.clientHeight;
 
+        // The whole case leans with the cursor (or the tilt), like the
+        // cases page; the pieces add their own travel on top.
         slideRefs.current.forEach((slide, index) => {
           if (!slide) return;
           const offset = index - position;
           const distance = Math.abs(offset);
           const near = Math.max(0, 1 - distance);
+          const x = strength.main * unit * smooth.x * near;
+          const y =
+            offset * STACK_GAP * height +
+            strength.main * unit * smooth.y * near;
           const scale = 1 - AWAY_SCALE * Math.min(distance, 1);
-          slide.style.transform = `translate3d(0, ${(offset * STACK_GAP * height).toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
+          slide.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
           slide.style.visibility = distance > 1.25 ? "hidden" : "visible";
-          const main = mainRefs.current[index];
-          if (main) {
-            const x = strength.main * unit * smooth.x * near;
-            const y = strength.main * unit * smooth.y * near;
-            main.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
-          }
         });
 
-        collage.pieces.forEach((piece, index) => {
-          const [seedX, seedY] = piece.seed;
-          const followX = Math.min(1, (0.045 + 0.12 * seedX) * frames);
-          const followY = Math.min(1, (0.045 + 0.12 * seedY) * frames);
-          const reach = piece.depth * strength.pieces * unit;
-          drift[index].x += (smooth.x * reach - drift[index].x) * followX;
-          drift[index].y += (smooth.y * reach - drift[index].y) * followY;
-          const floatX =
-            still *
-            Math.sin(time * (0.3 + 0.5 * seedX) + Math.PI * 2 * seedX) *
-            (4 + 9 * seedX) *
-            unit;
-          const floatY =
-            still *
-            Math.cos(time * (0.28 + 0.5 * seedY) + Math.PI * 2 * seedY) *
-            (4 + 9 * seedY) *
-            unit;
-          const transform = `translate3d(${(drift[index].x + floatX).toFixed(2)}px, ${(drift[index].y + floatY).toFixed(2)}px, 0)`;
+        // The cursor in collage design px (the case on stage sits at the
+        // stage center, like the CSS of its box).
+        let cursor: { x: number; y: number } | null = null;
+        if (still && desktop && pointer.inside) {
+          const bounds = stage.getBoundingClientRect();
+          cursor = {
+            x:
+              (pointer.clientX - bounds.left - bounds.width / 2) / unit +
+              fromCenter.x,
+            y:
+              (pointer.clientY - bounds.top - bounds.height / 2) / unit +
+              fromCenter.y,
+          };
+        }
+        const offsets = movePieces({
+          frames,
+          time,
+          still,
+          // The cursor as it is (cases page); the tilt already eased.
+          input: desktop ? pointer : smooth,
+          cursor,
+          unit,
+          amplitude: unit,
+          parallax: strength.pieces,
+          repel: repelRef.current,
+        });
+        offsets.forEach(({ x, y }, index) => {
+          const transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
           pieceRefs.current.forEach((pieces) => {
             const element = pieces?.[index];
             if (element) element.style.transform = transform;
@@ -226,6 +267,7 @@ export function HomeCases({ band }: HomeCasesProps) {
   const renderPieces = (
     project: CaseWithCollage,
     slideIndex: number,
+    isActive: boolean,
     behind: boolean,
   ) => {
     const images = project.collage.pieces;
@@ -241,14 +283,29 @@ export function HomeCases({ band }: HomeCasesProps) {
           tabIndex={-1}
           aria-hidden
           draggable={false}
-          className="pointer-events-auto absolute overflow-hidden will-change-transform"
+          className={cn(
+            "absolute will-change-transform",
+            isActive && "pointer-events-auto",
+          )}
           style={collageBoxStyle(piece, collageSize)}
+          onPointerEnter={(event) => {
+            if (isActive && event.pointerType === "mouse") onPieceEnter(index);
+          }}
+          onPointerLeave={() => onPieceLeave(index)}
           onClick={(event) => openCase(event, project, images[index])}
         >
-          <CollageImage
-            src={images[index]}
-            sizes="(min-width: 1024px) 21vw, 50vw"
-          />
+          <div
+            ref={(element) => {
+              (innerRefs.current[slideIndex] ??= [])[index] = element;
+            }}
+            className="absolute inset-0 overflow-hidden"
+            style={{ opacity: REST_OPACITY }}
+          >
+            <CollageImage
+              src={images[index]}
+              sizes="(min-width: 1024px) 21vw, 50vw"
+            />
+          </div>
         </Link>
       ) : null,
     );
@@ -287,16 +344,13 @@ export function HomeCases({ band }: HomeCasesProps) {
                 }}
                 className="absolute top-[calc(50%-var(--u)*157)] left-[calc(50%-var(--u)*176.5)] aspect-[354/460] w-[calc(var(--u)*354)] lg:top-[calc(50%-var(--u)*327.5)] lg:left-[calc(50%-var(--u)*668)] lg:aspect-[1276/655] lg:w-[calc(var(--u)*1276)]"
               >
-                {renderPieces(project, index, true)}
+                {renderPieces(project, index, isActive, true)}
                 <Link
-                  ref={(element) => {
-                    mainRefs.current[index] = element;
-                  }}
                   href={getProjectHref(project)}
                   tabIndex={isActive ? 0 : -1}
                   aria-label={project.name}
                   className={cn(
-                    "group absolute block overflow-hidden will-change-transform",
+                    "group absolute block overflow-hidden",
                     isActive && "pointer-events-auto",
                   )}
                   style={collageBoxStyle(collage.main, collageSize)}
@@ -308,7 +362,7 @@ export function HomeCases({ band }: HomeCasesProps) {
                     className="transition-transform duration-700 ease-power3 group-hover:scale-[1.03]"
                   />
                 </Link>
-                {renderPieces(project, index, false)}
+                {renderPieces(project, index, isActive, false)}
               </div>
             </div>
           );
