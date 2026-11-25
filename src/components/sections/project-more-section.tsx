@@ -60,10 +60,14 @@ export function ProjectMoreSection({ project }: ProjectMoreSectionProps) {
       </Reveal>
 
       {/* The letters flip up with the scroll (React Bits ScrollFloat), with
-          nothing clipping them on the way. */}
+          nothing clipping them on the way, and land as soon as the whole
+          word is on screen: on short screens the band sits at the top before
+          the default end. */}
       <ScrollFloat
         tag="p"
         effect="flip"
+        scrollStart="top bottom"
+        scrollEnd="bottom bottom"
         ease={EASE.inOut}
         stagger={0.08}
         containerClassName="pointer-events-none absolute top-92.75 right-14 -translate-y-1/2 overflow-visible font-gothic text-fim-sm text-orange lg:top-257.25 lg:right-78 lg:text-fim"
