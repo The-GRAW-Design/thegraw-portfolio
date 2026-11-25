@@ -22,6 +22,16 @@ type CasesTrackProps = {
   footerClassName?: string;
   /** Shown next to the progress bar (e.g. "view all"). */
   aside?: ReactNode;
+  /** Where the row starts, as a share of the track width (desktop, phones). */
+  startOffset?: number;
+  mobileStartOffset?: number;
+  /** Gap between the cards, a card's width and its `sizes`. */
+  listClassName?: string;
+  itemClassName?: string;
+  sizes?: string;
+  /** Progress bar box and its rail (the red thumb fills the box height). */
+  barClassName?: string;
+  railClassName?: string;
   className?: string;
 };
 
@@ -34,6 +44,13 @@ export function CasesTrack({
   projects,
   footerClassName,
   aside,
+  startOffset = START_OFFSET,
+  mobileStartOffset = START_OFFSET,
+  listClassName = "gap-12 lg:gap-22",
+  itemClassName = "w-[72vw] lg:w-568",
+  sizes = "(min-width: 1024px) 30vw, 72vw",
+  barClassName = "h-4 w-[60vw] lg:w-609",
+  railClassName = "h-2 bg-track",
   className,
 }: CasesTrackProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -50,7 +67,10 @@ export function CasesTrack({
 
       const range = () => Math.min(0, viewport.clientWidth - track.scrollWidth);
       const clamp = (value: number) => gsap.utils.clamp(range(), 0, value);
-      let target = clamp(viewport.clientWidth * START_OFFSET);
+      const desktop = window.matchMedia("(min-width: 64rem)").matches;
+      let target = clamp(
+        viewport.clientWidth * (desktop ? startOffset : mobileStartOffset),
+      );
       let x = target;
       let dragging: { pointer: number; start: number; from: number } | null =
         null;
@@ -134,7 +154,10 @@ export function CasesTrack({
         viewport.removeEventListener("focusin", onFocusIn);
       };
     },
-    { dependencies: [projects, reducedMotion], revertOnUpdate: true },
+    {
+      dependencies: [projects, reducedMotion, startOffset, mobileStartOffset],
+      revertOnUpdate: true,
+    },
   );
 
   return (
@@ -143,12 +166,12 @@ export function CasesTrack({
         ref={viewportRef}
         className="relative w-full cursor-grab touch-pan-y select-none active:cursor-grabbing"
       >
-        <ul ref={trackRef} className="flex w-max gap-12 lg:gap-22">
+        <ul ref={trackRef} className={cn("flex w-max", listClassName)}>
           {projects.map((project) => (
             <li
               key={project.slug}
               data-track-item
-              className="w-[72vw] shrink-0 lg:w-568"
+              className={cn("shrink-0", itemClassName)}
             >
               <TransitionLink
                 href={getProjectHref(project)}
@@ -160,13 +183,13 @@ export function CasesTrack({
                     src={project.cover}
                     alt={project.name}
                     fill
-                    sizes="(min-width: 1024px) 30vw, 72vw"
+                    sizes={sizes}
                     draggable={false}
                     className="object-cover transition-transform duration-700 ease-power3 group-hover:scale-105 group-focus-visible:scale-105"
                   />
                 ) : (
                   <>
-                    <ComingSoon sizes="(min-width: 1024px) 30vw, 72vw" />
+                    <ComingSoon sizes={sizes} />
                     <span className="sr-only">{project.name}</span>
                   </>
                 )}
@@ -188,8 +211,13 @@ export function CasesTrack({
         data-track-item
         className={cn("flex items-center justify-between", footerClassName)}
       >
-        <div aria-hidden className="relative h-4 w-[60vw] lg:w-609">
-          <span className="absolute inset-x-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-track" />
+        <div aria-hidden className={cn("relative", barClassName)}>
+          <span
+            className={cn(
+              "absolute inset-x-0 top-1/2 -translate-y-1/2 rounded-full",
+              railClassName,
+            )}
+          />
           <span
             ref={thumbRef}
             className="absolute inset-y-0 left-0 w-1/3 rounded-full bg-red-graw"
