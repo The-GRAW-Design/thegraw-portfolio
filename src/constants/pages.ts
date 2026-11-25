@@ -37,9 +37,9 @@ export const HOME_PAGE = {
 } as const;
 
 export const NOT_FOUND_PAGE = {
-  title: "Page not found",
-  code: "error 404",
-  back: "back to home",
+  title: "Página não encontrada",
+  code: "erro 404",
+  back: "voltar para o início",
 } as const;
 
 export const PROJECT_PAGE = {
