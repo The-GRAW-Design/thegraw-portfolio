@@ -15,18 +15,24 @@ type Step = 1 | -1;
 
 /**
  * Turns wheel, trackpad, touch swipes and the up/down arrow keys into single
- * steps (one project at a time), ignoring the inertia tail of trackpads.
+ * steps (one project or panel at a time), ignoring the inertia tail of
+ * trackpads. While enabled they don't scroll the page. `enabled` can also be
+ * a check run on each event (the input then passes through while it is false).
  */
 export function useStepInput(
   ref: RefObject<HTMLElement | null>,
   onStep: (step: Step) => void,
-  enabled = true,
+  enabled: boolean | (() => boolean) = true,
 ) {
   const step = useEffectEvent(onStep);
+  const active = useEffectEvent(() =>
+    typeof enabled === "function" ? enabled() : enabled,
+  );
+  const attached = enabled !== false;
 
   useEffect(() => {
     const element = ref.current;
-    if (!element || !enabled) return;
+    if (!element || !attached) return;
 
     let total = 0;
     let blockedUntil = 0;
@@ -42,6 +48,7 @@ export function useStepInput(
     };
 
     const onWheel = (event: WheelEvent) => {
+      if (!active()) return;
       event.preventDefault();
       const now = performance.now();
       const size = Math.abs(event.deltaY);
@@ -69,6 +76,7 @@ export function useStepInput(
       swiped = false;
     };
     const onTouchMove = (event: TouchEvent) => {
+      if (!active()) return;
       event.preventDefault();
       const now = performance.now();
       if (swiped || now < blockedUntil) return;
@@ -79,6 +87,7 @@ export function useStepInput(
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
+      if (!active()) return;
       if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey)
         return;
       const direction =
@@ -105,5 +114,5 @@ export function useStepInput(
       element.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [ref, enabled]);
+  }, [ref, attached]);
 }
