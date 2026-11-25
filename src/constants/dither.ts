@@ -6,11 +6,11 @@ type DitherPreset = Omit<DitherImageProps, "alt" | "animation" | "className">;
 /** Plain cover of the container, used on small screens. */
 const COVER_FRAME: DitherFrame = { x: 0, y: 0, width: 1, height: 1 };
 
-/** The hero runs 30% past the first screen (`h-[130svh]` on the section). */
+/** The desktop hero runs 30% past the first screen (`lg:h-[130svh]`). */
 const HERO_SCREENS = 1.3;
 
-/** Figma "Desktop - 1" image rectangle: 2274×2069 at (-40, -217.66) in the 1920×1080 frame. */
-const HERO_FRAME: DitherFrame = {
+/** Figma "Desktop - 1" image rectangle (the knight of the first site). */
+const KNIGHT_FRAME: DitherFrame = {
   x: -0.02083,
   y: -0.20154,
   width: 1.18438,
@@ -18,10 +18,43 @@ const HERO_FRAME: DitherFrame = {
 };
 
 /**
- * Figma "Desktop - 1" palette (white → RED GRAW → deep red), rendered like the
- * footer at the user's request: gradient map with grain, 3px pixels.
+ * Figma "Desktop - 2" (site 2.0): the knight with the banner, 2500×2276 at
+ * (-153, -424) in the 1920×1080 frame; phones: 401×852 at (-6, 0) in the
+ * 393×852 frame.
+ */
+const HERO_FRAME: DitherFrame = {
+  x: -0.07969,
+  y: -0.39259,
+  width: 1.30208,
+  height: 2.10741,
+};
+
+/**
+ * Figma "Desktop - 2" effects: gradient map white → blood → char, then Dither
+ * (Bayer 16x16, 7 levels, brightness 82%, pixel 1).
  */
 export const HERO_DITHER: DitherPreset = {
+  src: asset("/images/home/hero-banner.webp"),
+  palette: [
+    { token: "white", position: 0 },
+    { token: "blood", position: 0.5 },
+    { token: "char", position: 1 },
+  ],
+  pixelSize: 1,
+  quantize: "ordered",
+  levels: 7,
+  brightness: 82,
+  // Kept on the first screen: the image already runs past it, into the extra 30%.
+  frame: {
+    ...HERO_FRAME,
+    y: HERO_FRAME.y / HERO_SCREENS,
+    height: HERO_FRAME.height / HERO_SCREENS,
+  },
+  mobileFrame: { x: -0.01527, y: 0, width: 1.02036, height: 1 },
+};
+
+/** 404: the first site's knight, rendered like its footer, on a single screen. */
+export const NOT_FOUND_DITHER: DitherPreset = {
   src: asset("/images/home/hero-knight.webp"),
   palette: [
     { token: "white", position: 0 },
@@ -32,19 +65,8 @@ export const HERO_DITHER: DitherPreset = {
   scatter: 0.3,
   quantize: "posterize",
   levels: 16,
-  // Kept on the first screen: the image already runs past it, into the extra 30%.
-  frame: {
-    ...HERO_FRAME,
-    y: HERO_FRAME.y / HERO_SCREENS,
-    height: HERO_FRAME.height / HERO_SCREENS,
-  },
+  frame: KNIGHT_FRAME,
   mobileFrame: COVER_FRAME,
-};
-
-/** 404: the hero knight on a single screen. */
-export const NOT_FOUND_DITHER: DitherPreset = {
-  ...HERO_DITHER,
-  frame: HERO_FRAME,
 };
 
 /** Figma "Footer": image at 29% over RED GRAW, offset −15%, scatter 50%, then Pixelate (2px, 16 levels). */
@@ -84,10 +106,10 @@ export const FOOTER_DARK_DITHER: DitherPreset = {
 };
 
 /**
- * Figma home "case studies" (1920×617): image mapped white → #dfdfdf →
- * #fefefe, offset −15%, scatter 50%, a light grain behind the title.
+ * Figma home "Projetos" (1920×617, phones 393×412): image mapped white →
+ * #dfdfdf → #fefefe, offset −15%, scatter 50%, a light grain behind the title.
  */
-export const CASE_STUDIES_DITHER: DitherPreset = {
+export const PROJECTS_INTRO_DITHER: DitherPreset = {
   src: asset("/images/home/case-studies-texture.webp"),
   palette: [
     { token: "white", position: 0 },
@@ -99,7 +121,8 @@ export const CASE_STUDIES_DITHER: DitherPreset = {
   scatter: 0.5,
   quantize: "none",
   frame: { x: -0.1262, y: -1.6694, width: 1.2523, height: 5.2269 },
-  mobileFrame: COVER_FRAME,
+  // 438×851 at (-29, 0) in the 393×412 phone frame.
+  mobileFrame: { x: -0.07379, y: 0, width: 1.1145, height: 2.06553 },
 };
 
 /** Figma "Studio" hero: image at 14% over BLACK GRAW, offset −15%, scatter 50%. */

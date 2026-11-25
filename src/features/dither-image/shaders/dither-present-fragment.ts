@@ -7,6 +7,8 @@ import { BAYER_SIZE } from "@/features/dither-image/utils/bayer";
  *   calm air a few cells still hop. Cells flicker between baked variants.
  * - Coarse cells (entry, scroll, cursor lens) enlarge the effect's own pixels:
  *   the bake is sampled once per bigger cell, so no new color appears.
+ * - Disturbance (the hero sword): cells near a segment are blown away from
+ *   it, and a shockwave band of coarser cells runs outward from it.
  * Premultiplied output.
  */
 export const DITHER_PRESENT_FRAGMENT_SHADER = /* glsl */ `
@@ -30,6 +32,13 @@ export const DITHER_PRESENT_FRAGMENT_SHADER = /* glsl */ `
   uniform float uReveal;
   uniform float uEntryCoarse;
   uniform float uScrollCoarse;
+
+  uniform float uPixelRatio;
+  uniform vec2 uWakeA;
+  uniform vec2 uWakeB;
+  uniform float uWake;
+  uniform float uWakeRing;
+  uniform float uWakeRingStrength;
 
   uniform vec2 uMouse;
   uniform float uMouseStrength;
@@ -80,16 +89,34 @@ export const DITHER_PRESENT_FRAGMENT_SHADER = /* glsl */ `
     float blown = floor(gust * hash(cell + tick * 1.37) * uWindStrength + 0.5);
     float hops = step(1.0 - uSwap, hash(cell + tick * 2.9)) * uLive;
     blown += hops * floor(hash(cell + tick * 4.1) * 3.0 + 1.0);
-    vec2 px = fragPx - vec2(blown * uCell, 0.0);
 
-    float coarse = uEntryCoarse * uScrollCoarse * floor(1.0 + hover * 3.0 + 0.5);
+    // Disturbance: cells hop away from the segment near it, and in a band
+    // (the shockwave) further out.
+    vec2 push = vec2(0.0);
+    float stirred = 0.0;
+    if (uWake > 0.001 || uWakeRingStrength > 0.001) {
+      vec2 ab = uWakeB - uWakeA;
+      float along = clamp(dot(fragPx - uWakeA, ab) / max(dot(ab, ab), 1e-3), 0.0, 1.0);
+      vec2 away = fragPx - (uWakeA + ab * along);
+      float distance = length(away);
+      vec2 normal = distance > 0.001 ? away / distance : vec2(0.0, 1.0);
+      float near = uWake * exp(-distance / (150.0 * uPixelRatio));
+      float band = uWakeRingStrength
+        * exp(-pow((distance - uWakeRing) / (80.0 * uPixelRatio), 2.0));
+      float hop = 0.35 + hash(cell + tick * 7.3);
+      push = normal * (near * 70.0 + band * 46.0) * uPixelRatio * hop;
+      stirred = clamp(near * 6.0 + band * 9.0, 0.0, 10.0);
+    }
+    vec2 px = fragPx - vec2(blown * uCell, 0.0) - push;
+
+    float coarse = uEntryCoarse * uScrollCoarse * floor(1.0 + hover * 3.0 + stirred + 0.5);
     float size = max(uCell, floor(uCell * coarse + 0.5));
     vec2 sampleCell = floor(px / size);
     vec2 uv = bakeUv((sampleCell + 0.5) * size);
 
     // Each cell flickers between the baked variants of the effect.
     float roll = hash(sampleCell + tick * 4.13) * step(0.5, uLive);
-    float boil = uBoil + gust * 0.35;
+    float boil = uBoil + gust * 0.35 + min(stirred, 1.0) * 0.4;
     vec3 color = texture2D(uBake0, uv).rgb;
     if (roll > 1.0 - boil) {
       color = roll > 1.0 - boil * 0.5 ? texture2D(uBake2, uv).rgb : texture2D(uBake1, uv).rgb;

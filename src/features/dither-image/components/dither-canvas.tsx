@@ -5,6 +5,7 @@ import { useDitherAnimation } from "@/features/dither-image/hooks/use-dither-ani
 import { useDitherScene } from "@/features/dither-image/hooks/use-dither-scene";
 import type {
   DitherAnimation,
+  DitherDisturbance,
   DitherFrame,
   DitherPalette,
   DitherQuantize,
@@ -19,18 +20,23 @@ type DitherCanvasProps = {
   scatter: number;
   quantize: DitherQuantize;
   levels: number;
+  brightness: number;
+  contrast: number;
   frame: DitherFrame;
   animation: DitherAnimation;
+  disturbance?: DitherDisturbance;
 };
 
 export function DitherCanvas({
   animation,
+  disturbance,
   ...sceneOptions
 }: DitherCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const uniforms = useDitherScene(containerRef, {
     ...sceneOptions,
     continuous: animation !== "none",
+    disturbance,
   });
 
   useDitherAnimation(containerRef, uniforms, animation);
