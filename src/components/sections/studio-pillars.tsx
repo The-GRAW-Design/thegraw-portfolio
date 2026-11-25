@@ -8,7 +8,9 @@ import {
 } from "@/constants/dither";
 import { STUDIO_PAGE } from "@/constants/pages";
 import { DitherImage } from "@/features/dither-image";
-import { EASE, gsap, useGSAP } from "@/lib/gsap";
+import { useStepInput } from "@/hooks/use-step-input";
+import { EASE, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { getLenis } from "@/lib/smooth-scroll-provider";
 import { cn } from "@/utils/cn";
 
 const DITHER = {
@@ -17,22 +19,42 @@ const DITHER = {
   foundations: STUDIO_FOUNDATIONS_DITHER,
 } as const;
 
-/** A panel's background scale as it starts sliding in (1 once it is in). */
+/** Seconds a slide to the next panel takes. */
+const SLIDE = 1;
+/** A panel's background scale as it slides in (1 once it has locked). */
 const BACKGROUND_ZOOM = 1.12;
-/** How far a panel's words come from, in viewport widths (at most 140px). */
-const WORDS_TRAVEL = 0.12;
+/** How far a panel's words rise as they come in, in px. */
+const WORDS_RISE = 60;
+/** Leaving the strip, the page goes on by this share of the screen. */
+const CARRY = 0.5;
+/** Scroll (px) away from the lock that means the page moved some other way. */
+const DRIFT = 4;
+/** A pause (ms) between wheel events that starts a new gesture. */
+const QUIET_GAP = 180;
+/** Right after locking, a moving page (a touch fling) is put back (ms). */
+const SETTLE = 450;
+
+type LockInput = { active: boolean; step: (step: 1 | -1) => void };
 
 /**
  * Site 2.0 studio "Propósito", "Pilares" and "Fundamentos" (Figma frames
  * 35052/35053/35054, laid side by side in a strip; each block keeps its own
- * frame's place). The screen pins and the vertical scroll slides the panels
- * sideways, settling on one at a time: each background eases out of a slight
- * zoom into its Figma framing as it comes in, and its words follow from the
- * right. Without motion the panels stack.
+ * frame's place). When the strip reaches the top of the screen the page locks
+ * there: each scroll, swipe or arrow key slides to the next panel, which
+ * locks in place (its background easing out of a slight zoom into its Figma
+ * framing) before its words rise. Past the first or the last panel the page
+ * scrolls on. Without motion the panels stack.
  */
 export function StudioPillars() {
   const rootRef = useRef<HTMLElement>(null);
+  const inputRef = useRef<LockInput>({ active: false, step: () => {} });
   const sections = STUDIO_PAGE.sections;
+
+  useStepInput(
+    rootRef,
+    (step) => inputRef.current.step(step),
+    () => inputRef.current.active,
+  );
 
   useGSAP(
     () => {
@@ -40,85 +62,172 @@ export function StudioPillars() {
       const track = root?.querySelector<HTMLElement>("[data-track]");
       if (!root || !track) return;
       const panels = gsap.utils.toArray<HTMLElement>("[data-block]", root);
+      const words = panels.map((panel) =>
+        gsap.utils.toArray<HTMLElement>("[data-text]", panel),
+      );
+      const backgrounds = panels.map((panel) =>
+        panel.querySelector<HTMLElement>("[data-bg]"),
+      );
       const count = panels.length;
+      const input = inputRef.current;
       const media = gsap.matchMedia();
 
-      media.add(
-        // One condition always matches: the callback only runs when one does.
-        {
-          desktop: "(min-width: 64rem)",
-          phone: "(max-width: 63.99rem)",
-          reduced: "(prefers-reduced-motion: reduce)",
-        },
-        (context) => {
-          const { desktop = false, reduced } = context.conditions ?? {};
-          if (reduced) return;
-          const distance = () => track.scrollWidth - root.clientWidth;
-          // Scroll per panel: a screen's shorter side.
-          const perPanel = () =>
-            Math.min(window.innerWidth, window.innerHeight);
-          const slide = gsap.to(track, {
-            x: () => -distance(),
-            ease: "none",
-            scrollTrigger: {
-              trigger: root,
-              start: "top top",
-              end: () => `+=${perPanel() * (count - 1)}`,
-              pin: true,
-              scrub: 0.6,
-              snap: {
-                snapTo: 1 / (count - 1),
-                // Mouse: any scroll moves on to the next panel that way.
-                // Touch: the nearest panel from where the swipe stops, so a
-                // short swipe or a fast fling never skips one.
-                directional: desktop,
-                inertia: false,
-                duration: { min: 0.3, max: 0.7 },
-                ease: EASE.inOut,
-              },
-              invalidateOnRefresh: true,
+      media.add("(prefers-reduced-motion: no-preference)", () => {
+        let index = 0;
+        let sliding = false;
+        let state: "before" | "locked" | "after" = "before";
+        // One gesture moves one panel: the rest of it (or a trackpad's
+        // glide) is ignored until a new one starts (a pause in the wheel,
+        // a new touch, a key).
+        let armed = false;
+        let lastInput = 0;
+        const onInput = (event: Event) => {
+          const now = performance.now();
+          if (event.type !== "wheel" || now - lastInput > QUIET_GAP) {
+            armed = true;
+          }
+          lastInput = now;
+        };
+        const shown = panels.map(() => false);
+
+        gsap.set(words.flat(), { autoAlpha: 0, y: WORDS_RISE });
+        const showWords = (panel: number, delay = 0) => {
+          shown[panel] = true;
+          gsap.to(words[panel], {
+            autoAlpha: 1,
+            y: 0,
+            duration: 1,
+            delay,
+            ease: EASE.expo,
+            stagger: 0.08,
+            overwrite: true,
+          });
+        };
+        const hideWords = (panel: number) => {
+          shown[panel] = false;
+          gsap.to(words[panel], {
+            autoAlpha: 0,
+            y: WORDS_RISE,
+            duration: 0.35,
+            ease: EASE.out,
+            overwrite: true,
+          });
+        };
+
+        /** Puts the page at the lock. */
+        const hold = (at: number) => {
+          const lenis = getLenis();
+          if (lenis) lenis.scrollTo(at, { immediate: true, force: true });
+          else window.scrollTo(0, at);
+        };
+        let settleUntil = 0;
+
+        // The page's scroll where the strip fills the screen.
+        const place = ScrollTrigger.create({
+          trigger: root,
+          start: "top top",
+          onRefresh: (self) => {
+            if (state === "locked") hold(self.start);
+          },
+        });
+        state = window.scrollY > place.start + DRIFT ? "after" : "before";
+
+        const lock = () => {
+          state = "locked";
+          // The page's smooth scroll leaves the strip's input alone, and the
+          // page stays still (that also ends a touch fling on the way in).
+          root.setAttribute("data-lenis-prevent", "");
+          getLenis()?.stop();
+          settleUntil = performance.now() + SETTLE;
+          hold(place.start);
+          input.active = true;
+          armed = false;
+          lastInput = performance.now();
+          if (!shown[index]) showWords(index, 0.15);
+        };
+
+        const release = (direction: 1 | -1, carry: boolean) => {
+          state = direction > 0 ? "after" : "before";
+          input.active = false;
+          root.removeAttribute("data-lenis-prevent");
+          getLenis()?.start();
+          if (!carry) return;
+          const to = place.start + direction * window.innerHeight * CARRY;
+          const lenis = getLenis();
+          // Locked: the rest of the swipe doesn't stop it.
+          if (lenis) lenis.scrollTo(to, { lock: true });
+          else window.scrollTo({ top: to, behavior: "smooth" });
+        };
+
+        const slideTo = (next: number) => {
+          sliding = true;
+          hideWords(index);
+          gsap.fromTo(
+            backgrounds[next],
+            { scale: BACKGROUND_ZOOM },
+            { scale: 1, duration: SLIDE + 0.4, ease: EASE.expo },
+          );
+          gsap.to(track, {
+            xPercent: -(100 / count) * next,
+            duration: SLIDE,
+            ease: EASE.inOut,
+            overwrite: true,
+            // Locked in place: now the words come in.
+            onComplete: () => {
+              sliding = false;
+              showWords(next);
             },
           });
+          index = next;
+        };
 
-          panels.forEach((panel, index) => {
-            const background = panel.querySelector("[data-bg]");
-            const words = panel.querySelectorAll("[data-text]");
-            if (index > 0) {
-              gsap.fromTo(
-                background,
-                { scale: BACKGROUND_ZOOM },
-                {
-                  scale: 1,
-                  ease: "none",
-                  scrollTrigger: {
-                    trigger: panel,
-                    containerAnimation: slide,
-                    start: "left right",
-                    end: "left left",
-                    scrub: true,
-                  },
-                },
-              );
-            }
-            gsap.from(words, {
-              x: () => Math.min(140, window.innerWidth * WORDS_TRAVEL),
-              autoAlpha: 0,
-              duration: 1,
-              ease: EASE.out,
-              stagger: 0.08,
-              scrollTrigger:
-                index === 0
-                  ? { trigger: root, start: "top 60%", once: true }
-                  : {
-                      trigger: panel,
-                      containerAnimation: slide,
-                      start: "left 75%",
-                      toggleActions: "play none none reverse",
-                    },
-            });
-          });
-        },
-      );
+        input.step = (step) => {
+          if (state !== "locked" || sliding || !armed) return;
+          armed = false;
+          const next = index + step;
+          if (next < 0 || next >= count) release(step, true);
+          else slideTo(next);
+        };
+
+        // Locks when the scroll reaches the strip from either side; any other
+        // way of scrolling away (keys, scrollbar) lets it go.
+        let last = window.scrollY;
+        const onScroll = () => {
+          const y = window.scrollY;
+          const at = place.start;
+          if (state === "locked") {
+            if (Math.abs(y - at) <= DRIFT) {
+              // In place.
+            } else if (performance.now() < settleUntil) hold(at);
+            else release(y > at ? 1 : -1, false);
+          } else if (state === "before" && last < at && y >= at) {
+            lock();
+          } else if (state === "after" && last > at && y <= at) {
+            lock();
+          }
+          last = y;
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        // Seen before the strip's input (capture), to arm it for this event.
+        const inputs = ["wheel", "touchstart", "keydown"] as const;
+        inputs.forEach((type) =>
+          window.addEventListener(type, onInput, {
+            capture: true,
+            passive: true,
+          }),
+        );
+
+        return () => {
+          window.removeEventListener("scroll", onScroll);
+          inputs.forEach((type) =>
+            window.removeEventListener(type, onInput, { capture: true }),
+          );
+          root.removeAttribute("data-lenis-prevent");
+          if (state === "locked") getLenis()?.start();
+          input.active = false;
+          input.step = () => {};
+        };
+      });
       return () => media.revert();
     },
     { scope: rootRef },
@@ -128,7 +237,7 @@ export function StudioPillars() {
     <section
       ref={rootRef}
       data-header-theme="light"
-      className="relative h-svh min-h-640 overflow-hidden bg-black-graw text-white-graw motion-reduce:h-auto lg:min-h-0"
+      className="relative h-lvh min-h-640 overflow-hidden bg-black-graw text-white-graw motion-reduce:h-auto lg:min-h-0"
     >
       <div
         data-track
