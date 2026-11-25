@@ -119,13 +119,13 @@ export function ServicesHeroSection({
       <div className="relative flex flex-col items-end text-right lg:absolute lg:inset-x-0 lg:top-[max(calc(var(--spacing)*120),min(calc(var(--spacing)*386),calc(100svh-var(--spacing)*594)))]">
         <h1 className="sr-only">{SERVICES_PAGE.title}</h1>
         {/* The services end where the header "Menu" ends: that word (2.38em
-            of `text-menu`) is centred in the button, 101.75 wide at the edge
-            (phone) or 129 wide 48 from it (desktop), and the last letter of
+            of `text-hotbar`) is centred in the button, 101.75 wide at the edge
+            (phone) or 129 wide 37 from it (desktop), and the last letter of
             each service keeps 0.05em of side bearing inside its box. */}
         <ul
           ref={listRef}
           aria-label={SERVICES_PAGE.title}
-          className="mr-[calc((var(--spacing)*101.75-var(--text-menu)*2.38)/2-var(--text-title)*0.05)] lg:mr-[calc(var(--spacing)*48+(var(--spacing)*129-var(--text-menu)*2.38)/2-var(--text-title)*0.05)]"
+          className="mr-[calc((var(--spacing)*101.75-var(--text-hotbar)*2.38)/2-var(--text-title)*0.05)] lg:mr-[calc(var(--spacing)*37+(var(--spacing)*129-var(--text-hotbar)*2.38)/2-var(--text-title)*0.05)]"
         >
           {serviceOrder(active).map((service, index) => {
             const pressed = service.id === active;
