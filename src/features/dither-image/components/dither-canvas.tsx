@@ -25,11 +25,13 @@ type DitherCanvasProps = {
   frame: DitherFrame;
   animation: DitherAnimation;
   disturbance?: DitherDisturbance;
+  coveredBy?: string;
 };
 
 export function DitherCanvas({
   animation,
   disturbance,
+  coveredBy,
   ...sceneOptions
 }: DitherCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -39,7 +41,7 @@ export function DitherCanvas({
     disturbance,
   });
 
-  useDitherAnimation(containerRef, uniforms, animation);
+  useDitherAnimation(containerRef, uniforms, animation, coveredBy);
 
   return <div ref={containerRef} className="absolute inset-0" />;
 }

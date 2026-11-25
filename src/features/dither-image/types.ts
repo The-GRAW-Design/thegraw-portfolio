@@ -77,6 +77,12 @@ export type DitherImageProps = {
   animation?: DitherAnimation;
   /** Live disturbance of the cells (WebGL only). */
   disturbance?: DitherDisturbance;
+  /**
+   * `intro` only, for an image that holds still (sticky) while a section
+   * slides over it: that section's selector. The grain coarsens while it
+   * rises over the image, and the image stops drawing once it has gone by.
+   */
+  coveredBy?: string;
   className?: string;
 };
 

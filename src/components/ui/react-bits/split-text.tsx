@@ -43,6 +43,11 @@ export interface SplitTextProps {
   onLetterAnimationComplete?: () => void;
   /** Styles for the masks (e.g. room around the glyphs they clip). */
   maskStyle?: gsap.TweenVars;
+  /**
+   * `view` trigger only: ScrollTrigger settings that replace the defaults
+   * (e.g. a scroll position at which the text plays).
+   */
+  scrollTrigger?: ScrollTrigger.Vars;
 }
 
 type Look = {
@@ -146,6 +151,7 @@ export const SplitText = ({
   accentColor,
   onLetterAnimationComplete,
   maskStyle,
+  scrollTrigger,
 }: SplitTextProps) => {
   const ref = useRef<HTMLParagraphElement>(null);
   const completedTextRef = useRef<string | null>(null);
@@ -466,6 +472,7 @@ export const SplitText = ({
                     once: true,
                     fastScrollEnd: true,
                     anticipatePin: 0.4,
+                    ...scrollTrigger,
                   },
             onComplete: () => {
               revealed = true;
@@ -523,6 +530,7 @@ export const SplitText = ({
         loopDelay,
         fontsLoaded,
         JSON.stringify(maskStyle),
+        JSON.stringify(scrollTrigger),
       ],
       scope: ref,
       revertOnUpdate: true,
