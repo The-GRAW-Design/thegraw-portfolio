@@ -91,8 +91,10 @@ const AFFIX =
 const DIGIT =
   "relative box-content inline-block mx-[calc(var(--counter-gap,0px)/2*var(--counter-shown,1))] opacity-[var(--counter-shown,1)] text-center leading-[calc(1em_+_var(--counter-padding,0px))]";
 const SIZER = "invisible";
+// Wider than its digit: with negative letter spacing a digit's box is
+// narrower than its glyph, and a window of the same width cut its sides.
 const WINDOW =
-  "pointer-events-none absolute top-[calc(var(--counter-fade,0em)*-1)] right-0 bottom-[calc(var(--counter-fade,0em)*-1)] left-0 overflow-hidden";
+  "pointer-events-none absolute top-[calc(var(--counter-fade,0em)*-1)] -right-[0.25em] bottom-[calc(var(--counter-fade,0em)*-1)] -left-[0.25em] overflow-hidden";
 const STRIP = "absolute inset-0";
 const NUMERAL =
   "absolute inset-0 flex items-center justify-center will-change-transform";
