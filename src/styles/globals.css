@@ -37,6 +37,8 @@
   --color-chip-text: #8c8c8c;
   --color-track: #888888;
   --color-smoke: #eeeeee;
+  /* Site 2.0: mobile cases side bars */
+  --color-ash: #606060;
 
   /* Figma shader gradient-map stops */
   --color-red-graw-deep: #7b000b;
@@ -44,6 +46,9 @@
   --color-mist: #d1d1d1;
   --color-fog: #dfdfdf;
   --color-snow: #fefefe;
+  /* Site 2.0 hero gradient map: white → blood → char */
+  --color-blood: #b30010;
+  --color-char: #1e1e1e;
 
   /* Figma translucent fills */
   --color-shade: rgb(0 0 0 / 0.52);
@@ -70,8 +75,59 @@
 @theme inline {
   --font-sans: var(--font-sf-pro), ui-sans-serif, system-ui, sans-serif;
   --font-blackletter: var(--font-seagram), serif;
+  /* Site 2.0 */
+  --font-gothic: var(--font-pirata), serif;
+  --font-flex:
+    var(--font-google-sans-flex), ui-sans-serif, system-ui, sans-serif;
 
   --text-*: initial;
+
+  /*
+   * Site 2.0 (Figma home). `-sm` sizes follow the 393px mobile frames
+   * (`--mobile`); the others the 1920px desktop frame, or stay at a
+   * readable minimum on phones when both frames use about the same size.
+   */
+  --text-headline: calc(var(--fluid) * 137.258);
+  --text-headline--line-height: 1.2;
+  --text-headline-sm: calc(var(--mobile) * 69.703);
+  --text-headline-sm--line-height: 1.2;
+  --text-strap: max(1rem, calc(var(--fluid) * 28));
+  --text-strap--line-height: 1.2;
+  --text-projects: calc(var(--fluid) * 181.501);
+  --text-projects--line-height: 0.74;
+  --text-projects--letter-spacing: -0.04em;
+  --text-projects-sm: calc(var(--mobile) * 66);
+  --text-projects-sm--line-height: 0.74;
+  --text-projects-sm--letter-spacing: -0.04em;
+  --text-projects-copy: max(1rem, calc(var(--fluid) * 22));
+  --text-projects-copy--line-height: 0.89;
+  --text-together: calc(var(--fluid) * 120.8);
+  --text-together--line-height: 0.93;
+  --text-together-sm: calc(var(--mobile) * 140.94);
+  --text-together-sm--line-height: 0.93;
+  --text-together-copy: max(1rem, calc(var(--fluid) * 24));
+  --text-together-copy--line-height: 0.93;
+  --text-together-copy--letter-spacing: -0.04em;
+  --text-proposal-sm: 1.2746rem;
+  --text-proposal-sm--line-height: 0.93;
+  --text-proposal-sm--letter-spacing: -0.04em;
+  --text-band: max(1.25rem, calc(var(--fluid) * 20));
+  --text-band--line-height: normal;
+  --text-counter-sm: 1.6773rem;
+  --text-counter-sm--line-height: 1.2;
+  --text-counter-sm--letter-spacing: -0.07em;
+  --text-menu: max(1.8515rem, calc(var(--fluid) * 37.552));
+  --text-menu--line-height: 1.2;
+  --text-footer-link: max(1.25rem, calc(var(--fluid) * 23.872));
+  --text-footer-link--line-height: 1.2;
+  --text-footer-studio: max(1.5rem, calc(var(--fluid) * 32.485));
+  --text-footer-studio--line-height: 1.2;
+  --text-footer-about: max(1rem, calc(var(--fluid) * 35.332));
+  --text-footer-about--line-height: 1.03;
+  --text-footer-credit: max(0.75rem, calc(var(--fluid) * 17.608));
+  --text-footer-credit--line-height: 1.2;
+  --text-small-sm: 1.1594rem;
+  --text-small-sm--line-height: 1.04;
 
   --text-hero: calc(var(--fluid) * 284.862);
   --text-hero--line-height: 1.2;
@@ -198,6 +254,8 @@
 
 :root {
   --fluid: calc(100vw / 1920);
+  /* Site 2.0 mobile frames are 393px wide (capped on tablets). */
+  --mobile: calc(min(100vw, 37.5rem) / 393);
 }
 
 @media (width >= 64rem) {

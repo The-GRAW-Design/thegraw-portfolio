@@ -3,7 +3,7 @@ import { Header } from "@/components/layout/header";
 import { SkipLink } from "@/components/layout/skip-link";
 import { SITE_CONFIG } from "@/constants/site";
 import { PageTransition } from "@/features/page-transition";
-import { seagram, sfPro } from "@/lib/fonts";
+import { googleSansFlex, pirataOne, seagram, sfPro } from "@/lib/fonts";
 import { SmoothScrollProvider } from "@/lib/smooth-scroll-provider";
 import { asset } from "@/utils/asset";
 import "lenis/dist/lenis.css";
@@ -29,7 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang={SITE_CONFIG.locale}
-      className={`${sfPro.variable} ${seagram.variable}`}
+      className={`${sfPro.variable} ${seagram.variable} ${pirataOne.variable} ${googleSansFlex.variable}`}
     >
       <body className="overflow-x-clip bg-white-graw font-sans text-black-graw antialiased">
         <SmoothScrollProvider>

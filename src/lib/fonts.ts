@@ -31,3 +31,21 @@ export const seagram = localFont({
   variable: "--font-seagram",
   display: "swap",
 });
+
+// Site 2.0 (Figma home): Pirata One for the blackletter headlines and
+// Google Sans Flex (variable, Light to Medium) for the text. Latin subsets.
+export const pirataOne = localFont({
+  src: "../../public/fonts/pirata-one.woff2",
+  weight: "400",
+  style: "normal",
+  variable: "--font-pirata",
+  display: "swap",
+});
+
+export const googleSansFlex = localFont({
+  src: "../../public/fonts/google-sans-flex.woff2",
+  weight: "300 500",
+  style: "normal",
+  variable: "--font-google-sans-flex",
+  display: "swap",
+});
