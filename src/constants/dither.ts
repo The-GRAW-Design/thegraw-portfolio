@@ -226,7 +226,8 @@ export const CASES_DRAWER_DITHER: DitherPreset = {
 
 /**
  * Site 2.0 "Project Open" closing band (1920×1151 under the gallery; phones
- * 393×326.356): the studio texture at 14% over the white page, behind the
+ * 393×326.356): the studio texture at 14% over BLACK GRAW (the page stays
+ * dark, as in the first version, at the user's request), behind the
  * credits and the cases track.
  */
 export const PROJECT_END_DITHER: DitherPreset = {

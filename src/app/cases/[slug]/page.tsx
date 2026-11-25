@@ -28,7 +28,7 @@ export default async function ProjectPage({
 
   return (
     <>
-      <main id="conteudo" className="bg-white">
+      <main id="conteudo" className="bg-black-graw">
         <ProjectDetailSection project={project} />
         <ProjectMoreSection project={project} />
       </main>

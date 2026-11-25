@@ -25,8 +25,8 @@ const TRACK_START = -520.75 / 1920;
 export function ProjectMoreSection({ project }: ProjectMoreSectionProps) {
   return (
     <section
-      data-header-theme="dark"
-      className="relative my-30 h-326.25 overflow-hidden bg-white font-flex text-black lg:mt-51 lg:mb-0 lg:h-1151"
+      data-header-theme="light"
+      className="relative my-30 h-326.25 overflow-hidden bg-black-graw font-flex text-white lg:mt-51 lg:mb-0 lg:h-1151"
     >
       <DitherImage {...PROJECT_END_DITHER} animation="scroll" />
 

@@ -37,7 +37,8 @@ function GalleryRow({ row }: { row: ProjectRow }) {
 }
 
 /**
- * Site 2.0 "Project Open" (1920 frame on white; phones "Mobile - overview"):
+ * Site 2.0 "Project Open" (1920 frame; phones "Mobile - overview"), on the
+ * dark BLACK GRAW of the first version at the user's request:
  * the name, the overview with the case's lists, then its gallery one box
  * under the other. A case without its gallery yet shows its logo (when there
  * is one) and the {EM BREVE} glass.
@@ -47,8 +48,8 @@ export function ProjectDetailSection({ project }: ProjectDetailSectionProps) {
 
   return (
     <section
-      data-header-theme="dark"
-      className="bg-white px-14 pt-96.5 font-flex text-black lg:px-79 lg:pt-178"
+      data-header-theme="light"
+      className="bg-black-graw px-14 pt-96.5 font-flex text-white lg:px-79 lg:pt-178"
     >
       <div className="flex flex-col gap-13 lg:gap-45">
         <SplitReveal

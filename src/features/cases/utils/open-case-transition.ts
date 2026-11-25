@@ -87,7 +87,7 @@ function projectPageReady(slug: string) {
 
 /**
  * Opens a case: its image leaves the collage and grows into the first box of
- * the project page while the stage fades to the page's white and that box's
+ * the project page while the stage fades to the page's dark and that box's
  * image comes through; the page changes underneath, the image settles on the
  * box where it really is, and the overlay lets go.
  */
@@ -105,7 +105,7 @@ export function openCaseTransition({
   overlay.setAttribute("aria-hidden", "true");
   overlay.className = "pointer-events-auto fixed inset-0 z-30";
   const backdrop = document.createElement("div");
-  backdrop.className = "absolute inset-0 bg-white opacity-0";
+  backdrop.className = "absolute inset-0 bg-black-graw opacity-0";
   const frame = document.createElement("div");
   frame.className = "absolute overflow-hidden bg-coal";
   const target = landing(project);
