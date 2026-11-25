@@ -25,8 +25,11 @@ const SLIDE = 1;
 const BACKGROUND_ZOOM = 1.12;
 /** How far a panel's words rise as they come in, in px. */
 const WORDS_RISE = 60;
-/** Leaving the strip, the page goes on by this share of the screen. */
+/** Leaving the strip, the page goes on by this share of the screen… */
 const CARRY = 0.5;
+/** …in this long (s). */
+const CARRY_DURATION = 0.9;
+const carryEase = gsap.parseEase(EASE.out);
 /** Scroll (px) away from the lock that means the page moved some other way. */
 const DRIFT = 4;
 /** A pause (ms) between wheel events that starts a new gesture. */
@@ -152,11 +155,20 @@ export function StudioPillars() {
           root.removeAttribute("data-lenis-prevent");
           getLenis()?.start();
           if (!carry) return;
-          const to = place.start + direction * window.innerHeight * CARRY;
+          const to = Math.round(
+            place.start + direction * window.innerHeight * CARRY,
+          );
           const lenis = getLenis();
-          // Locked: the rest of the swipe doesn't stop it.
-          if (lenis) lenis.scrollTo(to, { lock: true });
-          else window.scrollTo({ top: to, behavior: "smooth" });
+          // Locked, so the rest of the swipe doesn't cut it short; timed, so
+          // it always ends and unlocks (a lerp glide toward a fractional
+          // target never settles, and the page would stay locked).
+          if (lenis) {
+            lenis.scrollTo(to, {
+              lock: true,
+              duration: CARRY_DURATION,
+              easing: carryEase,
+            });
+          } else window.scrollTo({ top: to, behavior: "smooth" });
         };
 
         const slideTo = (next: number) => {
