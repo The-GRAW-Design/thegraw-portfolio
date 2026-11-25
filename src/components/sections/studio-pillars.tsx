@@ -8,7 +8,7 @@ import {
 } from "@/constants/dither";
 import { STUDIO_PAGE } from "@/constants/pages";
 import { DitherImage } from "@/features/dither-image";
-import { EASE, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { EASE, gsap, useGSAP } from "@/lib/gsap";
 import { cn } from "@/utils/cn";
 
 const DITHER = {
@@ -17,19 +17,18 @@ const DITHER = {
   foundations: STUDIO_FOUNDATIONS_DITHER,
 } as const;
 
-/** Desktop: scroll, in viewport heights, that each section stays on screen. */
-const STEP = 0.6;
-/** How far a block rises as it stacks under the previous one, in px. */
-const RISE = 60;
-const SHOWN = "inset(0% 0% 0% 0%)";
-const HIDDEN = "inset(100% 0% 0% 0%)";
+/** A panel's background scale as it starts sliding in (1 once it is in). */
+const BACKGROUND_ZOOM = 1.12;
+/** How far a panel's words come from, in viewport widths (at most 140px). */
+const WORDS_TRAVEL = 0.12;
 
 /**
  * Site 2.0 studio "Propósito", "Pilares" and "Fundamentos" (Figma frames
- * 35052/35053/35054 and the stacked 35056). Desktop: the screen pins and each
- * block stacks under the last while its background unveils from the bottom.
- * Phones: the three 393×852 panels side by side, walked through sideways as
- * the page scrolls.
+ * 35052/35053/35054, laid side by side in a strip; each block keeps its own
+ * frame's place). The screen pins and the vertical scroll slides the panels
+ * sideways, settling on one at a time: each background eases out of a slight
+ * zoom into its Figma framing as it comes in, and its words follow from the
+ * right. Without motion the panels stack.
  */
 export function StudioPillars() {
   const rootRef = useRef<HTMLElement>(null);
@@ -38,16 +37,10 @@ export function StudioPillars() {
   useGSAP(
     () => {
       const root = rootRef.current;
-      if (!root) return;
-      const track = root.querySelector<HTMLElement>("[data-track]");
-      const backgrounds = gsap.utils.toArray<HTMLElement>("[data-bg]", root);
-      const blocks = sections.map((section) =>
-        gsap.utils.toArray<HTMLElement>(
-          `[data-block="${section.id}"] [data-text]`,
-          root,
-        ),
-      );
-      const count = sections.length;
+      const track = root?.querySelector<HTMLElement>("[data-track]");
+      if (!root || !track) return;
+      const panels = gsap.utils.toArray<HTMLElement>("[data-block]", root);
+      const count = panels.length;
       const media = gsap.matchMedia();
 
       media.add(
@@ -58,86 +51,71 @@ export function StudioPillars() {
           reduced: "(prefers-reduced-motion: reduce)",
         },
         (context) => {
-          const { desktop, reduced } = context.conditions ?? {};
-          const pace = reduced ? 0 : 1;
-
-          if (!desktop) {
-            if (reduced || !track) return;
-            // The panels slide by as the page scrolls, one screen each.
-            gsap.to(track, {
-              x: () => -(track.scrollWidth - root.clientWidth),
-              ease: "none",
-              scrollTrigger: {
-                trigger: root,
-                start: "top top",
-                end: () => `+=${window.innerWidth * (count - 1)}`,
-                pin: true,
-                scrub: 0.6,
-                snap: {
-                  snapTo: 1 / (count - 1),
-                  // The nearest panel from where the scroll stops: a short
-                  // swipe or a fast fling never skips one.
-                  directional: false,
-                  inertia: false,
-                  duration: { min: 0.3, max: 0.7 },
-                  ease: EASE.inOut,
-                },
-                invalidateOnRefresh: true,
+          const { desktop = false, reduced } = context.conditions ?? {};
+          if (reduced) return;
+          const distance = () => track.scrollWidth - root.clientWidth;
+          // Scroll per panel: a screen's shorter side.
+          const perPanel = () =>
+            Math.min(window.innerWidth, window.innerHeight);
+          const slide = gsap.to(track, {
+            x: () => -distance(),
+            ease: "none",
+            scrollTrigger: {
+              trigger: root,
+              start: "top top",
+              end: () => `+=${perPanel() * (count - 1)}`,
+              pin: true,
+              scrub: 0.6,
+              snap: {
+                snapTo: 1 / (count - 1),
+                // Mouse: any scroll moves on to the next panel that way.
+                // Touch: the nearest panel from where the swipe stops, so a
+                // short swipe or a fast fling never skips one.
+                directional: desktop,
+                inertia: false,
+                duration: { min: 0.3, max: 0.7 },
+                ease: EASE.inOut,
               },
-            });
-            return;
-          }
-
-          let current = 0;
-          blocks.forEach((texts, index) =>
-            gsap.set(texts, {
-              autoAlpha: index === 0 ? 1 : 0,
-              y: index === 0 ? 0 : RISE,
-            }),
-          );
-          gsap.set(backgrounds, {
-            clipPath: (index) => (index === 0 ? SHOWN : HIDDEN),
+              invalidateOnRefresh: true,
+            },
           });
 
-          const show = (next: number) => {
-            if (next === current) return;
-            blocks.forEach((texts, index) => {
-              const stacked = index <= next;
-              gsap.to(texts, {
-                autoAlpha: stacked ? 1 : 0,
-                y: stacked ? 0 : RISE,
-                duration: (stacked ? 1 : 0.5) * pace,
-                ease: stacked ? EASE.expo : EASE.out,
-                stagger: stacked ? 0.08 * pace : 0,
-                overwrite: true,
-              });
-            });
-            backgrounds.forEach((background, index) => {
-              gsap.to(background, {
-                clipPath: index <= next ? SHOWN : HIDDEN,
-                duration: 1.1 * pace,
-                ease: EASE.expo,
-                overwrite: true,
-              });
-            });
-            if (next > current) {
+          panels.forEach((panel, index) => {
+            const background = panel.querySelector("[data-bg]");
+            const words = panel.querySelectorAll("[data-text]");
+            if (index > 0) {
               gsap.fromTo(
-                backgrounds[next].firstElementChild,
-                { scale: 1.15 },
-                { scale: 1, duration: 1.4 * pace, ease: EASE.expo },
+                background,
+                { scale: BACKGROUND_ZOOM },
+                {
+                  scale: 1,
+                  ease: "none",
+                  scrollTrigger: {
+                    trigger: panel,
+                    containerAnimation: slide,
+                    start: "left right",
+                    end: "left left",
+                    scrub: true,
+                  },
+                },
               );
             }
-            current = next;
-          };
-
-          ScrollTrigger.create({
-            trigger: root,
-            start: "top top",
-            end: () => `+=${window.innerHeight * STEP * count}`,
-            pin: true,
-            invalidateOnRefresh: true,
-            onUpdate: (self) =>
-              show(Math.min(count - 1, Math.floor(self.progress * count))),
+            gsap.from(words, {
+              x: () => Math.min(140, window.innerWidth * WORDS_TRAVEL),
+              autoAlpha: 0,
+              duration: 1,
+              ease: EASE.out,
+              stagger: 0.08,
+              scrollTrigger:
+                index === 0
+                  ? { trigger: root, start: "top 60%", once: true }
+                  : {
+                      trigger: panel,
+                      containerAnimation: slide,
+                      start: "left 75%",
+                      toggleActions: "play none none reverse",
+                    },
+            });
           });
         },
       );
@@ -150,33 +128,29 @@ export function StudioPillars() {
     <section
       ref={rootRef}
       data-header-theme="light"
-      className="relative h-svh min-h-640 overflow-hidden bg-black-graw text-white-graw max-lg:motion-reduce:h-auto lg:min-h-0"
+      className="relative h-svh min-h-640 overflow-hidden bg-black-graw text-white-graw motion-reduce:h-auto lg:min-h-0"
     >
       <div
         data-track
-        className="flex h-full w-[300%] max-lg:will-change-transform max-lg:motion-reduce:w-full max-lg:motion-reduce:flex-col lg:block lg:w-full"
+        className="flex h-full w-[300%] will-change-transform motion-reduce:w-full motion-reduce:flex-col"
       >
-        {sections.map((section, index) => (
+        {sections.map((section) => (
           <div
             key={section.id}
             data-block={section.id}
-            className="relative h-full w-1/3 shrink-0 overflow-hidden max-lg:motion-reduce:h-svh max-lg:motion-reduce:w-full lg:static lg:w-auto lg:overflow-visible"
+            className="relative h-full w-1/3 shrink-0 overflow-hidden motion-reduce:h-svh motion-reduce:w-full"
           >
+            {/* Pixelated while it zooms: no colors between the dither's. */}
             <div
               data-bg
-              className={cn(
-                "absolute inset-0 overflow-hidden",
-                index > 0 && "lg:[clip-path:inset(100%_0%_0%_0%)]",
-              )}
+              className="absolute inset-0 [&_canvas]:[image-rendering:pixelated]"
             >
-              <div className="absolute inset-0">
-                <DitherImage {...DITHER[section.id]} animation="scroll" />
-              </div>
+              <DitherImage {...DITHER[section.id]} animation="scroll" />
             </div>
 
             {/* Phones: title over text at the panel's left; desktop: the
-                title at x 251 and the text on its own column, one row per
-                block (the rows stack down the screen). */}
+                title at x 251 and the text on its own column, at the row's
+                place in the panel's Figma frame. */}
             <div
               className={cn(
                 "absolute left-15 flex w-324 flex-col gap-16 lg:contents",
@@ -187,7 +161,6 @@ export function StudioPillars() {
                 data-text
                 className={cn(
                   "font-gothic text-pillar-sm uppercase lg:absolute lg:left-251 lg:z-10 lg:text-together",
-                  index > 0 && "lg:opacity-0",
                   section.className,
                 )}
               >
@@ -197,7 +170,6 @@ export function StudioPillars() {
                 data-text
                 className={cn(
                   "font-flex text-pillar-copy-sm lg:absolute lg:z-10 lg:w-550 lg:text-together-copy",
-                  index > 0 && "lg:opacity-0",
                   section.className,
                   section.textClassName,
                 )}

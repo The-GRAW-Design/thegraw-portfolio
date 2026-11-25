@@ -97,8 +97,8 @@ export const TEAM_MEMBERS = [
 export const STUDIO_PAGE = {
   title: "Estúdio",
   /**
-   * Figma "Frame 35052/35053/35054": stacked as the desktop scroll goes, each
-   * on its own background; side by side on phones.
+   * Figma "Frame 35052/35053/35054": side by side, each on its own
+   * background, shown one at a time as the page scrolls.
    */
   sections: [
     {
