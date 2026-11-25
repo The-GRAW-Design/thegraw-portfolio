@@ -19,11 +19,12 @@ type FooterProps = {
 };
 
 /**
+ * The first site's footer, kept on the pages not redesigned for 2.0 yet.
  * Figma "Footer" (937px): dithered figure behind the studio details, which
  * are kept together at its bottom. It slides out from under the section
  * above, like the project under the hero.
  */
-export function Footer({ tone = "red" }: FooterProps) {
+export function LegacyFooter({ tone = "red" }: FooterProps) {
   const [emailUser, emailDomain] = STUDIO_INFO.email.split("@");
 
   return (
