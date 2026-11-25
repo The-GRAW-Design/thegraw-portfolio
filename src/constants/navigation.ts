@@ -3,15 +3,19 @@ import { asset } from "@/utils/asset";
 
 /** Each link carries the thumbnail the menu opens beside it. */
 export const NAV_LINKS = [
-  { label: "home", href: "/", visual: asset("/images/menu/home.webp") },
-  { label: "cases", href: "/cases", visual: asset("/images/menu/cases.webp") },
+  { label: "Início", href: "/", visual: asset("/images/menu/home.webp") },
   {
-    label: "studio",
+    label: "Projetos",
+    href: "/cases",
+    visual: asset("/images/menu/cases.webp"),
+  },
+  {
+    label: "Estúdio",
     href: "/studio",
     visual: asset("/images/menu/studio.webp"),
   },
   {
-    label: "services",
+    label: "Serviços",
     href: "/services",
     visual: asset("/images/menu/services.webp"),
   },

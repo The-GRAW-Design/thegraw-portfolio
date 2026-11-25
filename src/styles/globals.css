@@ -126,6 +126,11 @@
   --text-footer-about--line-height: 1.03;
   --text-footer-credit: max(0.75rem, calc(var(--fluid) * 17.608));
   --text-footer-credit--line-height: 1.2;
+  --text-menu-word: max(4.4375rem, calc(var(--fluid) * 130));
+  --text-menu-word--line-height: 0.93;
+  --text-menu-word--letter-spacing: -0.02em;
+  --text-menu-close: max(2.347rem, calc(var(--fluid) * 37.552));
+  --text-menu-close--line-height: 1.2;
   --text-small-sm: 1.1594rem;
   --text-small-sm--line-height: 1.04;
 
