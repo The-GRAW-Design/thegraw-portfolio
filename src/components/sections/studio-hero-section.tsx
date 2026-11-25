@@ -33,7 +33,11 @@ const CLIP_SHOWN = "inset(0% 0% 0% 0%)";
 const clipHidden = (direction: 1 | -1) =>
   direction === 1 ? "inset(0% 0% 0% 100%)" : "inset(0% 100% 0% 0%)";
 
-/** Figma "Studio" hero: portrait, team member and headline. */
+/**
+ * Site 2.0 studio team (Figma ANDRÉ/ALAN/TATÁ/ERIK, 1920×950; phones
+ * "Mobile - Estúdio", 393×746): the photo on top, the member's name and bio
+ * over it and the role filling the band below. The arrows swap the member.
+ */
 export function StudioHeroSection() {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
@@ -166,17 +170,21 @@ export function StudioHeroSection() {
   return (
     <section
       data-header-theme="light"
-      className="@container relative flex min-h-svh flex-col overflow-hidden bg-black-graw text-white lg:block lg:h-svh"
+      className="relative h-746 overflow-hidden bg-black-graw font-flex text-white lg:h-950"
     >
-      <DitherImage {...STUDIO_DITHER} animation="intro" />
+      {/* The grain: the band under the photo on phones, the whole frame on
+          desktop (a 1080px box from the top, as in the Figma). */}
+      <div className="absolute inset-x-0 top-644 h-102 lg:top-0 lg:h-1080">
+        <DitherImage {...STUDIO_DITHER} animation="intro" />
+      </div>
 
       {/* Each member's photo; a new one wipes in over the last. Isolated, so
-          the stacked slides stay under the role headline. */}
+          the stacked slides stay under the name and the role. */}
       <div
         ref={photoRef}
         onPointerMove={onPhotoMove}
         onPointerLeave={onPhotoLeave}
-        className="relative isolate h-[60svh] w-full overflow-hidden lg:absolute lg:inset-y-0 lg:left-0 lg:h-auto lg:w-897"
+        className="absolute inset-x-0 top-0 isolate h-644 overflow-hidden lg:h-651"
       >
         <div data-pan className="absolute inset-0">
           {TEAM_MEMBERS.map((person, personIndex) => (
@@ -189,17 +197,13 @@ export function StudioHeroSection() {
               )}
             >
               <div data-slide-inner className="absolute inset-0">
-                {/* A shorter drift than the default, so its zoom keeps the
-                    room above the head. A box wider than the photo (tablets,
-                    wide screens) crops it near the top to keep the hair; the
-                    thin band of a phone held sideways centres on the eyes. */}
                 <ParallaxImage
                   src={person.photo}
                   alt=""
                   priority={personIndex === 0}
-                  sizes="(min-width: 1024px) 47vw, 100vw"
+                  sizes="100vw"
                   amount={PHOTO_DRIFT}
-                  imageClassName="object-[50%_20%] max-lg:landscape:object-[50%_35%]"
+                  imageClassName={person.photoClassName}
                   settle="load"
                 />
               </div>
@@ -215,22 +219,24 @@ export function StudioHeroSection() {
 
       <h1 className="sr-only">{STUDIO_PAGE.title}</h1>
 
+      {/* Phones: the arrows at the photo's sides and the name over its foot;
+          desktop: one card, arrows above the name. */}
       <div
         aria-roledescription="carrossel"
         aria-label="Equipe"
         className={cn(
-          "relative flex flex-col gap-24 px-16 pt-32 lg:absolute lg:top-88 lg:left-960 lg:gap-37 lg:p-0",
+          "max-lg:contents lg:absolute lg:top-285 lg:flex lg:flex-col lg:gap-37",
           member.cardClassName,
         )}
       >
         {/* The arrows pull toward the cursor (React Bits Magnet) and nudge
             the way they point. */}
-        <div className="flex gap-11">
+        <div className="absolute top-451 right-14 left-15 flex justify-between lg:static lg:justify-start lg:gap-11">
           <Magnet padding={36} magnetStrength={3} maxOffset={10}>
             <button
               type="button"
               aria-label="Pessoa anterior"
-              className="group block transition-[scale] duration-300 ease-power3 active:scale-90"
+              className="group block backdrop-blur-[1.2px] transition-[scale] duration-300 ease-power3 active:scale-90"
               onClick={() => go(-1)}
             >
               <Image
@@ -238,7 +244,7 @@ export function StudioHeroSection() {
                 alt=""
                 width={48}
                 height={48}
-                className="size-40 rotate-180 transition-[translate,opacity] duration-300 ease-power3 group-hover:-translate-x-6 group-hover:opacity-80 lg:size-48"
+                className="size-26.5 rotate-180 transition-[translate,opacity] duration-300 ease-power3 group-hover:-translate-x-6 group-hover:opacity-80 lg:size-48"
               />
             </button>
           </Magnet>
@@ -246,7 +252,7 @@ export function StudioHeroSection() {
             <button
               type="button"
               aria-label="Próxima pessoa"
-              className="group block transition-[scale] duration-300 ease-power3 active:scale-90"
+              className="group block backdrop-blur-[1.2px] transition-[scale] duration-300 ease-power3 active:scale-90"
               onClick={() => go(1)}
             >
               <Image
@@ -254,16 +260,19 @@ export function StudioHeroSection() {
                 alt=""
                 width={48}
                 height={48}
-                className="size-40 transition-[translate,opacity] duration-300 ease-power3 group-hover:translate-x-6 group-hover:opacity-80 lg:size-48"
+                className="size-26.5 transition-[translate,opacity] duration-300 ease-power3 group-hover:translate-x-6 group-hover:opacity-80 lg:size-48"
               />
             </button>
           </Magnet>
         </div>
-        <div key={index} className="flex flex-col gap-15">
+        <div
+          key={index}
+          className="absolute top-494 left-15 flex w-313 flex-col gap-5 lg:static lg:w-auto lg:gap-15"
+        >
           <ProximityText
             as="h2"
             trigger="load"
-            className="text-subheading leading-[1.2] tracking-tight whitespace-nowrap"
+            className="text-member whitespace-nowrap"
           >
             {member.name}
           </ProximityText>
@@ -271,24 +280,22 @@ export function StudioHeroSection() {
             split="lines"
             trigger="load"
             delay={0.15}
-            // 2 design px of slack: the browser measures some lines a hair
-            // wider than the Figma box (0.4px on André's first line).
-            className="text-nav leading-[1.03] text-white-graw lg:h-271 lg:w-[calc(100%+var(--spacing)*2)]"
+            className="text-bio text-white-graw"
           >
             {member.bio}
           </SplitReveal>
         </div>
       </div>
 
-      {/* Scaled with the section (not the viewport) and its Figma side margin,
-          so the line fits the width that is really there. */}
+      {/* The role under the photo: centred on phones, filling the 1822px
+          line of the desktop frame. */}
       <ProximityText
         key={index}
         as="p"
         trigger="load"
         delay={0.2}
         className={cn(
-          "relative mt-auto px-[calc(var(--fluid)*50)] pt-48 pb-16 whitespace-nowrap [--fluid:calc(100cqw/1920)] lg:absolute lg:mt-0 lg:p-0",
+          "absolute top-663.25 left-1/2 w-364 -translate-x-1/2 text-center whitespace-nowrap uppercase lg:top-651 lg:left-51 lg:w-1822 lg:translate-x-0 lg:text-left",
           member.roleClassName,
         )}
       >

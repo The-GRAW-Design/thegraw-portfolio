@@ -63,6 +63,8 @@ export type DitherImageProps = {
   offset?: number;
   /** Random per-cell offset amplitude, as in Figma (0.5 = 50%). */
   scatter?: number;
+  /** Scatter below the `lg` breakpoint, when the mobile frame sets its own; defaults to `scatter`. */
+  mobileScatter?: number;
   quantize?: DitherQuantize;
   /** Quantization levels per channel (Figma "Levels"). */
   levels?: number;

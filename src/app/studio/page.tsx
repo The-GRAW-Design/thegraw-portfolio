@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { LegacyFooter } from "@/components/layout/legacy-footer";
-import { StudioContentSection } from "@/components/sections/studio-content-section";
+import { Footer } from "@/components/layout/footer";
+import { ContactSection } from "@/components/sections/contact-section";
 import { StudioHeroSection } from "@/components/sections/studio-hero-section";
+import { StudioPillars } from "@/components/sections/studio-pillars";
 import { STUDIO_PAGE } from "@/constants/pages";
 
 export const metadata: Metadata = {
@@ -13,9 +14,10 @@ export default function StudioPage() {
     <>
       <main id="conteudo">
         <StudioHeroSection />
-        <StudioContentSection />
+        <StudioPillars />
+        <ContactSection cta="link" />
       </main>
-      <LegacyFooter />
+      <Footer />
     </>
   );
 }

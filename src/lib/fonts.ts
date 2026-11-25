@@ -44,7 +44,7 @@ export const pirataOne = localFont({
 
 export const googleSansFlex = localFont({
   src: "../../public/fonts/google-sans-flex.woff2",
-  weight: "300 500",
+  weight: "300 700",
   style: "normal",
   variable: "--font-google-sans-flex",
   display: "swap",
