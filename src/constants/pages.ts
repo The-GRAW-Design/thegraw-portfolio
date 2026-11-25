@@ -16,12 +16,17 @@ export const HOME_PAGE = {
     title: "Projetos",
     body: "Um olhar sobre como estratégia, design e desenvolvimento dão forma a cada projeto.",
   },
-  /**
-   * The "Projeto Allce" slides of the Figma home, in order; its "projeto"
-   * variant (Gilberto do Acordeon) is off the site for now.
-   */
-  showcases: ["allce", "grupo-penguin", "conexao-duo", "elle-fanning"],
-  viewAllCases: "View All Cases",
+  casesLabel: "Cases",
+  /** Home "Cases" collages, in order (Figma 01 is Grupo Penguin). */
+  cases: [
+    "grupo-penguin",
+    "allce",
+    "lorena-lourenco",
+    "tati-hotelzinho-pet",
+    "elle-fanning",
+    "conexao-duo",
+  ],
+  viewAllCases: "Ver todos os projetos",
   viewAllImage: asset("/images/home/view-all-band.webp"),
 } as const;
 
