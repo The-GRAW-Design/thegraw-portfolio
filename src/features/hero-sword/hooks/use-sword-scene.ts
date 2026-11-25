@@ -5,13 +5,13 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { SwordMode } from "@/features/hero-sword/types";
+import { heroWaitsForScroll } from "@/features/hero-sword/utils/intro";
 import { mixPose, slotPose } from "@/features/hero-sword/utils/pose";
 import {
   HERO_REVEAL_SCROLL,
   SWORD_LOAD_DELAY,
   SWORD_REVEAL_DELAY,
 } from "@/features/hero-sword/utils/reveal";
-import { isOpeningPage } from "@/features/page-transition";
 import { resetSwordWake, SWORD_WAKE } from "@/features/hero-sword/utils/wake";
 import { EASE, gsap, ScrollTrigger } from "@/lib/gsap";
 import { asset } from "@/utils/asset";
@@ -62,9 +62,9 @@ function disposeObject(root: THREE.Object3D) {
  * The home sword in 3D, drawn on a fixed canvas over the hero stack. It rests
  * in the `[data-sword-slot]` boxes (hero, then "Projetos"), read live every
  * frame, so it moves with the page:
- * - entry, on the first scroll when the site opens on the home (the hero
- *   shows its background alone until then), or on load when coming back
- *   from another page: flies in tip first, spinning, and lands with a
+ * - entry, on the first scroll when the site opens on the home on desktop
+ *   (the hero shows its background alone until then), or on load (back from
+ *   another page, or on phones): flies in tip first, spinning, and lands with a
  *   shockwave through the hero dither (`SWORD_WAKE`);
  * - scroll: while "Projetos" comes up, it turns over and settles into its
  *   slot there, upright on desktop, flat on phones;
@@ -88,7 +88,7 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
     /** "Projetos" has gone past the top: the cases cover the hero. */
     let passed = false;
     /** The site opened on the home: the sword waits for the first scroll. */
-    const onScroll = isOpeningPage();
+    const onScroll = heroWaitsForScroll();
     /** Time for the sword to fly in (the first scroll, or right away). */
     let revealed = !onScroll;
     let model: THREE.Object3D | null = null;
