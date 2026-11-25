@@ -128,6 +128,8 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
 
     // Viewport px <-> world: z = 0 is the screen plane, 1 unit = 1 CSS px.
     const viewport = { width: 1, height: 1 };
+    /** Ticker time of the last frame drawn (s). */
+    let lastTime = 0;
     const resize = () => {
       const width = container.clientWidth;
       const height = container.clientHeight;
@@ -141,10 +143,10 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
       camera.near = distance * 0.05;
       camera.far = distance * 4;
       camera.updateProjectionMatrix();
+      // Resizing cleared the canvas: draw again before the browser paints it
+      // (blank until the next frame otherwise, a blink).
+      if (model) tick(lastTime, 0);
     };
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(container);
-    resize();
 
     // Scroll: 0 in the hero, 1 once "Projetos" is centred on screen.
     let dock = 0;
@@ -179,6 +181,7 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
     let turntableSpin = 0;
     const tick = (time: number, deltaTime: number) => {
       if (!model) return;
+      lastTime = time;
       const frames = Math.min(deltaTime / (1000 / 60), 4);
 
       // Rest pose: between the two slots, as the page scrolls.
@@ -247,6 +250,10 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
       SWORD_WAKE.ring = ring.radius;
       SWORD_WAKE.ringStrength = ring.strength;
     };
+
+    const resizeObserver = new ResizeObserver(resize);
+    resizeObserver.observe(container);
+    resize();
 
     const updateLoop = () => {
       gsap.ticker.remove(tick);

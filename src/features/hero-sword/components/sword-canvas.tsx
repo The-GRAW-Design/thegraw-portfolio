@@ -3,7 +3,11 @@
 import { useRef } from "react";
 import { useSwordScene } from "@/features/hero-sword/hooks/use-sword-scene";
 
-/** Fixed, see-through layer over the hero stack, under the header. */
+/**
+ * Fixed, see-through layer over the hero stack, under the header. It spans
+ * the large viewport, so a phone's browser bars showing or hiding never
+ * resize it (a resize clears the WebGL canvas).
+ */
 export function SwordCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
   useSwordScene(containerRef);
@@ -12,7 +16,7 @@ export function SwordCanvas() {
     <div
       ref={containerRef}
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-30"
+      className="pointer-events-none fixed inset-x-0 top-0 z-30 h-lvh"
     />
   );
 }

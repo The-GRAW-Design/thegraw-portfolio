@@ -16,6 +16,9 @@ const HERO_COVER = "[data-hero-cover]";
  * forms); the first scroll brings in the blackletter headline, its two lines
  * and the sword (`HeroSword`), which stirs the dither as it lands. After a
  * short hold, the white "Projetos" and then the cases slide over it.
+ * It fills the large viewport, so no gap opens under it when a phone's
+ * browser bars hide; the words and the sword are placed on the small one
+ * (always visible), at Figma's proportions (199 of 852 for the words).
  */
 export function HeroSection() {
   const { title, lines } = HOME_PAGE.hero;
@@ -24,14 +27,14 @@ export function HeroSection() {
     <>
       <section
         data-header-theme="light"
-        className="sticky top-0 h-svh overflow-hidden bg-black-graw text-white-graw"
+        className="sticky top-0 h-lvh overflow-hidden bg-black-graw text-white-graw"
       >
         <SwordBackdrop
           {...HERO_DITHER}
           animation="intro"
           coveredBy={HERO_COVER}
         />
-        <div className="absolute top-199 left-14 flex w-[calc(var(--mobile)*305)] flex-col gap-25 lg:contents">
+        <div className="absolute top-[23.36svh] left-14 flex w-[calc(var(--mobile)*305)] flex-col gap-25 lg:contents">
           <SplitReveal
             as="h1"
             split="chars"
