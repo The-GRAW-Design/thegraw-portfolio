@@ -130,7 +130,11 @@ export const FOOTER_GRAW_DITHER: DitherPreset = {
   mobileFrame: { x: -0.13995, y: -0.00654, width: 1.29517, height: 1.39869 },
 };
 
-/** Figma "Studio" hero: image at 14% over BLACK GRAW, offset −15%, scatter 50%. */
+/**
+ * Figma "Studio" team frames: image at 14% over BLACK GRAW, offset −15%,
+ * scatter 50%, in a 1920×1080 box from the top (phones: the 393×102 band
+ * under the photo).
+ */
 export const STUDIO_DITHER: DitherPreset = {
   src: asset("/images/studio/hero-texture.webp"),
   palette: [
@@ -145,6 +149,70 @@ export const STUDIO_DITHER: DitherPreset = {
   quantize: "none",
   frame: { x: -0.0576, y: -0.4935, width: 1.1152, height: 2.9861 },
   mobileFrame: COVER_FRAME,
+};
+
+/**
+ * Site 2.0 studio panels (Figma "Frame 35052/35053/35054", 1920×1069; phones
+ * 393×852 side by side, each image in a 396px box at x −2): gradient maps
+ * with Figma's own scatter per frame, no pixelation.
+ */
+const STUDIO_PANEL_MOBILE: DitherFrame = {
+  x: -0.00509,
+  y: 0,
+  width: 1.00763,
+  height: 0.99883,
+};
+
+/** Propósito: the serpent mapped #151515 → #0d0d0d (56.25%) → RED GRAW. */
+export const STUDIO_PURPOSE_DITHER: DitherPreset = {
+  src: asset("/images/studio/purpose.webp"),
+  palette: [
+    { token: "soot", position: 0 },
+    { token: "night", position: 0.5625 },
+    { token: "red-graw", position: 1 },
+  ],
+  pixelSize: 1,
+  offset: -0.15,
+  scatter: 0.187,
+  mobileScatter: 0.053,
+  quantize: "none",
+  frame: COVER_FRAME,
+  // 396×976 on phones: taller than the panel.
+  mobileFrame: { ...STUDIO_PANEL_MOBILE, height: 1.14554 },
+};
+
+/** Pilares: the crows mapped #151515 → RED GRAW (56.25%) → #1f1f1f. */
+export const STUDIO_PILLARS_DITHER: DitherPreset = {
+  src: asset("/images/studio/pillars.webp"),
+  palette: [
+    { token: "soot", position: 0 },
+    { token: "red-graw", position: 0.5625 },
+    { token: "pitch", position: 1 },
+  ],
+  pixelSize: 1,
+  offset: -0.15,
+  scatter: 0.382,
+  mobileScatter: 0.174,
+  quantize: "none",
+  frame: COVER_FRAME,
+  mobileFrame: STUDIO_PANEL_MOBILE,
+};
+
+/** Fundamentos: the rider mapped #060606 → #2c2c2c → #999999, no offset. */
+export const STUDIO_FOUNDATIONS_DITHER: DitherPreset = {
+  src: asset("/images/studio/foundations.webp"),
+  palette: [
+    { token: "abyss", position: 0 },
+    { token: "slate", position: 0.5 },
+    { token: "stone", position: 1 },
+  ],
+  pixelSize: 1,
+  scatter: 0.3,
+  mobileScatter: 0.079,
+  quantize: "none",
+  // 2954×1378 at (-803.5, -250) in the 1920×1069 frame.
+  frame: { x: -0.4185, y: -0.234, width: 1.5385, height: 1.2894 },
+  mobileFrame: STUDIO_PANEL_MOBILE,
 };
 
 /**

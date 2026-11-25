@@ -6,12 +6,23 @@ import { CONTACT_DITHER } from "@/constants/dither";
 import { HOME_PAGE } from "@/constants/pages";
 import { PROPOSAL_HREF } from "@/constants/services";
 import { DitherImage } from "@/features/dither-image";
+import { cn } from "@/utils/cn";
+
+type ContactSectionProps = {
+  /**
+   * `button`: the red box (home). `link`: the studio's plain red link on
+   * desktop (Figma studio "Frame 81"); phones keep the box.
+   */
+  cta?: "button" | "link";
+};
 
 /**
  * Figma home "Frame 81" (1920×788; phones 393×852): the red blackletter call
  * over a light grain, the line and the red "Solicite sua proposta" button.
  */
-export function ContactSection() {
+export function ContactSection({
+  cta: ctaStyle = "button",
+}: ContactSectionProps) {
   const { title, copy, cta } = HOME_PAGE.contact;
 
   return (
@@ -47,10 +58,22 @@ export function ContactSection() {
                 href={PROPOSAL_HREF}
                 tone="graw"
                 iconClassName="size-27.25 lg:size-20"
-                className="h-40 w-312 justify-center gap-4 bg-red-graw px-31 font-flex text-proposal-sm font-medium lg:h-30 lg:w-auto lg:gap-8 lg:px-25 lg:text-caption"
+                className={cn(
+                  "h-40 w-312 justify-center gap-4 bg-red-graw px-31 font-flex text-proposal-sm font-medium lg:h-30 lg:w-auto lg:gap-8 lg:px-25 lg:text-caption",
+                  ctaStyle === "link" && "lg:hidden",
+                )}
               >
                 {cta}
               </ArrowLink>
+              {ctaStyle === "link" && (
+                <ArrowLink
+                  href={PROPOSAL_HREF}
+                  tone="red"
+                  className="font-flex max-lg:hidden"
+                >
+                  {cta}
+                </ArrowLink>
+              )}
             </Magnet>
           </div>
         </Reveal>

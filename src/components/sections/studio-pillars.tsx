@@ -1,87 +1,128 @@
 "use client";
 
-import Image from "next/image";
 import { useRef } from "react";
-import { Reveal } from "@/components/ui/reveal";
+import {
+  STUDIO_FOUNDATIONS_DITHER,
+  STUDIO_PILLARS_DITHER,
+  STUDIO_PURPOSE_DITHER,
+} from "@/constants/dither";
 import { STUDIO_PAGE } from "@/constants/pages";
+import { DitherImage } from "@/features/dither-image";
 import { EASE, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { cn } from "@/utils/cn";
-import { themeColor } from "@/utils/theme-color";
 
-/** Scroll, in viewport heights, that each section stays on screen. */
+const DITHER = {
+  purpose: STUDIO_PURPOSE_DITHER,
+  pillars: STUDIO_PILLARS_DITHER,
+  foundations: STUDIO_FOUNDATIONS_DITHER,
+} as const;
+
+/** Desktop: scroll, in viewport heights, that each section stays on screen. */
 const STEP = 0.6;
+/** How far a block rises as it stacks under the previous one, in px. */
+const RISE = 60;
 const SHOWN = "inset(0% 0% 0% 0%)";
 const HIDDEN = "inset(100% 0% 0% 0%)";
 
-/** How far a section rises as it stacks under the previous one, in px. */
-const RISE = 60;
-
 /**
- * Figma "Studio" purpose, pillars and foundations: the row pins and the
- * scroll stacks them one under the other, as laid out in the Figma. The one
- * coming in is red and the ones before it settle to black, while its photo
- * unveils from the bottom over the previous one.
+ * Site 2.0 studio "Propósito", "Pilares" and "Fundamentos" (Figma frames
+ * 35052/35053/35054 and the stacked 35056). Desktop: the screen pins and each
+ * block stacks under the last while its background unveils from the bottom.
+ * Phones: the three 393×852 panels side by side, walked through sideways as
+ * the page scrolls.
  */
 export function StudioPillars() {
-  const rootRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLElement>(null);
   const sections = STUDIO_PAGE.sections;
 
   useGSAP(
     () => {
       const root = rootRef.current;
       if (!root) return;
-      const blocks = gsap.utils.toArray<HTMLElement>("[data-pillar]", root);
-      const images = gsap.utils.toArray<HTMLElement>(
-        "[data-pillar-image]",
-        root,
+      const track = root.querySelector<HTMLElement>("[data-track]");
+      const backgrounds = gsap.utils.toArray<HTMLElement>("[data-bg]", root);
+      const blocks = sections.map((section) =>
+        gsap.utils.toArray<HTMLElement>(
+          `[data-block="${section.id}"] [data-text]`,
+          root,
+        ),
       );
-      const count = blocks.length;
-
+      const count = sections.length;
       const media = gsap.matchMedia();
+
       media.add(
+        // One condition always matches: the callback only runs when one does.
         {
-          motion: "(prefers-reduced-motion: no-preference)",
+          desktop: "(min-width: 64rem)",
+          phone: "(max-width: 63.99rem)",
           reduced: "(prefers-reduced-motion: reduce)",
         },
         (context) => {
-          const pace = context.conditions?.reduced ? 0 : 1;
-          const red = themeColor("red-graw");
-          const black = themeColor("black");
+          const { desktop, reduced } = context.conditions ?? {};
+          const pace = reduced ? 0 : 1;
+
+          if (!desktop) {
+            if (reduced || !track) return;
+            // The panels slide by as the page scrolls, one screen each.
+            gsap.to(track, {
+              x: () => -(track.scrollWidth - root.clientWidth),
+              ease: "none",
+              scrollTrigger: {
+                trigger: root,
+                start: "top top",
+                end: () => `+=${window.innerWidth * (count - 1)}`,
+                pin: true,
+                scrub: 0.6,
+                snap: {
+                  snapTo: 1 / (count - 1),
+                  // The nearest panel from where the scroll stops: a short
+                  // swipe or a fast fling never skips one.
+                  directional: false,
+                  inertia: false,
+                  duration: { min: 0.3, max: 0.7 },
+                  ease: EASE.inOut,
+                },
+                invalidateOnRefresh: true,
+              },
+            });
+            return;
+          }
+
           let current = 0;
-          gsap.set(blocks, {
-            opacity: (index) => (index === 0 ? 1 : 0),
-            y: (index) => (index === 0 ? 0 : RISE),
-            color: (index) => (index === 0 ? red : black),
-          });
-          gsap.set(images, {
+          blocks.forEach((texts, index) =>
+            gsap.set(texts, {
+              autoAlpha: index === 0 ? 1 : 0,
+              y: index === 0 ? 0 : RISE,
+            }),
+          );
+          gsap.set(backgrounds, {
             clipPath: (index) => (index === 0 ? SHOWN : HIDDEN),
           });
 
           const show = (next: number) => {
             if (next === current) return;
-            const forward = next > current ? 1 : -1;
-            blocks.forEach((block, index) => {
+            blocks.forEach((texts, index) => {
               const stacked = index <= next;
-              gsap.to(block, {
-                opacity: stacked ? 1 : 0,
+              gsap.to(texts, {
+                autoAlpha: stacked ? 1 : 0,
                 y: stacked ? 0 : RISE,
-                color: index === next ? red : black,
                 duration: (stacked ? 1 : 0.5) * pace,
                 ease: stacked ? EASE.expo : EASE.out,
+                stagger: stacked ? 0.08 * pace : 0,
                 overwrite: true,
               });
             });
-            images.forEach((image, index) => {
-              gsap.to(image, {
+            backgrounds.forEach((background, index) => {
+              gsap.to(background, {
                 clipPath: index <= next ? SHOWN : HIDDEN,
                 duration: 1.1 * pace,
                 ease: EASE.expo,
                 overwrite: true,
               });
             });
-            if (forward > 0) {
+            if (next > current) {
               gsap.fromTo(
-                images[next].firstElementChild,
+                backgrounds[next].firstElementChild,
                 { scale: 1.15 },
                 { scale: 1, duration: 1.4 * pace, ease: EASE.expo },
               );
@@ -89,11 +130,9 @@ export function StudioPillars() {
             current = next;
           };
 
-          // Pinned centered in the viewport (or at the top when taller).
           ScrollTrigger.create({
             trigger: root,
-            start: () =>
-              `top ${Math.max(0, (window.innerHeight - root.offsetHeight) / 2)}px`,
+            start: "top top",
             end: () => `+=${window.innerHeight * STEP * count}`,
             pin: true,
             invalidateOnRefresh: true,
@@ -108,47 +147,78 @@ export function StudioPillars() {
   );
 
   return (
-    <div
+    <section
       ref={rootRef}
-      className="flex flex-col gap-48 lg:flex-row lg:items-start lg:gap-101 lg:pl-93"
+      data-header-theme="light"
+      className="relative h-svh min-h-640 overflow-hidden bg-black-graw text-white-graw max-lg:motion-reduce:h-auto lg:min-h-0"
     >
-      <Reveal className="flex flex-col gap-51 lg:w-703">
+      <div
+        data-track
+        className="flex h-full w-[300%] max-lg:will-change-transform max-lg:motion-reduce:w-full max-lg:motion-reduce:flex-col lg:block lg:w-full"
+      >
         {sections.map((section, index) => (
           <div
-            key={section.heading}
-            data-pillar
-            className={cn(index === 0 ? "text-red-graw" : "opacity-0")}
+            key={section.id}
+            data-block={section.id}
+            className="relative h-full w-1/3 shrink-0 overflow-hidden max-lg:motion-reduce:h-svh max-lg:motion-reduce:w-full lg:static lg:w-auto lg:overflow-visible"
           >
-            <h2 className="text-heading font-light">{section.heading}</h2>
-            {section.body.map((paragraph) => (
-              <p key={paragraph} className="text-body">
-                {paragraph}
-              </p>
-            ))}
-          </div>
-        ))}
-      </Reveal>
+            <div
+              data-bg
+              className={cn(
+                "absolute inset-0 overflow-hidden",
+                index > 0 && "lg:[clip-path:inset(100%_0%_0%_0%)]",
+              )}
+            >
+              <div className="absolute inset-0">
+                <DitherImage {...DITHER[section.id]} animation="scroll" />
+              </div>
+            </div>
 
-      <Reveal className="relative aspect-[938/874] w-full overflow-hidden bg-placeholder lg:w-938">
-        {sections.map((section, index) => (
-          <div
-            key={section.heading}
-            data-pillar-image
-            className={cn(
-              "absolute inset-0 overflow-hidden",
-              index > 0 && "[clip-path:inset(100%_0%_0%_0%)]",
-            )}
-          >
-            <Image
-              src={section.image}
-              alt=""
-              fill
-              sizes="(min-width: 1024px) 49vw, 100vw"
-              className="object-cover"
-            />
+            {/* Phones: title over text at the panel's left; desktop: the
+                title at x 251 and the text on its own column, one row per
+                block (the rows stack down the screen). */}
+            <div
+              className={cn(
+                "absolute left-15 flex w-324 flex-col gap-16 lg:contents",
+                section.mobileClassName,
+              )}
+            >
+              <h2
+                data-text
+                className={cn(
+                  "font-gothic text-pillar-sm uppercase lg:absolute lg:left-251 lg:z-10 lg:text-together",
+                  index > 0 && "lg:opacity-0",
+                  section.className,
+                )}
+              >
+                {section.heading}
+              </h2>
+              <div
+                data-text
+                className={cn(
+                  "font-flex text-pillar-copy-sm lg:absolute lg:z-10 lg:w-550 lg:text-together-copy",
+                  index > 0 && "lg:opacity-0",
+                  section.className,
+                  section.textClassName,
+                )}
+              >
+                {"items" in section ? (
+                  <ul className="flex flex-col gap-20 lg:gap-54">
+                    {section.items.map((item) => (
+                      <li key={item.label}>
+                        <strong className="font-bold">{item.label}</strong>{" "}
+                        {item.text}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>{section.body}</p>
+                )}
+              </div>
+            </div>
           </div>
         ))}
-      </Reveal>
-    </div>
+      </div>
+    </section>
   );
 }

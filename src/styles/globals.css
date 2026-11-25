@@ -49,6 +49,12 @@
   /* Site 2.0 hero gradient map: white → blood → char */
   --color-blood: #b30010;
   --color-char: #1e1e1e;
+  /* Site 2.0 studio: purpose and pillars (red), foundations (gray) */
+  --color-soot: #151515;
+  --color-pitch: #1f1f1f;
+  --color-abyss: #060606;
+  --color-slate: #2c2c2c;
+  --color-stone: #999999;
 
   /* Figma translucent fills */
   --color-shade: rgb(0 0 0 / 0.52);
@@ -143,18 +149,45 @@
   --text-end: calc(var(--fluid) * 338.106);
   --text-end--line-height: 1.2;
   --text-end--letter-spacing: -0.07em;
-  --text-role-motion: calc(var(--fluid) * 239.569);
-  --text-role-motion--line-height: 1.2;
-  --text-role-motion--letter-spacing: -0.07em;
-  --text-role-director: calc(var(--fluid) * 226.467);
+  /*
+   * Site 2.0 studio roles, each filling the 1822px line of its Figma frame;
+   * phones keep André's 49.59/270.722 ratio for all four.
+   */
+  --text-role-director: calc(var(--fluid) * 270.722);
   --text-role-director--line-height: 1.2;
   --text-role-director--letter-spacing: -0.07em;
-  --text-role-manager: calc(var(--fluid) * 225.561);
+  --text-role-director-sm: calc(var(--mobile) * 49.59);
+  --text-role-director-sm--line-height: 1.2;
+  --text-role-director-sm--letter-spacing: -0.07em;
+  --text-role-motion: calc(var(--fluid) * 255.136);
+  --text-role-motion--line-height: 1.2;
+  --text-role-motion--letter-spacing: -0.07em;
+  --text-role-motion-sm: calc(var(--mobile) * 46.735);
+  --text-role-motion-sm--line-height: 1.2;
+  --text-role-motion-sm--letter-spacing: -0.07em;
+  --text-role-manager: calc(var(--fluid) * 205.645);
   --text-role-manager--line-height: 1.2;
   --text-role-manager--letter-spacing: -0.07em;
-  --text-giant: calc(var(--fluid) * 248.266);
-  --text-giant--line-height: 1.2;
-  --text-giant--letter-spacing: -0.07em;
+  --text-role-manager-sm: calc(var(--mobile) * 37.669);
+  --text-role-manager-sm--line-height: 1.2;
+  --text-role-manager-sm--letter-spacing: -0.07em;
+  --text-role-developer: calc(var(--fluid) * 273.599);
+  --text-role-developer--line-height: 1.2;
+  --text-role-developer--letter-spacing: -0.07em;
+  --text-role-developer-sm: calc(var(--mobile) * 50.117);
+  --text-role-developer-sm--line-height: 1.2;
+  --text-role-developer-sm--letter-spacing: -0.07em;
+  /* Site 2.0 studio: member name and bio, purpose/pillars on phones */
+  --text-member: max(1.875rem, calc(var(--fluid) * 67.266));
+  --text-member--line-height: 1.2;
+  --text-member--letter-spacing: -0.07em;
+  --text-bio: max(0.875rem, calc(var(--fluid) * 22));
+  --text-bio--line-height: 1.03;
+  --text-pillar-sm: calc(var(--mobile) * 44.964);
+  --text-pillar-sm--line-height: 0.93;
+  --text-pillar-copy-sm: 0.75rem;
+  --text-pillar-copy-sm--line-height: 0.93;
+  --text-pillar-copy-sm--letter-spacing: -0.04em;
   --text-lets: max(3.5rem, calc(var(--fluid) * 257.131));
   --text-lets--line-height: 0.93;
   --text-lets--letter-spacing: -0.04em;
