@@ -179,7 +179,7 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
       // there finishes the turn at the nearest flat side.
       const turntable = heroPose.angle > Math.PI / 4;
       if (turntable && dock < 0.001) {
-        turntableSpin += (deltaTime / 1000) * TURNTABLE_SPEED;
+        turntableSpin -= (deltaTime / 1000) * TURNTABLE_SPEED;
       }
       const flatSide = Math.round(turntableSpin / (Math.PI * 2)) * Math.PI * 2;
       const spin = turntable

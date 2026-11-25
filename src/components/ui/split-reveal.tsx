@@ -20,6 +20,12 @@ type SplitRevealProps = {
 const STAGGER = { chars: 25, words: 60, lines: 100 } as const;
 /** Letters tip into place as they rise; words and lines rise straight. */
 const TILT = { chars: 7, words: 0, lines: 0 } as const;
+/**
+ * Start offset, in % of the unit height: low enough that accents and other
+ * marks above the letters stay below the mask (and its room for glyphs)
+ * until the unit rises, even with tight line heights.
+ */
+const START = 200;
 
 /**
  * Text revealed by chars, words or lines rising from under their masks
@@ -42,7 +48,7 @@ export function SplitReveal({
       mask
       maskStyle={split === "lines" ? LINE_MASK_ROOM : MASK_ROOM}
       from={{
-        yPercent: 110,
+        yPercent: START,
         rotation: TILT[split],
         transformOrigin: "0% 100%",
       }}
