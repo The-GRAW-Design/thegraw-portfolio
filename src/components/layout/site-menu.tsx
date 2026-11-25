@@ -64,7 +64,8 @@ function buildMenuTimeline(root: HTMLElement, onClosed: () => void) {
     .fromTo(content, { ...CONTENT_AWAY }, { ...CONTENT_AT_REST }, 0)
     .fromTo(
       links,
-      { yPercent: 120 },
+      // Far enough down to clear the clip's room for descenders.
+      { yPercent: 160 },
       { yPercent: 0, duration: 1.5, ease: EASE.menuLinks, stagger: 0.05 },
       0.8,
     )
@@ -202,10 +203,13 @@ export function SiteMenu({ open, onClose, returnFocusRef }: SiteMenuProps) {
                       className="object-cover"
                     />
                   </span>
-                  <span className="-mr-[0.06em] block overflow-hidden pr-[0.06em] pl-8 lg:-ml-[0.06em] lg:pr-8 lg:pl-[0.06em]">
+                  {/* The clip, sized like the word so its em are the word's, leaves
+                      room for accents above and descenders below the 0.93
+                      line ("j" of Projetos, "ç" of Serviços). */}
+                  <span className="-my-[0.15em] -mr-[0.06em] block overflow-hidden py-[0.15em] pr-[0.06em] pl-8 font-flex text-menu-word lg:-ml-[0.06em] lg:pr-8 lg:pl-[0.06em]">
                     <span
                       data-menu-link
-                      className="block font-flex text-menu-word text-[color:var(--menu-link-tint,var(--color-menu-link))] transition-colors duration-300 ease-power3 will-change-transform group-data-knockout:text-transparent max-lg:lowercase"
+                      className="block text-[color:var(--menu-link-tint,var(--color-menu-link))] transition-colors duration-300 ease-power3 will-change-transform group-data-knockout:text-transparent max-lg:lowercase"
                     >
                       {link.label}
                     </span>
