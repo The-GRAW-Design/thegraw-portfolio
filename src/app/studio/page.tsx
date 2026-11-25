@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Footer } from "@/components/layout/footer";
+import { LegacyFooter } from "@/components/layout/legacy-footer";
 import { StudioContentSection } from "@/components/sections/studio-content-section";
 import { StudioHeroSection } from "@/components/sections/studio-hero-section";
 import { STUDIO_PAGE } from "@/constants/pages";
@@ -15,7 +15,7 @@ export default function StudioPage() {
         <StudioHeroSection />
         <StudioContentSection />
       </main>
-      <Footer />
+      <LegacyFooter />
     </>
   );
 }

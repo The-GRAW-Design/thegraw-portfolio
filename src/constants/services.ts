@@ -2,17 +2,8 @@ import { STUDIO_INFO } from "@/constants/studio";
 import type { ServiceId } from "@/types/project";
 import { asset } from "@/utils/asset";
 
-/** Figma CTA copy, kept as written in the design. */
-export const PROPOSAL_CTA = "Socilite sua proposta";
+/** Where the "Solicite sua proposta" buttons lead: an e-mail to the studio. */
 export const PROPOSAL_HREF = `mailto:${STUDIO_INFO.email}`;
-
-export const LETS_WORK = {
-  title: "Let's work together",
-  copy: [
-    "Work with us if average isn't your thing.",
-    "Drop it, we'll build it!",
-  ],
-} as const;
 
 export type ServiceOffer = {
   id: ServiceId;

@@ -22,6 +22,12 @@ export const FOOTER_LINKS = [
   { label: "Studio", href: "/studio" },
 ] as const;
 
+/** Site 2.0 footer links (desktop). */
+export const FOOTER_LINKS_PT = [
+  { label: "Projetos", href: "/cases" },
+  { label: "Estúdio", href: "/studio" },
+] as const;
+
 /** Header "contato" (Figma HOTBAR, desktop only): an e-mail to the studio. */
 export const CONTACT_LINK = {
   label: "contato",
