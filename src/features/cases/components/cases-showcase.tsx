@@ -20,7 +20,7 @@ import {
   REST_OPACITY,
   usePieceVisibility,
 } from "@/features/cases/hooks/use-piece-visibility";
-import { useStepInput } from "@/features/cases/hooks/use-step-input";
+import { useStepInput } from "@/hooks/use-step-input";
 import {
   createPieceMotion,
   MAIN_PARALLAX,
