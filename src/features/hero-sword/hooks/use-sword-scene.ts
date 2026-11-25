@@ -26,6 +26,8 @@ const IDLE = { float: 5, roll: 0.14, tiltX: 0.16, tiltY: 0.28 };
  * a model viewer turntable, 20°/s).
  */
 const TURNTABLE_SPEED = THREE.MathUtils.degToRad(20);
+/** Share of the room the hilt reflects (the blade reflects all of it). */
+const HILT_REFLECTION = 0.3;
 /** Blade speed (px/s) that stirs the hero dither at full strength. */
 const WAKE_SPEED = 2600;
 
@@ -77,6 +79,8 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
     let disposed = false;
     let visible = true;
     let model: THREE.Object3D | null = null;
+    /** The sword materials: each holds the room map, turned with the slot. */
+    const materials: THREE.MeshStandardMaterial[] = [];
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -96,15 +100,16 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
     const pmrem = new THREE.PMREMGenerator(renderer);
     const room = new RoomEnvironment();
     const environment = pmrem.fromScene(room, 0.04).texture;
-    scene.environment = environment;
+    // Set on each sword material once the model loads (see there).
     room.dispose();
 
     // The light and the reflections turn with the slot angle, so the sword
     // looks the same lying or upright (the Figma uses one photo, rotated).
-    const KEY_DIRECTION = new THREE.Vector3(-0.45, 0.85, 1);
-    const key = new THREE.DirectionalLight(0xffffff, 1.6);
+    const KEY_DIRECTION = new THREE.Vector3(-0.25, 1, 0.45);
+    const key = new THREE.DirectionalLight(0xffffff, 3);
     key.position.copy(KEY_DIRECTION);
-    const fill = new THREE.AmbientLight(0xffffff, 0.25);
+    // Little fill, so the hilt keeps deep shade on the side away from the key.
+    const fill = new THREE.AmbientLight(0xffffff, 0.06);
     scene.add(key, fill);
 
     const camera = new THREE.PerspectiveCamera(FOV, 1, 1, 10);
@@ -213,7 +218,9 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
         pose.angle + Math.sin(time * 38) * 0.035 * intro.quiver,
       );
       pivot.scale.setScalar(pose.length / MODEL_LENGTH);
-      scene.environmentRotation.z = pose.angle;
+      materials.forEach((material) => {
+        material.envMapRotation.z = pose.angle;
+      });
       key.position.copy(KEY_DIRECTION).applyAxisAngle(Z_AXIS, pose.angle);
       renderer.render(scene, camera);
 
@@ -270,8 +277,16 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
               if (texture) texture.anisotropy = anisotropy;
             },
           );
-          // The Figma bronze (guard, pommel) is darker than the room makes it.
-          if (material.name.includes("Bronze")) material.envMapIntensity = 0.7;
+          // The room map is set on each material: three only applies
+          // `envMapIntensity` to a material's own map, not to the scene's.
+          // The hilt (grip, guard, ring, pommel) takes less of the room, so
+          // the key light shapes it with visible shade; the blade keeps the
+          // full reflection.
+          material.envMap = environment;
+          material.envMapIntensity = material.name.includes("Lamina")
+            ? 1
+            : HILT_REFLECTION;
+          materials.push(material);
         });
         // Centred between the tip and the pommel end.
         gltf.scene.position.x = -MODEL_MID;
