@@ -19,7 +19,6 @@ type SiteMenuProps = {
 };
 
 const FOCUSABLE = "a[href], button:not([disabled])";
-const DESKTOP = "(min-width: 64rem)";
 /** Words rise in red and settle into the link gray (hover still wins). */
 const LINK_TINT = "--menu-link-tint";
 
@@ -46,8 +45,6 @@ function buildMenuTimeline(root: HTMLElement, onClosed: () => void) {
   const content = root.querySelector("[data-menu-content]");
   const links = gsap.utils.toArray<HTMLElement>("[data-menu-link]", root);
   const visuals = gsap.utils.toArray<HTMLElement>("[data-menu-visual]", root);
-  // Without hover, the thumbnails open with the menu instead.
-  const touch = !window.matchMedia(DESKTOP).matches;
 
   // GSAP writes into the vars it receives, so each tween gets fresh copies.
   const timeline = gsap
@@ -82,19 +79,6 @@ function buildMenuTimeline(root: HTMLElement, onClosed: () => void) {
       },
       1.5,
     );
-  if (touch) {
-    timeline.fromTo(
-      visuals,
-      { width: 0 },
-      {
-        width: window.innerWidth < 768 ? 54 : 67,
-        duration: 0.8,
-        ease: EASE.menuVisual,
-        stagger: 0.05,
-      },
-      "-=0.9",
-    );
-  }
   return timeline;
 }
 
@@ -186,28 +170,29 @@ export function SiteMenu({ open, onClose, returnFocusRef }: SiteMenuProps) {
       />
       <div
         data-menu-panel
-        className="absolute inset-x-16 top-16 overflow-hidden bg-menu px-24 pt-96 pb-48 [clip-path:polygon(0%_0%,100%_0%,100%_0%,0%_0%)] lg:inset-x-auto lg:top-31 lg:right-55 lg:h-629 lg:w-1339 lg:p-0"
+        className="absolute top-24 right-17 left-14 h-576 overflow-hidden bg-menu [clip-path:polygon(0%_0%,100%_0%,100%_0%,0%_0%)] lg:inset-x-auto lg:top-31 lg:right-55 lg:h-629 lg:w-1339"
       >
         <nav
           data-menu-content
           aria-label="Principal"
-          className="lg:absolute lg:inset-0"
+          className="absolute inset-0"
         >
-          {/* The right column starts early enough for its words to be
-              pushed by the thumbnail like the left one, inside the panel. */}
-          <ul className="flex flex-col lg:absolute lg:top-146 lg:left-101 lg:grid lg:grid-flow-col lg:grid-cols-[calc(var(--spacing)*552)_auto] lg:grid-rows-2">
+          {/* Phones: one right-aligned column under "Voltar". Desktop: two
+              columns, the right one starting early enough for its words to
+              be pushed by the thumbnail like the left one, inside the panel. */}
+          <ul className="absolute top-132.5 right-53 flex w-256 flex-col items-end gap-41 lg:top-146 lg:right-auto lg:left-101 lg:grid lg:w-auto lg:grid-flow-col lg:grid-cols-[calc(var(--spacing)*568)_auto] lg:grid-rows-2 lg:gap-x-0 lg:gap-y-54">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
                   aria-current={pathname === link.href ? "page" : undefined}
-                  className="group relative -ml-5 flex items-center md:-ml-8"
+                  className="group relative flex items-center lg:-ml-8"
                   onClick={onClose}
                 >
                   <span
                     data-menu-visual
                     aria-hidden
-                    className="relative mr-5 h-36 w-0 shrink-0 overflow-hidden rounded-[0.2rem] md:mr-8 md:h-46 md:rounded-[0.3rem] lg:h-112 lg:rounded-[calc(var(--spacing)*4.8)] lg:transition-[width] lg:duration-800 lg:ease-menu-visual lg:group-hover:w-168 lg:group-focus-visible:w-168"
+                    className="relative hidden h-112 w-0 shrink-0 overflow-hidden rounded-[calc(var(--spacing)*4.8)] transition-[width] duration-800 ease-menu-visual group-hover:w-168 group-focus-visible:w-168 lg:mr-8 lg:block"
                   >
                     <Image
                       src={link.visual}
@@ -217,10 +202,10 @@ export function SiteMenu({ open, onClose, returnFocusRef }: SiteMenuProps) {
                       className="object-cover"
                     />
                   </span>
-                  <span className="-ml-[0.06em] block overflow-hidden pr-8 pl-[0.06em]">
+                  <span className="-mr-[0.06em] block overflow-hidden pr-[0.06em] pl-8 lg:-ml-[0.06em] lg:pr-8 lg:pl-[0.06em]">
                     <span
                       data-menu-link
-                      className="block text-display text-[color:var(--menu-link-tint,var(--color-menu-link))] transition-colors duration-300 ease-power3 will-change-transform group-data-knockout:text-transparent"
+                      className="block font-flex text-menu-word text-[color:var(--menu-link-tint,var(--color-menu-link))] transition-colors duration-300 ease-power3 will-change-transform group-data-knockout:text-transparent max-lg:lowercase"
                     >
                       {link.label}
                     </span>
@@ -234,10 +219,10 @@ export function SiteMenu({ open, onClose, returnFocusRef }: SiteMenuProps) {
           ref={closeRef}
           type="button"
           aria-label="Fechar menu"
-          className="group absolute top-16 right-16 bg-black-graw px-19 pt-5 pb-4 text-nav text-red-graw lg:top-14.25 lg:right-11"
+          className="group absolute top-10.25 right-53 pt-5 pb-4 pl-19 font-flex text-menu-close text-red-graw lg:top-14.25 lg:right-11 lg:px-19"
           onClick={onClose}
         >
-          <ShuffleText>Menu</ShuffleText>
+          <ShuffleText>Voltar</ShuffleText>
         </button>
       </div>
     </div>

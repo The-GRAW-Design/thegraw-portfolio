@@ -66,6 +66,8 @@ const twMerge = extendTailwindMerge({
         "footer-about",
         "footer-credit",
         "small-sm",
+        "menu-word",
+        "menu-close",
       ],
     },
   },
