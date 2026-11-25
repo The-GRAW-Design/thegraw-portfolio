@@ -30,8 +30,9 @@ const HERO_FRAME: DitherFrame = {
 };
 
 /**
- * Figma "Desktop - 2" effects: gradient map white → blood → char, then Dither
- * (Bayer 16x16, 7 levels, brightness 82%, pixel 1).
+ * Figma "Desktop - 2" gradient map (white → blood → char), rendered like the
+ * first hero at the user's request: grain and visible 3px pixels, which the
+ * wind moves (the Figma Dither at pixel 1 is too fine to show it).
  */
 export const HERO_DITHER: DitherPreset = {
   src: asset("/images/home/hero-banner.webp"),
@@ -40,9 +41,11 @@ export const HERO_DITHER: DitherPreset = {
     { token: "blood", position: 0.5 },
     { token: "char", position: 1 },
   ],
-  pixelSize: 1,
-  quantize: "ordered",
-  levels: 7,
+  pixelSize: 3.75,
+  scatter: 0.3,
+  quantize: "posterize",
+  levels: 16,
+  // The Figma Dither brightness, which sets the tone.
   brightness: 82,
   // Kept on the first screen: the image already runs past it, into the extra 30%.
   frame: {

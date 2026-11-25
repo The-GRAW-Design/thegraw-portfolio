@@ -166,11 +166,13 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
       const eased = dockEase(dock);
       const pose = mixPose(slotPose(heroSlot), slotPose(projectsSlot), eased);
 
-      // Entry: from beyond the hilt end, along the blade, tip first.
+      // Entry: from beyond the hilt end, along the blade, tip first. It
+      // starts with the whole blade past the screen edge.
       const toHilt = { x: Math.cos(pose.angle), y: -Math.sin(pose.angle) };
-      const reach =
-        Math.abs(toHilt.x) * viewport.width * 0.9 +
-        Math.abs(toHilt.y) * viewport.height * 1.05;
+      const toEdge =
+        Math.abs(toHilt.x) * (toHilt.x > 0 ? viewport.width - pose.x : pose.x) +
+        Math.abs(toHilt.y) * (toHilt.y > 0 ? viewport.height - pose.y : pose.y);
+      const reach = toEdge + pose.length * 0.6;
       const x = pose.x + toHilt.x * reach * intro.travel;
       const y =
         pose.y +
@@ -258,12 +260,17 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
         gltf.scene.position.x = -MODEL_MID;
         pivot.add(gltf.scene);
         model = gltf.scene;
-        pivot.visible = true;
         setMode(stack, "live");
 
         const elapsed = (performance.now() - startedAt) / 1000;
         flight = gsap
-          .timeline({ delay: Math.max(0, INTRO_DELAY - elapsed) })
+          .timeline({
+            delay: Math.max(0, INTRO_DELAY - elapsed),
+            // Nothing shows before the flight.
+            onStart: () => {
+              pivot.visible = true;
+            },
+          })
           .fromTo(
             intro,
             { travel: 1, spin: Math.PI * 3 },

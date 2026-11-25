@@ -21,17 +21,12 @@ export function quantizeChannel(
 ) {
   if (mode === "none") return value;
   const steps = levels - 1;
-  // The Dither effect adjusts each channel first (Figma brightness/contrast).
-  const adjusted =
-    mode === "ordered"
-      ? Math.min(
-          1,
-          Math.max(
-            0,
-            (value - 0.5) * contrast + 0.5 + (brightness - 100) / 200,
-          ),
-        )
-      : value;
+  // Each channel is adjusted first (Figma Dither brightness/contrast).
+  const adjusted = Math.min(
+    1,
+    Math.max(0, (value - 0.5) * contrast + 0.5 + (brightness - 100) / 200),
+  );
+
   const biased =
     mode === "ordered" ? adjusted + (threshold - 0.5) / steps : adjusted;
   return Math.min(1, Math.max(0, Math.floor(biased * steps + 0.5) / steps));
