@@ -116,8 +116,8 @@
   --text-counter-sm: 1.6773rem;
   --text-counter-sm--line-height: 1.2;
   --text-counter-sm--letter-spacing: -0.07em;
-  --text-menu: max(1.8515rem, calc(var(--fluid) * 37.552));
-  --text-menu--line-height: 1.2;
+  --text-hotbar: max(1.8515rem, calc(var(--fluid) * 37.552));
+  --text-hotbar--line-height: 1.2;
   --text-footer-link: max(1.25rem, calc(var(--fluid) * 23.872));
   --text-footer-link--line-height: 1.2;
   --text-footer-studio: max(1.5rem, calc(var(--fluid) * 32.485));

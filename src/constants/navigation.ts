@@ -1,3 +1,4 @@
+import { STUDIO_INFO } from "@/constants/studio";
 import { asset } from "@/utils/asset";
 
 /** Each link carries the thumbnail the menu opens beside it. */
@@ -20,3 +21,9 @@ export const FOOTER_LINKS = [
   { label: "Work", href: "/cases" },
   { label: "Studio", href: "/studio" },
 ] as const;
+
+/** Header "contato" (Figma HOTBAR, desktop only): an e-mail to the studio. */
+export const CONTACT_LINK = {
+  label: "contato",
+  href: `mailto:${STUDIO_INFO.email}`,
+} as const;
