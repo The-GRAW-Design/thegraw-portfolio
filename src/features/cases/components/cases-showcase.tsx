@@ -461,11 +461,13 @@ export function CasesShowcase() {
         ease={EASE.out}
         className="pointer-events-none absolute inset-0"
       >
+        {/* Under the header row on desktop, where its logo now sits in the
+            middle (2.0 HOTBAR). */}
         <div
           role="group"
           aria-label="Serviços"
           data-cases-chrome
-          className="pointer-events-auto absolute top-72 left-1/2 flex -translate-x-1/2 gap-8 lg:top-29 lg:gap-12"
+          className="pointer-events-auto absolute top-72 left-1/2 flex -translate-x-1/2 gap-8 lg:top-108 lg:gap-12"
         >
           {SERVICE_TABS.map((tab) => {
             const pressed = tab.id === service;
