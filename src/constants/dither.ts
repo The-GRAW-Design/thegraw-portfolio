@@ -9,14 +9,6 @@ const COVER_FRAME: DitherFrame = { x: 0, y: 0, width: 1, height: 1 };
 /** The desktop hero runs 30% past the first screen (`lg:h-[130svh]`). */
 const HERO_SCREENS = 1.3;
 
-/** Figma "Desktop - 1" image rectangle (the knight of the first site). */
-const KNIGHT_FRAME: DitherFrame = {
-  x: -0.02083,
-  y: -0.20154,
-  width: 1.18438,
-  height: 1.91604,
-};
-
 /**
  * Figma "Desktop - 2" (site 2.0): the knight with the banner, 2500×2276 at
  * (-153, -424) in the 1920×1080 frame; phones: 401×852 at (-6, 0) in the
@@ -56,20 +48,10 @@ export const HERO_DITHER: DitherPreset = {
   mobileFrame: { x: -0.01527, y: 0, width: 1.02036, height: 1 },
 };
 
-/** 404: the first site's knight, rendered like its footer, on a single screen. */
+/** 404: the home hero on a single screen (the image keeps its Figma frame). */
 export const NOT_FOUND_DITHER: DitherPreset = {
-  src: asset("/images/home/hero-knight.webp"),
-  palette: [
-    { token: "white", position: 0 },
-    { token: "red-graw", position: 0.5 },
-    { token: "red-graw-deep", position: 1 },
-  ],
-  pixelSize: 3.75,
-  scatter: 0.3,
-  quantize: "posterize",
-  levels: 16,
-  frame: KNIGHT_FRAME,
-  mobileFrame: COVER_FRAME,
+  ...HERO_DITHER,
+  frame: HERO_FRAME,
 };
 
 /** Figma "Footer": image at 29% over RED GRAW, offset −15%, scatter 50%, then Pixelate (2px, 16 levels). */
