@@ -227,7 +227,7 @@ export function StudioHeroSection() {
           member.cardClassName,
         )}
       >
-        {/* The arrows fill white pixel by pixel on hover (`ArrowButton`). */}
+        {/* RED GRAW sweeps through the arrows on hover (`ArrowButton`). */}
         <div className="absolute top-451 right-14 left-15 flex justify-between lg:static lg:justify-start lg:gap-11">
           <ArrowButton
             direction="prev"
