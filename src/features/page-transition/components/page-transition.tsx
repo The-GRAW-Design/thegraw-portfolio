@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { registerPageTransition } from "@/features/page-transition/utils/controller";
+import { markPageChange } from "@/features/page-transition/utils/visit";
 import { EASE, gsap } from "@/lib/gsap";
 import { getLenis } from "@/lib/smooth-scroll-provider";
 
@@ -159,6 +160,7 @@ export function PageTransition() {
     const path = pathname.replace(/\/+$/, "") || "/";
     if (path === pathRef.current) return;
     pathRef.current = path;
+    markPageChange();
 
     const controls = controlsRef.current;
     if (!controls) return;

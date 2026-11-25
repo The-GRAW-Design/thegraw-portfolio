@@ -8,8 +8,10 @@ import type { SwordMode } from "@/features/hero-sword/types";
 import { mixPose, slotPose } from "@/features/hero-sword/utils/pose";
 import {
   HERO_REVEAL_SCROLL,
+  SWORD_LOAD_DELAY,
   SWORD_REVEAL_DELAY,
 } from "@/features/hero-sword/utils/reveal";
+import { isOpeningPage } from "@/features/page-transition";
 import { resetSwordWake, SWORD_WAKE } from "@/features/hero-sword/utils/wake";
 import { EASE, gsap, ScrollTrigger } from "@/lib/gsap";
 import { asset } from "@/utils/asset";
@@ -60,9 +62,10 @@ function disposeObject(root: THREE.Object3D) {
  * The home sword in 3D, drawn on a fixed canvas over the hero stack. It rests
  * in the `[data-sword-slot]` boxes (hero, then "Projetos"), read live every
  * frame, so it moves with the page:
- * - entry, on the first scroll (the hero opens on its background alone):
- *   flies in tip first, spinning, and lands with a shockwave through the
- *   hero dither (`SWORD_WAKE`);
+ * - entry, on the first scroll when the site opens on the home (the hero
+ *   shows its background alone until then), or on load when coming back
+ *   from another page: flies in tip first, spinning, and lands with a
+ *   shockwave through the hero dither (`SWORD_WAKE`);
  * - scroll: while "Projetos" comes up, it turns over and settles into its
  *   slot there, upright on desktop, flat on phones;
  * - idle: floats, rolls a little and leans toward the cursor; on phones it
@@ -79,12 +82,15 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
     const projects = projectsSlot?.closest("section");
     if (!container || !stack || !heroSlot || !projectsSlot || !projects) return;
 
+    const startedAt = performance.now();
     let disposed = false;
     let visible = true;
     /** "Projetos" has gone past the top: the cases cover the hero. */
     let passed = false;
-    /** The first scroll happened: the sword flies in. */
-    let revealed = false;
+    /** The site opened on the home: the sword waits for the first scroll. */
+    const onScroll = isOpeningPage();
+    /** Time for the sword to fly in (the first scroll, or right away). */
+    let revealed = !onScroll;
     let model: THREE.Object3D | null = null;
     /** The sword materials: each holds the room map, turned with the slot. */
     const materials: THREE.MeshStandardMaterial[] = [];
@@ -287,9 +293,13 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
     let flight: gsap.core.Timeline | null = null;
     const fly = () => {
       if (!revealed || !model || flight) return;
+      // Back from another page: the knight forms first, as the page starts.
+      const elapsed = (performance.now() - startedAt) / 1000;
       flight = gsap
         .timeline({
-          delay: SWORD_REVEAL_DELAY,
+          delay: onScroll
+            ? SWORD_REVEAL_DELAY
+            : Math.max(0, SWORD_LOAD_DELAY - elapsed),
           // Nothing shows before the flight.
           onStart: () => {
             pivot.visible = true;
@@ -319,16 +329,18 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
           0.2,
         );
     };
-    const revealTrigger = ScrollTrigger.create({
-      start: HERO_REVEAL_SCROLL,
-      end: "max",
-      once: true,
-      onEnter: () => {
-        revealed = true;
-        fly();
-        updateLoop();
-      },
-    });
+    const revealTrigger = onScroll
+      ? ScrollTrigger.create({
+          start: HERO_REVEAL_SCROLL,
+          end: "max",
+          once: true,
+          onEnter: () => {
+            revealed = true;
+            fly();
+            updateLoop();
+          },
+        })
+      : null;
     const loader = new GLTFLoader();
     loader
       .loadAsync(asset("/models/sword.glb"))
@@ -376,7 +388,7 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
       flight?.kill();
       dockTrigger.kill();
       passTrigger.kill();
-      revealTrigger.kill();
+      revealTrigger?.kill();
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
       window.removeEventListener("pointermove", onPointerMove);

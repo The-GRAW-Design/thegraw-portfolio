@@ -1,21 +1,18 @@
-import { SplitReveal } from "@/components/ui/split-reveal";
 import { HERO_DITHER } from "@/constants/dither";
 import { HOME_PAGE } from "@/constants/pages";
-import {
-  HERO_REVEAL_SCROLL,
-  SwordBackdrop,
-  SwordSlot,
-} from "@/features/hero-sword";
+import { HeroWords, SwordBackdrop, SwordSlot } from "@/features/hero-sword";
 
 /** The section that slides over the hero (see `ProjectsIntroSection`). */
 const HERO_COVER = "[data-hero-cover]";
 
 /**
  * Figma "Desktop - 3" then "Desktop - 2" / "Mobile - home": the dithered
- * knight holds still on screen. It opens on the background alone (the knight
- * forms); the first scroll brings in the blackletter headline, its two lines
- * and the sword (`HeroSword`), which stirs the dither as it lands. After a
- * short hold, the white "Projetos" and then the cases slide over it.
+ * knight holds still on screen. When the site opens on it, it shows the
+ * background alone (the knight forms) and the first scroll brings in the
+ * blackletter headline, its two lines and the sword (`HeroSword`), which
+ * stirs the dither as it lands; coming back from another page, they come in
+ * on load. After a short hold, the white "Projetos" and then the cases slide
+ * over it.
  * It fills the large viewport, so no gap opens under it when a phone's
  * browser bars hide; the words and the sword are placed on the small one
  * (always visible), at Figma's proportions (199 of 852 for the words).
@@ -34,32 +31,7 @@ export function HeroSection() {
           animation="intro"
           coveredBy={HERO_COVER}
         />
-        <div className="absolute top-[23.36svh] left-14 flex w-[calc(var(--mobile)*305)] flex-col gap-25 lg:contents">
-          <SplitReveal
-            as="h1"
-            split="chars"
-            revealAt={HERO_REVEAL_SCROLL}
-            className="font-gothic text-headline-sm uppercase lg:absolute lg:top-365 lg:left-319 lg:w-1318 lg:text-headline lg:whitespace-nowrap"
-          >
-            {title}
-          </SplitReveal>
-          <SplitReveal
-            split="lines"
-            revealAt={HERO_REVEAL_SCROLL}
-            delay={0.35}
-            className="w-192 font-flex text-strap uppercase lg:absolute lg:top-659 lg:left-398 lg:w-auto lg:whitespace-nowrap"
-          >
-            {lines[0]}
-          </SplitReveal>
-          <SplitReveal
-            split="lines"
-            revealAt={HERO_REVEAL_SCROLL}
-            delay={0.45}
-            className="w-193 font-flex text-strap uppercase lg:absolute lg:top-707 lg:right-875 lg:w-auto lg:text-right lg:whitespace-nowrap"
-          >
-            {lines[1]}
-          </SplitReveal>
-        </div>
+        <HeroWords title={title} lines={lines} />
         {/* Where the sword rests: across the headline on desktop, upright on
             the right on phones (Figma "sword 1"). */}
         <SwordSlot
