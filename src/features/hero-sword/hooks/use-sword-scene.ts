@@ -21,6 +21,11 @@ const MODEL_MID = (MODEL.pommel + MODEL.tip) / 2;
 const INTRO_DELAY = 1.1;
 /** Idle motion: float (px), roll around the blade and cursor tilt (rad). */
 const IDLE = { float: 5, roll: 0.14, tiltX: 0.16, tiltY: 0.28 };
+/**
+ * Phones: the upright sword turns slowly around its blade in the hero (like
+ * a model viewer turntable, 20°/s).
+ */
+const TURNTABLE_SPEED = THREE.MathUtils.degToRad(20);
 /** Blade speed (px/s) that stirs the hero dither at full strength. */
 const WAKE_SPEED = 2600;
 
@@ -55,7 +60,8 @@ function disposeObject(root: THREE.Object3D) {
  *   the hero dither (`SWORD_WAKE`);
  * - scroll: while "Projetos" comes up, it turns over and settles into its
  *   slot there, upright on desktop, flat on phones;
- * - idle: floats, rolls a little and leans toward the cursor.
+ * - idle: floats, rolls a little and leans toward the cursor; on phones it
+ *   turns slowly around its blade instead.
  * Renders only while the hero stack is on screen; disposes everything.
  */
 export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
@@ -158,13 +164,27 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
     }
 
     let last: { x: number; y: number; time: number } | null = null;
+    let turntableSpin = 0;
     const tick = (time: number, deltaTime: number) => {
       if (!model) return;
       const frames = Math.min(deltaTime / (1000 / 60), 4);
 
       // Rest pose: between the two slots, as the page scrolls.
       const eased = dockEase(dock);
-      const pose = mixPose(slotPose(heroSlot), slotPose(projectsSlot), eased);
+      const heroPose = slotPose(heroSlot);
+      const pose = mixPose(heroPose, slotPose(projectsSlot), eased);
+
+      // Phones (upright in the hero): the turntable runs while the hero is
+      // on screen alone and holds still once "Projetos" comes up; settling
+      // there finishes the turn at the nearest flat side.
+      const turntable = heroPose.angle > Math.PI / 4;
+      if (turntable && dock < 0.001) {
+        turntableSpin += (deltaTime / 1000) * TURNTABLE_SPEED;
+      }
+      const flatSide = Math.round(turntableSpin / (Math.PI * 2)) * Math.PI * 2;
+      const spin = turntable
+        ? turntableSpin + (flatSide - turntableSpin) * eased
+        : Math.sin(time * 0.6) * IDLE.roll;
 
       // Entry: from beyond the hilt end, along the blade, tip first. It
       // starts with the whole blade past the screen edge.
@@ -188,10 +208,7 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
       const lift = Math.sin(Math.PI * eased) * pose.length * 0.22;
       pivot.position.set(x - viewport.width / 2, viewport.height / 2 - y, lift);
       pivot.rotation.set(
-        intro.spin +
-          turn +
-          Math.sin(time * 0.6) * IDLE.roll +
-          tilt.x * IDLE.tiltX,
+        intro.spin + turn + spin + tilt.x * IDLE.tiltX,
         tilt.y * IDLE.tiltY,
         pose.angle + Math.sin(time * 38) * 0.035 * intro.quiver,
       );
