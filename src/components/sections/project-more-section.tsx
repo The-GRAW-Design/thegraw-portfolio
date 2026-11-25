@@ -14,67 +14,79 @@ type ProjectMoreSectionProps = {
   project: Project;
 };
 
+/** Figma: the 2927px card row is centered 17px left of the 1920 frame. */
+const TRACK_START = -520.75 / 1920;
+
 /**
- * Figma "Project Open" closing block (1920×1039.658): the credits with the
- * orange END, then the other cases on the track, over the studio texture.
+ * Site 2.0 "Project Open" closing band (1920×1151; phones 393×326): the
+ * credits with the orange FIM, then the other cases on the track and "ver
+ * todos", over the studio texture.
  */
 export function ProjectMoreSection({ project }: ProjectMoreSectionProps) {
   return (
     <section
-      data-header-theme="light"
-      className="relative overflow-hidden bg-black-graw pt-48 pb-64 text-white lg:h-1039.75 lg:p-0"
+      data-header-theme="dark"
+      className="relative my-30 h-326.25 overflow-hidden bg-white font-flex text-black lg:mt-51 lg:mb-0 lg:h-1151"
     >
       <DitherImage {...PROJECT_END_DITHER} animation="scroll" />
 
-      <div className="relative grid px-16 lg:absolute lg:top-32.5 lg:left-300 lg:p-0">
-        <Reveal
-          blur={6}
-          className="col-start-1 row-start-1 grid grid-cols-2 gap-x-24 lg:flex lg:w-1034 lg:gap-90 lg:p-10"
-        >
-          {project.credits.map((column, columnIndex) => (
-            <dl
-              key={columnIndex}
-              data-reveal
-              className={
-                columnIndex === 0
-                  ? "flex flex-col gap-46 lg:w-428"
-                  : "flex flex-col gap-46 lg:w-496"
-              }
-            >
-              {column.map((credit) => (
-                <div key={credit.label} className="flex flex-col gap-6">
-                  <dt className="text-heading tracking-tight">
-                    {credit.label}
-                  </dt>
-                  <dd className="text-credit">{credit.value}</dd>
-                </div>
-              ))}
-            </dl>
-          ))}
-        </Reveal>
-        {/* The letters flip up with the scroll (React Bits ScrollFloat), with
-            nothing clipping them on the way. On phones END gets its own row
-            under the credits instead of covering the last one. */}
-        <ScrollFloat
-          tag="p"
-          effect="flip"
-          ease={EASE.inOut}
-          stagger={0.08}
-          containerClassName="pointer-events-none overflow-visible col-start-1 row-start-2 mt-24 justify-self-end text-end text-orange lg:row-start-1 lg:mt-55 lg:ml-714 lg:h-334 lg:w-606 lg:justify-self-start"
-        >
-          {PROJECT_PAGE.end}
-        </ScrollFloat>
-      </div>
+      <Reveal
+        blur={6}
+        className="absolute top-56.25 left-14 flex h-83.5 w-271.5 gap-16 p-1.75 lg:top-60 lg:left-92.75 lg:h-450.25 lg:w-1301 lg:gap-86.5 lg:p-9.5"
+      >
+        {project.credits.map((column, columnIndex) => (
+          <dl
+            key={columnIndex}
+            data-reveal
+            className="flex flex-1 flex-col gap-8.25 lg:gap-44.25"
+          >
+            {/* Rows of a fixed height, as in the Figma: a label on two lines
+                runs past its row instead of pushing the next one down. */}
+            {column.map((credit) => (
+              <div
+                key={credit.label}
+                className="flex min-h-0 flex-1 flex-col gap-1 lg:gap-5.75"
+              >
+                <dt className="text-credit-title-sm lg:text-credit-title">
+                  {credit.label}
+                </dt>
+                <dd className="h-12 text-credit-name-sm lg:h-65.5 lg:text-credit-name">
+                  {credit.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        ))}
+      </Reveal>
 
-      <Reveal className="relative mt-48 lg:absolute lg:inset-x-0 lg:top-504.5 lg:mt-0">
+      {/* The letters flip up with the scroll (React Bits ScrollFloat), with
+          nothing clipping them on the way. */}
+      <ScrollFloat
+        tag="p"
+        effect="flip"
+        ease={EASE.inOut}
+        stagger={0.08}
+        containerClassName="pointer-events-none absolute top-92.75 right-14 -translate-y-1/2 overflow-visible font-gothic text-fim-sm text-orange lg:top-257.25 lg:right-78 lg:text-fim"
+      >
+        {PROJECT_PAGE.end}
+      </ScrollFloat>
+
+      <Reveal className="absolute inset-x-0 top-164.5 lg:top-501">
         <CasesTrack
           projects={PROJECTS}
-          className="gap-32 lg:gap-69.25"
-          footerClassName="w-full px-16 lg:ml-318 lg:w-1285 lg:self-start lg:px-0"
+          startOffset={TRACK_START}
+          mobileStartOffset={0}
+          className="gap-18.5 lg:gap-63.25"
+          listClassName="gap-6 lg:gap-27.5"
+          itemClassName="w-153 lg:w-711.25"
+          sizes="(min-width: 1024px) 37vw, 40vw"
+          barClassName="h-4 w-108.5 lg:h-12.5 lg:w-337"
+          railClassName="h-2 bg-haze lg:h-6.25 lg:bg-rail"
+          footerClassName="h-27 w-[calc(100%-var(--spacing)*28)] lg:relative lg:left-46 lg:h-83 lg:w-776"
           aside={
             <TransitionLink
               href="/cases/all"
-              className="group text-more whitespace-nowrap transition-colors duration-300 ease-power3 hover:text-red-graw"
+              className="group text-view-all whitespace-nowrap transition-colors duration-300 ease-power3 hover:text-red-graw"
             >
               <ShuffleText>{PROJECT_PAGE.viewAll}</ShuffleText>
             </TransitionLink>

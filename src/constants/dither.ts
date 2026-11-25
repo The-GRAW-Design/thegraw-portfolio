@@ -225,10 +225,12 @@ export const CASES_DRAWER_DITHER: DitherPreset = {
 };
 
 /**
- * Figma "Project Open" closing block (1920×1039.658): the studio texture at
- * 14% over BLACK GRAW behind the credits and the cases track.
+ * Site 2.0 "Project Open" closing band (1920×1151 under the gallery; phones
+ * 393×326.356): the studio texture at 14% over the white page, behind the
+ * credits and the cases track.
  */
 export const PROJECT_END_DITHER: DitherPreset = {
   ...STUDIO_DITHER,
-  frame: { x: -0.2221, y: -0.9883, width: 1.4441, height: 4.0169 },
+  frame: { x: -0.37323, y: -0.85491, width: 1.77958, height: 4.47116 },
+  mobileFrame: { x: -0.39822, y: -0.61375, width: 1.84654, height: 3.34914 },
 };
