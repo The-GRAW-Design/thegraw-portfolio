@@ -90,6 +90,9 @@ export type ProjectCollage = {
   pieces?: readonly [string, string, string, string];
 };
 
+/** A list next to the overview of the project page ("Marca", "Estratégia"). */
+export type ProjectScope = { title: string; items: readonly string[] };
+
 export type Project = {
   slug: string;
   /** Short name used on cards and the cases index ("Allce"). */
@@ -107,6 +110,8 @@ export type Project = {
   hero: { src: string; position?: string; overlay?: HeroOverlay } | null;
   /** Cases page collage; `null` shows the {EM BREVE} card there too. */
   collage: ProjectCollage | null;
+  /** Lists next to the overview (Figma "Project Open"); none hides them. */
+  scope?: readonly ProjectScope[];
   /** Credits, in two columns of two. */
   credits: readonly (readonly Credit[])[];
   /** Logo panel shown under the intro of a page without a gallery. */

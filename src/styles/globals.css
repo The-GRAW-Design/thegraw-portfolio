@@ -55,6 +55,9 @@
   --color-abyss: #060606;
   --color-slate: #2c2c2c;
   --color-stone: #999999;
+  /* Site 2.0 project page: cases track rail (desktop, phones) */
+  --color-rail: #adadad;
+  --color-haze: #ededed;
 
   /* Figma translucent fills */
   --color-shade: rgb(0 0 0 / 0.52);
@@ -188,6 +191,30 @@
   --text-pillar-copy-sm: 0.75rem;
   --text-pillar-copy-sm--line-height: 0.93;
   --text-pillar-copy-sm--letter-spacing: -0.04em;
+  /* Site 2.0 project page (Figma "Project Open", "Mobile - overview") */
+  --text-project-title: max(3.375rem, calc(var(--fluid) * 77.34));
+  --text-project-title--line-height: 1.2;
+  --text-project-title--letter-spacing: -0.02em;
+  --text-overview: max(0.875rem, calc(var(--fluid) * 15.877));
+  --text-overview--line-height: 1;
+  --text-overview-sm: 1rem;
+  --text-overview-sm--line-height: 1;
+  --text-credit-title: calc(var(--fluid) * 74.645);
+  --text-credit-title--line-height: 1.2;
+  --text-credit-title--letter-spacing: -0.07em;
+  --text-credit-title-sm: calc(var(--mobile) * 13.826);
+  --text-credit-title-sm--line-height: 1.2;
+  --text-credit-title-sm--letter-spacing: -0.07em;
+  --text-credit-name: calc(var(--fluid) * 36.576);
+  --text-credit-name--line-height: 1;
+  --text-credit-name-sm: calc(var(--mobile) * 6.775);
+  --text-credit-name-sm--line-height: 1;
+  --text-fim: calc(var(--fluid) * 468.069);
+  --text-fim--line-height: 1.2;
+  --text-fim-sm: calc(var(--mobile) * 86.7);
+  --text-fim-sm--line-height: 1.2;
+  --text-view-all: max(1rem, calc(var(--fluid) * 49.645));
+  --text-view-all--line-height: 1.2;
   --text-lets: max(3.5rem, calc(var(--fluid) * 257.131));
   --text-lets--line-height: 0.93;
   --text-lets--letter-spacing: -0.04em;
