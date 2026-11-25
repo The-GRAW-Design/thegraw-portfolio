@@ -1,114 +1,144 @@
 import { asset } from "@/utils/asset";
 
-/** Figma placeholder copy, kept as written in the design. */
-export const LOREM_LONG =
-  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software like Aldus PageMaker and Microsoft Word including versions of Lorem Ipsum.";
-
 export const HOME_PAGE = {
-  caseStudies: {
-    title: ["case", "studies"],
-    body: "A closer look at how strategy, design, and development shape each project.",
+  hero: {
+    title: "Criamos valor pelo design",
+    lines: [
+      "marcas, estratégia e produtos digitais",
+      "há 5 anos ajudamos marcas a crescer",
+    ],
   },
-  /**
-   * The "Projeto Allce" slides of the Figma home, in order; its "projeto"
-   * variant (Gilberto do Acordeon) is off the site for now.
-   */
-  showcases: ["allce", "grupo-penguin", "conexao-duo", "elle-fanning"],
-  viewAllCases: "View All Cases",
+  projects: {
+    title: "Projetos",
+    body: "Um olhar sobre como estratégia, design e desenvolvimento dão forma a cada projeto.",
+  },
+  casesLabel: "Cases",
+  /** Home "Cases" collages, in order (Figma 01 is Grupo Penguin). */
+  cases: [
+    "grupo-penguin",
+    "allce",
+    "lorena-lourenco",
+    "tati-hotelzinho-pet",
+    "elle-fanning",
+    "conexao-duo",
+  ],
+  viewAllCases: "Ver todos os projetos",
+  /** Figma "Frame 81": the call to work together. */
+  contact: {
+    title: "Vamos criar juntos",
+    copy: "Queremos entender os detalhes do seu próximo projeto! Será um prazer co-criar com o seu time.",
+    cta: "Solicite sua proposta",
+  },
   viewAllImage: asset("/images/home/view-all-band.webp"),
 } as const;
 
 export const NOT_FOUND_PAGE = {
-  title: "Page not found",
-  code: "error 404",
-  back: "back to home",
+  title: "Página não encontrada",
+  code: "erro 404",
+  back: "voltar para o início",
 } as const;
 
+/** Site 2.0 project page (Figma "Project Open", "Mobile - overview"). */
 export const PROJECT_PAGE = {
-  viewAll: "view all",
-  solution: "Solution",
-  process: "process",
-  results: "results",
-  resultsBody:
-    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many",
-  end: "END",
+  overview: "visão geral",
+  /** Phones: the overview opens and closes under its first lines. */
+  more: "ver mais  +",
+  less: "ver menos  −",
+  end: "FIM",
+  viewAll: "ver todos",
 } as const;
 
-/**
- * Figma team photo of a member, cropped from the Figma original to the
- * 897×1080 photo box with the face centred, the eyes at 38% of the height and
- * the heads about the same size, so the photos line up as they swap.
- */
 const teamPhoto = (slug: string) => asset(`/images/studio/team-${slug}.webp`);
 
 /**
- * Figma team frames (André, Alan, Erick, Tatá): each with its photo, its card
- * width and its own headline, sized to fill the frame width and placed as a
- * share of its 1080px height.
+ * Site 2.0 team frames (Figma ANDRÉ, ALAN, TATÁ, ERIK, 1920×950; phones
+ * "Mobile - Estúdio"): the photo as Figma crops it, the card's place and the
+ * role sized to fill the frame width.
  */
 export const TEAM_MEMBERS = [
   {
     name: "André Gonçalves",
-    role: "CREATIVE DIRECTOR",
+    role: "Diretor criativo",
     bio: "À frente da direção criativa do estúdio, conduz conceitos, define linguagens visuais e transforma ideias em projetos com identidade. Responsável por conectar criatividade, estratégia e design em cada entrega.",
     photo: teamPhoto("andre-goncalves"),
-    cardClassName: "lg:w-594",
-    roleClassName: "text-role-director lg:top-[72.34%] lg:left-51",
+    photoClassName: "object-center",
+    cardClassName: "lg:left-1231 lg:w-489",
+    roleClassName: "text-role-director-sm lg:text-role-director",
   },
   {
     name: "Alan Erick",
-    role: "MOTION DESIGNER",
+    role: "Motion designer",
     bio: "Responsável por dar movimento às ideias, transformando conceitos em experiências visuais dinâmicas. Une criatividade e técnica para construir narrativas que prendem a atenção.",
     photo: teamPhoto("alan-erick"),
-    cardClassName: "lg:w-600",
-    roleClassName: "text-role-motion lg:top-[71.61%] lg:left-51",
-  },
-  {
-    name: "Erik Elias",
-    role: "DEVELOPER",
-    bio: "Responsável por transformar ideias em experiências digitais. Conecta tecnologia, funcionalidade e criatividade para desenvolver soluções que dão vida aos projetos da THE GRAW.",
-    photo: teamPhoto("erik-elias"),
-    cardClassName: "lg:w-554",
-    roleClassName: "text-giant lg:top-[71.13%] lg:left-43",
+    photoClassName: "object-center lg:object-[50%_25%]",
+    cardClassName: "lg:left-1210 lg:w-594",
+    roleClassName: "text-role-motion-sm lg:text-role-motion",
   },
   {
     name: "Tatá Gomes",
-    role: "PROJECT MANAGER",
+    role: "Gestora de projetos",
     bio: "Conecta pessoas, ideias e processos para fazer tudo acontecer. À frente da gestão de projetos, organiza fluxos, coordena equipes e garante que cada projeto siga seu caminho com propósito.",
     photo: teamPhoto("tata-gomes"),
-    cardClassName: "lg:w-637",
-    roleClassName: "text-role-manager lg:top-[72.39%] lg:left-51",
+    photoClassName: "object-center",
+    cardClassName: "lg:left-1210 lg:w-594",
+    roleClassName: "text-role-manager-sm lg:text-role-manager",
+  },
+  {
+    name: "Erik Elias",
+    role: "Desenvolvedor",
+    bio: "Responsável por transformar ideias em experiências digitais. Conecta tecnologia, funcionalidade e criatividade para desenvolver soluções que dão vida aos projetos da THE GRAW.",
+    photo: teamPhoto("erik-elias"),
+    photoClassName: "object-center",
+    cardClassName: "lg:left-1210 lg:w-594",
+    roleClassName: "text-role-developer-sm lg:text-role-developer",
   },
 ] as const;
 
 export const STUDIO_PAGE = {
-  title: "Studio",
-  /** Shown one at a time while scrolling, each with its Figma knight (groups 3120:922/928/933, dither baked in). */
+  title: "Estúdio",
+  /**
+   * Figma "Frame 35052/35053/35054": stacked as the desktop scroll goes, each
+   * on its own background; side by side on phones.
+   */
   sections: [
     {
-      heading: "Purpose",
-      image: asset("/images/studio/purpose.webp"),
-      body: [
-        "We move brands forward through clear thinking, distinctive design, and digital experiences built with purpose.",
-      ],
+      id: "purpose",
+      heading: "Propósito",
+      body: "Impulsionamos marcas com clareza, design autêntico e experiências digitais criadas com propósito.",
+      // Desktop: the row's top (173, 415 and 740 of the 1069px frame) and
+      // the text's x in the 1920 frame; phones: the block's top.
+      className: "lg:top-[16.18%]",
+      textClassName: "lg:left-1014",
+      mobileClassName: "top-329",
     },
     {
-      heading: "Pillars",
-      image: asset("/images/studio/pillars.webp"),
-      body: [
-        "Clarity — We turn complex ideas into clear, focused experiences.",
-        "Identity — We create distinctive visual languages that make each brand recognizable.",
-        "Craft — We bring strategy, design, and development together with care.",
+      id: "pillars",
+      heading: "Pilares",
+      items: [
+        {
+          label: "Clareza:",
+          text: "Transformamos ideias complexas em experiências claras e objetivas.",
+        },
+        {
+          label: "Identidade:",
+          text: "Criamos linguagens visuais únicas que tornam cada marca reconhecível.",
+        },
+        {
+          label: "Cuidado:",
+          text: "Unimos estratégia, design e desenvolvimento com atenção aos detalhes.",
+        },
       ],
+      className: "lg:top-[38.82%]",
+      textClassName: "lg:left-1021",
+      mobileClassName: "top-318",
     },
     {
-      heading: "Foundations",
-      image: asset("/images/studio/foundations.webp"),
-      body: [
-        "Good work starts with listening. We ask the right questions, understand the challenge, and make deliberate decisions at every step — from the first idea to the final detail.",
-      ],
+      id: "foundations",
+      heading: "Fundamentos",
+      body: "Um bom trabalho começa pela escuta. Fazemos as perguntas certas, entendemos o desafio e tomamos decisões conscientes em cada etapa da primeira ideia ao último detalhe.",
+      className: "lg:top-[69.22%]",
+      textClassName: "lg:left-1018",
+      mobileClassName: "top-324",
     },
   ],
-  videoCover: asset("/images/studio/video-cover.webp"),
-  play: "play",
 } as const;

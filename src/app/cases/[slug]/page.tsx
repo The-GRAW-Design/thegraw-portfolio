@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Footer } from "@/components/layout/footer";
 import { ProjectDetailSection } from "@/components/sections/project-detail-section";
 import { ProjectMoreSection } from "@/components/sections/project-more-section";
 import { findProject, PROJECTS } from "@/constants/projects";
@@ -26,9 +27,12 @@ export default async function ProjectPage({
   if (!project) notFound();
 
   return (
-    <main id="conteudo" className="bg-black-graw">
-      <ProjectDetailSection project={project} />
-      <ProjectMoreSection project={project} />
-    </main>
+    <>
+      <main id="conteudo" className="bg-black-graw">
+        <ProjectDetailSection project={project} />
+        <ProjectMoreSection project={project} />
+      </main>
+      <Footer />
+    </>
   );
 }

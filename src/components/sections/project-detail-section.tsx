@@ -1,262 +1,136 @@
 import { ComingSoon } from "@/components/ui/coming-soon";
 import { GalleryImage } from "@/components/ui/gallery-image";
-import { ParallaxImage } from "@/components/ui/parallax-image";
-import { ScrollReveal } from "@/components/ui/react-bits/scroll-reveal";
 import { Reveal } from "@/components/ui/reveal";
 import { SplitReveal } from "@/components/ui/split-reveal";
-import { LOREM_LONG, PROJECT_PAGE } from "@/constants/pages";
-import { LogoLayers } from "@/components/ui/logo-layers";
-import type {
-  Project,
-  ProjectCopy,
-  ProjectGallery,
-  ProjectRow,
-} from "@/types/project";
-import { cn } from "@/utils/cn";
+import { ProjectOverview } from "@/components/sections/project-overview";
+import type { Project, ProjectMedia, ProjectRow } from "@/types/project";
+import { galleryItems } from "@/utils/project-gallery";
 
 type ProjectDetailSectionProps = {
   project: Project;
 };
 
-/** Long copy: its words come in one after the other (React Bits ScrollReveal). */
-function Copy({
-  children,
-  className,
-}: {
-  children: string;
-  className: string;
-}) {
-  return (
-    <ScrollReveal
-      tag="p"
-      mode="enter"
-      stagger={0.012}
-      duration={0.7}
-      baseOpacity={0}
-      blurStrength={6}
-      containerClassName={className}
-    >
-      {children}
-    </ScrollReveal>
-  );
-}
+/** Figma "Project Open" gallery box (1763×1017), for the {EM BREVE} glass. */
+const BOX = { width: 1763, height: 1017 } as const;
 
-/** Gallery box under the intro: 1517.428 wide minus the 11.109px frame. */
-const WIDE_BOX = { width: 1495.21, height: 829.81 } as const;
+/** A box key: its image, or its logo layer. */
+const mediaKey = (media: ProjectMedia) => media.src ?? media.logo.layers[0].src;
 
-/** A frame with its boxes side by side (one under the other on phones). */
+/** Boxes side by side, sized by their aspect so they share one height. */
 function GalleryRow({ row }: { row: ProjectRow }) {
   return (
-    <div className="flex flex-col gap-10 p-10 lg:flex-row lg:gap-11 lg:p-11">
+    <div className="flex gap-7.25 lg:gap-36">
       {row.row.map((media) => (
-        <GalleryImage
-          key={media.src}
-          media={media}
-          sizes="(min-width: 1024px) 40vw, 100vw"
-          className="p-0 lg:flex-1 lg:p-0"
-        />
+        <div
+          key={mediaKey(media)}
+          style={{ flex: `${media.width / media.height} 1 0%` }}
+        >
+          <GalleryImage
+            media={media}
+            sizes="(min-width: 1024px) 46vw, 50vw"
+            className="p-0 lg:p-0"
+          />
+        </div>
       ))}
     </div>
   );
 }
 
-/** Figma gallery: lead boxes, split row with "Solution", story, closing boxes. */
-function Gallery({
-  gallery,
-  copy,
-}: {
-  gallery: ProjectGallery;
-  copy?: ProjectCopy;
-}) {
-  return (
-    <>
-      <div className="flex w-full flex-col gap-10">
-        {gallery.lead.map((media) => (
-          <GalleryImage key={media.src ?? "lead"} media={media} />
-        ))}
-        <div className="flex flex-col gap-32 lg:w-1506 lg:flex-row lg:items-start lg:gap-33.25">
-          <GalleryImage
-            media={gallery.split}
-            sizes="(min-width: 1024px) 47vw, 100vw"
-            className="lg:w-889.75"
-          />
-          <div className="flex flex-col gap-16 px-10 lg:w-582.75 lg:gap-15.5 lg:px-0">
-            <SplitReveal as="h2" split="chars" className="text-chapter">
-              {PROJECT_PAGE.solution}
-            </SplitReveal>
-            <Copy className="text-copy">{copy?.solution ?? LOREM_LONG}</Copy>
-          </div>
-        </div>
-        {gallery.middle.map((group) =>
-          "row" in group ? (
-            <GalleryRow key={group.row[0].src} row={group} />
-          ) : (
-            <div
-              key={group[0].src}
-              className="flex flex-col gap-10 p-10 lg:gap-11 lg:p-11"
-            >
-              {group.map((media) => (
-                <GalleryImage
-                  key={media.src}
-                  media={media}
-                  className="p-0 lg:p-0"
-                />
-              ))}
-            </div>
-          ),
-        )}
-      </div>
-
-      <div className="flex flex-col gap-32 px-10 lg:w-1490 lg:flex-row lg:items-start lg:gap-33.25 lg:px-0">
-        <div className="flex flex-col gap-6.75 lg:w-885.25">
-          <SplitReveal as="h2" split="chars" className="text-chapter">
-            {PROJECT_PAGE.process}
-          </SplitReveal>
-          <Copy className="text-copy">{copy?.process ?? LOREM_LONG}</Copy>
-        </div>
-        <div className="flex flex-col gap-6.75 lg:w-571">
-          <SplitReveal as="h2" split="chars" className="text-chapter">
-            {PROJECT_PAGE.results}
-          </SplitReveal>
-          <Copy className="text-copy">
-            {copy?.results ?? PROJECT_PAGE.resultsBody}
-          </Copy>
-        </div>
-      </div>
-
-      <div
-        className={cn(
-          "flex w-full flex-col",
-          !gallery.closingJoined && "gap-24 lg:gap-45.5",
-        )}
-      >
-        {gallery.closing.map((frame) =>
-          "row" in frame ? (
-            <GalleryRow key={frame.row[0].src} row={frame} />
-          ) : (
-            <GalleryImage key={frame.src} media={frame} />
-          ),
-        )}
-      </div>
-    </>
-  );
-}
-
 /**
- * Figma "Project Open" (1920 frame, BLACK GRAW): hero, intro and the case
- * study. A case without its gallery yet shows its logo (when there is one)
- * and the {EM BREVE} glass right under the intro (or as its hero, when it
- * has no photo either).
+ * Site 2.0 "Project Open" (1920 frame; phones "Mobile - overview"), on the
+ * dark BLACK GRAW of the first version at the user's request:
+ * the name, the overview with the case's lists, then its gallery one box
+ * under the other. A case without its gallery yet shows its logo (when there
+ * is one) and the {EM BREVE} glass.
  */
 export function ProjectDetailSection({ project }: ProjectDetailSectionProps) {
-  const { gallery } = project;
+  const { gallery, copy, scope } = project;
 
   return (
-    <>
-      <section data-header-theme="light" className="bg-black-graw">
-        <div
-          data-project-hero
-          className="relative h-[60svh] w-full bg-coal lg:h-692"
+    <section
+      data-header-theme="light"
+      className="bg-black-graw px-14 pt-96.5 font-flex text-white lg:px-79 lg:pt-178"
+    >
+      <div className="flex flex-col gap-13 lg:gap-45">
+        <SplitReveal
+          as="h1"
+          split="chars"
+          trigger="load"
+          className="text-project-title font-medium"
         >
-          {project.hero ? (
-            <>
-              <ParallaxImage
-                src={project.hero.src}
-                alt=""
-                priority
-                imageClassName={project.hero.position}
-              />
-              {project.hero.overlay && (
-                // Figma place in the 1920×692 hero, as shares of the box.
-                <div
-                  className="absolute"
-                  style={{
-                    left: `${(project.hero.overlay.left / 1920) * 100}%`,
-                    top: `${(project.hero.overlay.top / 692) * 100}%`,
-                    width: `${(project.hero.overlay.logo.width / 1920) * 100}%`,
-                  }}
-                >
-                  <Reveal blur={8} delay={0.3}>
-                    <LogoLayers logo={project.hero.overlay.logo} />
-                  </Reveal>
-                </div>
-              )}
-            </>
-          ) : (
-            <ComingSoon scale="page" sizes="100vw" />
-          )}
-        </div>
-      </section>
-
-      <section
-        data-header-theme="light"
-        className="flex flex-col items-center gap-44 bg-black-graw py-44 text-white"
-      >
-        <div className="flex w-full flex-col gap-32 px-16 lg:w-1496 lg:px-0">
-          <div className="flex flex-col gap-16 lg:flex-row lg:items-center lg:justify-between">
-            <SplitReveal
-              as="h1"
-              split="chars"
-              trigger="load"
-              className="text-title"
-            >
-              {project.title}
-            </SplitReveal>
-            <SplitReveal
-              split="words"
-              trigger="load"
-              delay={0.4}
-              className="text-meta text-orange lg:w-99"
-            >
-              {project.category}
-            </SplitReveal>
-          </div>
-          {gallery && (
-            <Copy className="text-body lg:w-1037">
-              {project.copy?.intro ?? LOREM_LONG}
-            </Copy>
-          )}
-        </div>
-
-        <div className="flex w-full flex-col items-center gap-64 px-6 lg:w-1517.5 lg:gap-62 lg:px-0">
-          {gallery ? (
-            <Gallery gallery={gallery} copy={project.copy} />
-          ) : (
-            <div className="flex w-full flex-col gap-10">
-              {project.logo && (
-                <GalleryImage media={{ ...WIDE_BOX, logo: project.logo }} />
-              )}
-              {/* Without a hero photo, the hero is the {EM BREVE} glass. */}
-              {project.hero && (
-                <Reveal className="p-10 lg:p-11">
+          {project.title}
+        </SplitReveal>
+        {(copy || scope) && (
+          <div className="flex flex-col text-overview-sm lg:flex-row lg:gap-330 lg:text-overview">
+            {copy && <ProjectOverview>{copy.intro}</ProjectOverview>}
+            {scope && (
+              <Reveal
+                stagger={0.08}
+                className="hidden lg:flex lg:h-225 lg:w-719 lg:gap-225"
+              >
+                {scope.map((group) => (
                   <div
-                    className="relative w-full overflow-hidden"
-                    style={{
-                      aspectRatio: `${WIDE_BOX.width} / ${WIDE_BOX.height}`,
-                    }}
+                    key={group.title}
+                    data-reveal
+                    className="flex flex-1 flex-col gap-19"
                   >
-                    <ComingSoon
-                      image={project.hero.src}
-                      scale="page"
-                      sizes="80vw"
-                    />
+                    <h3 className="font-bold uppercase">{group.title}</h3>
+                    <ul className="flex flex-col gap-8">
+                      {group.items.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
                   </div>
-                </Reveal>
+                ))}
+              </Reveal>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="mt-30 flex flex-col gap-8 lg:mt-164.25 lg:gap-43">
+        {gallery ? (
+          galleryItems(gallery).map((item, index) => (
+            // The first box is where an opened case's image lands.
+            <div
+              key={"row" in item ? mediaKey(item.row[0]) : mediaKey(item)}
+              data-project-hero={index === 0 ? "" : undefined}
+            >
+              {"row" in item ? (
+                <GalleryRow row={item} />
+              ) : (
+                <GalleryImage
+                  media={item}
+                  sizes="(min-width: 1024px) 92vw, 100vw"
+                  className="p-0 lg:p-0"
+                />
               )}
             </div>
-          )}
-        </div>
-
-        {gallery?.final && (
-          <GalleryImage
-            media={gallery.final}
-            sizes="100vw"
-            className={
-              gallery.final.bleed ? "w-full p-0 lg:p-0" : "w-full lg:p-10"
-            }
-          />
+          ))
+        ) : (
+          <>
+            {project.logo && (
+              <GalleryImage
+                media={{ ...BOX, logo: project.logo }}
+                className="p-0 lg:p-0"
+              />
+            )}
+            <Reveal wipe="up">
+              <div
+                data-project-hero
+                className="relative w-full overflow-hidden"
+                style={{ aspectRatio: `${BOX.width} / ${BOX.height}` }}
+              >
+                <ComingSoon
+                  image={project.hero?.src}
+                  scale="page"
+                  sizes="92vw"
+                />
+              </div>
+            </Reveal>
+          </>
         )}
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

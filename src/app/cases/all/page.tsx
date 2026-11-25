@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Footer } from "@/components/layout/footer";
+import { LegacyFooter } from "@/components/layout/legacy-footer";
 import { AllProjectsSection } from "@/components/sections/all-projects-section";
 import { CASES_PAGE } from "@/constants/cases";
 
@@ -13,7 +13,7 @@ export default function AllProjectsPage() {
       <main id="conteudo">
         <AllProjectsSection />
       </main>
-      <Footer tone="dark" />
+      <LegacyFooter tone="dark" />
     </>
   );
 }

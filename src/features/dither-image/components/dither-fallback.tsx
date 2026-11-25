@@ -31,6 +31,8 @@ type DitherFallbackProps = {
   scatter: number;
   quantize: DitherQuantize;
   levels: number;
+  brightness: number;
+  contrast: number;
   frame: DitherFrame;
 };
 
@@ -49,6 +51,8 @@ export function DitherFallback({
   scatter,
   quantize,
   levels,
+  brightness,
+  contrast,
   frame,
 }: DitherFallbackProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -131,6 +135,8 @@ export function DitherFallback({
                   quantize,
                   levels,
                   threshold,
+                  brightness,
+                  contrast,
                 );
               }
             }
@@ -189,6 +195,8 @@ export function DitherFallback({
     scatter,
     quantize,
     levels,
+    brightness,
+    contrast,
     frame,
   ]);
 

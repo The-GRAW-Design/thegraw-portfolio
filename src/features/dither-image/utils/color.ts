@@ -16,10 +16,19 @@ export function quantizeChannel(
   mode: DitherQuantize,
   levels: number,
   threshold: number,
+  brightness = 100,
+  contrast = 1,
 ) {
   if (mode === "none") return value;
   const steps = levels - 1;
-  const biased = mode === "ordered" ? value + (threshold - 0.5) / steps : value;
+  // Each channel is adjusted first (Figma Dither brightness/contrast).
+  const adjusted = Math.min(
+    1,
+    Math.max(0, (value - 0.5) * contrast + 0.5 + (brightness - 100) / 200),
+  );
+
+  const biased =
+    mode === "ordered" ? adjusted + (threshold - 0.5) / steps : adjusted;
   return Math.min(1, Math.max(0, Math.floor(biased * steps + 0.5) / steps));
 }
 

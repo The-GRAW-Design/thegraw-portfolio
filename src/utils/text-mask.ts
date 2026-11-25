@@ -13,7 +13,14 @@ export type TextMask = {
  */
 export function createTextMask(element: HTMLElement): TextMask | null {
   const style = getComputedStyle(element);
-  const text = element.textContent ?? "";
+  // The text as shown: CSS case transforms included.
+  const raw = element.textContent ?? "";
+  const text =
+    style.textTransform === "lowercase"
+      ? raw.toLocaleLowerCase()
+      : style.textTransform === "uppercase"
+        ? raw.toLocaleUpperCase()
+        : raw;
   const fontSize = parseFloat(style.fontSize);
   const bleed = Math.ceil(fontSize * 0.3);
   const width = element.offsetWidth + bleed * 2;

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { HeaderLogo } from "@/components/layout/header-logo";
 import { SiteMenu } from "@/components/layout/site-menu";
 import { ShuffleText } from "@/components/ui/shuffle-text";
+import { CONTACT_LINK } from "@/constants/navigation";
 import { DURATION, EASE, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { cn } from "@/utils/cn";
 
@@ -96,12 +97,21 @@ export function Header() {
       <header
         ref={headerRef}
         inert={menuOpen}
-        className="group/header pointer-events-none fixed inset-x-0 top-0 z-40 px-16 pt-16 text-white transition-colors duration-300 data-[theme=dark]:text-black lg:pt-29 lg:pr-46 lg:pl-50"
+        className="group/header pointer-events-none fixed inset-x-0 top-0 z-40 pt-24 pl-14 text-white transition-colors duration-300 data-[theme=dark]:text-black lg:pt-30 lg:pr-37 lg:pl-36"
       >
+        {/* Figma HOTBAR: "contato", the logo in the middle and "Menu"; phones
+            keep the logo and "Menu" only. */}
         <div
           data-header-row
-          className="invisible flex items-center justify-between"
+          className="invisible flex items-center justify-between lg:grid lg:grid-cols-[1fr_auto_1fr]"
         >
+          <a
+            href={CONTACT_LINK.href}
+            data-header-item
+            className="group pointer-events-auto hidden h-45 w-129 items-center justify-center text-nav transition-[scale] duration-300 ease-power3 active:scale-95 lg:flex lg:justify-self-start"
+          >
+            <ShuffleText>{CONTACT_LINK.label}</ShuffleText>
+          </a>
           <TransitionLink
             href="/"
             data-header-item
@@ -117,7 +127,7 @@ export function Header() {
             aria-expanded={menuOpen}
             aria-controls="site-menu"
             className={cn(
-              "group pointer-events-auto flex h-45 w-129 items-center justify-center text-nav transition-[opacity,scale] duration-300 ease-power3 active:scale-95",
+              "group pointer-events-auto flex h-35.5 w-101.75 items-center justify-center text-nav transition-[opacity,scale] duration-300 ease-power3 active:scale-95 max-lg:text-hotbar lg:h-45 lg:w-129 lg:justify-self-end",
               menuOpen && "opacity-0",
             )}
             onClick={() => setMenuOpen(true)}

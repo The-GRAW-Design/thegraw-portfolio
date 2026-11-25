@@ -16,8 +16,8 @@ const credits = (
   team: Credit,
   date: string,
 ): Project["credits"] => [
-  [lead, { label: "Client", value: client }],
-  [team, { label: "Date", value: date }],
+  [lead, { label: "Cliente", value: client }],
+  [team, { label: "Data", value: date }],
 ];
 
 const image = (slug: string, file: string, width: number, height: number) => ({
@@ -205,10 +205,31 @@ const ALL_PROJECTS: readonly Project[] = [
         asset("/images/projects/allce/chairs.webp"),
       ],
     },
+    // Deliverables drawn from the case texts (the Figma lists are placeholders).
+    scope: [
+      {
+        title: "Marca",
+        items: [
+          "Identidade visual",
+          "Logotipo",
+          "Paleta de cores",
+          "Elementos gráficos",
+        ],
+      },
+      {
+        title: "Estratégia",
+        items: [
+          "Pesquisa de referências",
+          "Conceito de marca",
+          "Aplicações em vestuário",
+          "Pontos de contato",
+        ],
+      },
+    ],
     credits: credits(
-      { label: "Project director", value: DIRECTOR },
+      { label: "Direção do projeto", value: DIRECTOR },
       "Allce. Co",
-      { label: "Motion Designer", value: "Alan Erick" },
+      { label: "Designer de animação", value: "Alan Erick" },
       "2024",
     ),
     gallery: {
@@ -255,11 +276,37 @@ const ALL_PROJECTS: readonly Project[] = [
     cover: cover("grupo-penguin"),
     hero: hero("grupo-penguin"),
     // Figma "Projeto" variant "Projeto 1".
-    collage: figmaCollage("grupo-penguin"),
+    collage: {
+      ...figmaCollage("grupo-penguin"),
+      mainPortrait: asset(
+        "/images/projects/grupo-penguin/collage-main-portrait.webp",
+      ),
+    },
+    // Deliverables drawn from the case texts (the Figma lists are placeholders).
+    scope: [
+      {
+        title: "Marca",
+        items: [
+          "Identidade visual",
+          "Logotipo",
+          "Tipografia",
+          "Elementos gráficos",
+        ],
+      },
+      {
+        title: "Estratégia",
+        items: [
+          "Conceito visual",
+          "Materiais editoriais",
+          "Sinalização",
+          "Produtos personalizados",
+        ],
+      },
+    ],
     credits: credits(
-      { label: "Project director", value: DIRECTOR },
+      { label: "Direção do projeto", value: DIRECTOR },
       "Poliana Fernandes",
-      { label: "Motion Designer", value: "Alan Erick" },
+      { label: "Designer de animação", value: "Alan Erick" },
       "2025",
     ),
     gallery: {
@@ -318,9 +365,9 @@ const ALL_PROJECTS: readonly Project[] = [
       ],
     },
     credits: credits(
-      { label: "Project director", value: DIRECTOR },
+      { label: "Direção do projeto", value: DIRECTOR },
       "E2 Company",
-      { label: "Dev", value: "Erik Elias" },
+      { label: "Desenvolvimento", value: "Erik Elias" },
       "2025",
     ),
     gallery: {
@@ -355,10 +402,31 @@ const ALL_PROJECTS: readonly Project[] = [
     hero: hero("lorena-lourenco"),
     // Figma "Projeto" variant "Projeto 2".
     collage: figmaCollage("lorena-lourenco"),
+    // Deliverables drawn from the case texts (the Figma lists are placeholders).
+    scope: [
+      {
+        title: "Marca",
+        items: [
+          "Identidade visual",
+          "Logotipo",
+          "Tipografia",
+          "Paleta de cores",
+        ],
+      },
+      {
+        title: "Estratégia",
+        items: [
+          "Posicionamento",
+          "Materiais institucionais",
+          "Comunicação digital",
+          "Peças promocionais",
+        ],
+      },
+    ],
     credits: credits(
-      { label: "Project director", value: DIRECTOR },
+      { label: "Direção do projeto", value: DIRECTOR },
       "Lorena Lourenço",
-      { label: "Motion Designer", value: "Alan Erick" },
+      { label: "Designer de animação", value: "Alan Erick" },
       "2026",
     ),
     copy: {
@@ -415,9 +483,9 @@ const ALL_PROJECTS: readonly Project[] = [
       ],
     },
     credits: credits(
-      { label: "Project director", value: DIRECTOR },
+      { label: "Direção do projeto", value: DIRECTOR },
       "Naturallis",
-      { label: "Dev", value: "Erik Elias" },
+      { label: "Desenvolvimento", value: "Erik Elias" },
       "2026",
     ),
     gallery: {
@@ -465,10 +533,31 @@ const ALL_PROJECTS: readonly Project[] = [
         asset("/images/projects/conexao-duo/inegociavel.webp"),
       ],
     },
+    // Deliverables drawn from the case texts (the Figma lists are placeholders).
+    scope: [
+      {
+        title: "Marca",
+        items: [
+          "Identidade visual",
+          "Símbolos",
+          "Elementos gráficos",
+          "Linguagem gráfica",
+        ],
+      },
+      {
+        title: "Estratégia",
+        items: [
+          "Pesquisa visual",
+          "Conceito de marca",
+          "Materiais institucionais",
+          "Comunicação digital",
+        ],
+      },
+    ],
     credits: credits(
-      { label: "Project director", value: DIRECTOR },
+      { label: "Direção do projeto", value: DIRECTOR },
       "Conexão Duo",
-      { label: "Motion Designer", value: "Alan Erick" },
+      { label: "Designer de animação", value: "Alan Erick" },
       "2026",
     ),
     logo: CONEXAO_LOGO,
@@ -533,7 +622,7 @@ const ALL_PROJECTS: readonly Project[] = [
     hero: null,
     collage: null,
     credits: credits(
-      { label: "Project director", value: "Thawany Gomes" },
+      { label: "Direção do projeto", value: "Thawany Gomes" },
       "Naturallis",
       { label: "Designer", value: DIRECTOR },
       "2024-2026",
@@ -559,10 +648,31 @@ const ALL_PROJECTS: readonly Project[] = [
         asset("/images/projects/elle-fanning/characters.webp"),
       ],
     },
+    // Deliverables drawn from the case texts (the Figma lists are placeholders).
+    scope: [
+      {
+        title: "Marca",
+        items: [
+          "Identidade editorial",
+          "Direção de arte",
+          "Tipografia",
+          "Paleta de cores",
+        ],
+      },
+      {
+        title: "Estratégia",
+        items: [
+          "Pesquisa de referências",
+          "Seleção de imagens",
+          "Composições editoriais",
+          "Peças digitais",
+        ],
+      },
+    ],
     credits: credits(
       { label: "Designer", value: DIRECTOR },
       "The Graw",
-      { label: "Dev", value: "Erik Elias" },
+      { label: "Desenvolvimento", value: "Erik Elias" },
       "2026",
     ),
     // Several boxes run to the right edge of their frame, as in the Figma.
@@ -611,10 +721,26 @@ const ALL_PROJECTS: readonly Project[] = [
     hero: { src: asset("/images/projects/tati-hotelzinho-pet/hero-dog.webp") },
     // Figma "Projeto" variant "Projeto 3".
     collage: figmaCollage("tati-hotelzinho-pet"),
+    // Deliverables drawn from the case texts (the Figma lists are placeholders).
+    scope: [
+      {
+        title: "Marca",
+        items: ["Identidade visual", "Logotipo", "Mascote", "Paleta de cores"],
+      },
+      {
+        title: "Estratégia",
+        items: [
+          "Conceito visual",
+          "Uniformes e embalagens",
+          "Comunicação digital",
+          "Publicidade",
+        ],
+      },
+    ],
     credits: credits(
-      { label: "Project director", value: DIRECTOR },
+      { label: "Direção do projeto", value: DIRECTOR },
       "Tati Sousa",
-      { label: "Motion Designer", value: "Julio Victor" },
+      { label: "Designer de animação", value: "Julio Victor" },
       "2023",
     ),
     copy: {
@@ -664,7 +790,7 @@ const ALL_PROJECTS: readonly Project[] = [
     collage: {
       main: asset("/images/projects/gilberto-do-acordeon/hero.webp"),
     },
-    credits: [[{ label: "Client", value: "Gilberto do Acordeon" }]],
+    credits: [[{ label: "Cliente", value: "Gilberto do Acordeon" }]],
     showcase: {
       background: asset("/images/projects/gilberto-do-acordeon/hero.webp"),
       card: asset("/images/projects/gilberto-do-acordeon/card.webp"),
@@ -678,13 +804,13 @@ const ALL_PROJECTS: readonly Project[] = [
   },
 ];
 
+/** The cases on the site: every project but the hidden ones. */
+/** Labels of the project details (client, year). */
 export const SHOWCASE_LABELS = {
   client: "Client",
   year: "year",
-  explore: "Explore project",
 } as const;
 
-/** The cases on the site: every project but the hidden ones. */
 export const PROJECTS = ALL_PROJECTS.filter((project) => !project.hidden);
 
 export function getProjectHref(project: Pick<Project, "slug">) {

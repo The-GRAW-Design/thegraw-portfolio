@@ -37,6 +37,8 @@
   --color-chip-text: #8c8c8c;
   --color-track: #888888;
   --color-smoke: #eeeeee;
+  /* Site 2.0: mobile cases side bars */
+  --color-ash: #606060;
 
   /* Figma shader gradient-map stops */
   --color-red-graw-deep: #7b000b;
@@ -44,6 +46,18 @@
   --color-mist: #d1d1d1;
   --color-fog: #dfdfdf;
   --color-snow: #fefefe;
+  /* Site 2.0 hero gradient map: white → blood → char */
+  --color-blood: #b30010;
+  --color-char: #1e1e1e;
+  /* Site 2.0 studio: purpose and pillars (red), foundations (gray) */
+  --color-soot: #151515;
+  --color-pitch: #1f1f1f;
+  --color-abyss: #060606;
+  --color-slate: #2c2c2c;
+  --color-stone: #999999;
+  /* Site 2.0 project page: cases track rail (desktop, phones) */
+  --color-rail: #adadad;
+  --color-haze: #ededed;
 
   /* Figma translucent fills */
   --color-shade: rgb(0 0 0 / 0.52);
@@ -70,8 +84,64 @@
 @theme inline {
   --font-sans: var(--font-sf-pro), ui-sans-serif, system-ui, sans-serif;
   --font-blackletter: var(--font-seagram), serif;
+  /* Site 2.0 */
+  --font-gothic: var(--font-pirata), serif;
+  --font-flex:
+    var(--font-google-sans-flex), ui-sans-serif, system-ui, sans-serif;
 
   --text-*: initial;
+
+  /*
+   * Site 2.0 (Figma home). `-sm` sizes follow the 393px mobile frames
+   * (`--mobile`); the others the 1920px desktop frame, or stay at a
+   * readable minimum on phones when both frames use about the same size.
+   */
+  --text-headline: calc(var(--fluid) * 137.258);
+  --text-headline--line-height: 1.2;
+  --text-headline-sm: calc(var(--mobile) * 69.703);
+  --text-headline-sm--line-height: 1.2;
+  --text-strap: max(1rem, calc(var(--fluid) * 28));
+  --text-strap--line-height: 1.2;
+  --text-projects: calc(var(--fluid) * 181.501);
+  --text-projects--line-height: 0.74;
+  --text-projects--letter-spacing: -0.04em;
+  --text-projects-sm: calc(var(--mobile) * 66);
+  --text-projects-sm--line-height: 0.74;
+  --text-projects-sm--letter-spacing: -0.04em;
+  --text-projects-copy: max(1rem, calc(var(--fluid) * 22));
+  --text-projects-copy--line-height: 0.89;
+  --text-together: calc(var(--fluid) * 120.8);
+  --text-together--line-height: 0.93;
+  --text-together-sm: calc(var(--mobile) * 140.94);
+  --text-together-sm--line-height: 0.93;
+  --text-together-copy: max(1rem, calc(var(--fluid) * 24));
+  --text-together-copy--line-height: 0.93;
+  --text-together-copy--letter-spacing: -0.04em;
+  --text-proposal-sm: 1.2746rem;
+  --text-proposal-sm--line-height: 0.93;
+  --text-proposal-sm--letter-spacing: -0.04em;
+  --text-band: max(1.25rem, calc(var(--fluid) * 20));
+  --text-band--line-height: normal;
+  --text-counter-sm: 1.6773rem;
+  --text-counter-sm--line-height: 1.2;
+  --text-counter-sm--letter-spacing: -0.07em;
+  --text-hotbar: max(1.8515rem, calc(var(--fluid) * 37.552));
+  --text-hotbar--line-height: 1.2;
+  --text-footer-link: max(1.25rem, calc(var(--fluid) * 23.872));
+  --text-footer-link--line-height: 1.2;
+  --text-footer-studio: max(1.5rem, calc(var(--fluid) * 32.485));
+  --text-footer-studio--line-height: 1.2;
+  --text-footer-about: max(1rem, calc(var(--fluid) * 35.332));
+  --text-footer-about--line-height: 1.03;
+  --text-footer-credit: max(0.75rem, calc(var(--fluid) * 17.608));
+  --text-footer-credit--line-height: 1.2;
+  --text-menu-word: max(4.4375rem, calc(var(--fluid) * 130));
+  --text-menu-word--line-height: 0.93;
+  --text-menu-word--letter-spacing: -0.02em;
+  --text-menu-close: max(2.347rem, calc(var(--fluid) * 37.552));
+  --text-menu-close--line-height: 1.2;
+  --text-small-sm: 1.1594rem;
+  --text-small-sm--line-height: 1.04;
 
   --text-hero: calc(var(--fluid) * 284.862);
   --text-hero--line-height: 1.2;
@@ -82,18 +152,69 @@
   --text-end: calc(var(--fluid) * 338.106);
   --text-end--line-height: 1.2;
   --text-end--letter-spacing: -0.07em;
-  --text-role-motion: calc(var(--fluid) * 239.569);
-  --text-role-motion--line-height: 1.2;
-  --text-role-motion--letter-spacing: -0.07em;
-  --text-role-director: calc(var(--fluid) * 226.467);
+  /*
+   * Site 2.0 studio roles, each filling the 1822px line of its Figma frame;
+   * phones keep André's 49.59/270.722 ratio for all four.
+   */
+  --text-role-director: calc(var(--fluid) * 270.722);
   --text-role-director--line-height: 1.2;
   --text-role-director--letter-spacing: -0.07em;
-  --text-role-manager: calc(var(--fluid) * 225.561);
+  --text-role-director-sm: calc(var(--mobile) * 49.59);
+  --text-role-director-sm--line-height: 1.2;
+  --text-role-director-sm--letter-spacing: -0.07em;
+  --text-role-motion: calc(var(--fluid) * 255.136);
+  --text-role-motion--line-height: 1.2;
+  --text-role-motion--letter-spacing: -0.07em;
+  --text-role-motion-sm: calc(var(--mobile) * 46.735);
+  --text-role-motion-sm--line-height: 1.2;
+  --text-role-motion-sm--letter-spacing: -0.07em;
+  --text-role-manager: calc(var(--fluid) * 205.645);
   --text-role-manager--line-height: 1.2;
   --text-role-manager--letter-spacing: -0.07em;
-  --text-giant: calc(var(--fluid) * 248.266);
-  --text-giant--line-height: 1.2;
-  --text-giant--letter-spacing: -0.07em;
+  --text-role-manager-sm: calc(var(--mobile) * 37.669);
+  --text-role-manager-sm--line-height: 1.2;
+  --text-role-manager-sm--letter-spacing: -0.07em;
+  --text-role-developer: calc(var(--fluid) * 273.599);
+  --text-role-developer--line-height: 1.2;
+  --text-role-developer--letter-spacing: -0.07em;
+  --text-role-developer-sm: calc(var(--mobile) * 50.117);
+  --text-role-developer-sm--line-height: 1.2;
+  --text-role-developer-sm--letter-spacing: -0.07em;
+  /* Site 2.0 studio: member name and bio, purpose/pillars on phones */
+  --text-member: max(1.875rem, calc(var(--fluid) * 67.266));
+  --text-member--line-height: 1.2;
+  --text-member--letter-spacing: -0.07em;
+  --text-bio: max(0.875rem, calc(var(--fluid) * 22));
+  --text-bio--line-height: 1.03;
+  --text-pillar-sm: calc(var(--mobile) * 44.964);
+  --text-pillar-sm--line-height: 0.93;
+  --text-pillar-copy-sm: 0.75rem;
+  --text-pillar-copy-sm--line-height: 0.93;
+  --text-pillar-copy-sm--letter-spacing: -0.04em;
+  /* Site 2.0 project page (Figma "Project Open", "Mobile - overview") */
+  --text-project-title: max(3.375rem, calc(var(--fluid) * 77.34));
+  --text-project-title--line-height: 1.2;
+  --text-project-title--letter-spacing: -0.02em;
+  --text-overview: max(0.875rem, calc(var(--fluid) * 15.877));
+  --text-overview--line-height: 1;
+  --text-overview-sm: 1rem;
+  --text-overview-sm--line-height: 1;
+  --text-credit-title: calc(var(--fluid) * 74.645);
+  --text-credit-title--line-height: 1.2;
+  --text-credit-title--letter-spacing: -0.07em;
+  --text-credit-title-sm: calc(var(--mobile) * 13.826);
+  --text-credit-title-sm--line-height: 1.2;
+  --text-credit-title-sm--letter-spacing: -0.07em;
+  --text-credit-name: calc(var(--fluid) * 36.576);
+  --text-credit-name--line-height: 1;
+  --text-credit-name-sm: calc(var(--mobile) * 6.775);
+  --text-credit-name-sm--line-height: 1;
+  --text-fim: calc(var(--fluid) * 468.069);
+  --text-fim--line-height: 1.2;
+  --text-fim-sm: calc(var(--mobile) * 86.7);
+  --text-fim-sm--line-height: 1.2;
+  --text-view-all: max(1rem, calc(var(--fluid) * 49.645));
+  --text-view-all--line-height: 1.2;
   --text-lets: max(3.5rem, calc(var(--fluid) * 257.131));
   --text-lets--line-height: 0.93;
   --text-lets--letter-spacing: -0.04em;
@@ -198,6 +319,8 @@
 
 :root {
   --fluid: calc(100vw / 1920);
+  /* Site 2.0 mobile frames are 393px wide (capped on tablets). */
+  --mobile: calc(min(100vw, 37.5rem) / 393);
 }
 
 @media (width >= 64rem) {

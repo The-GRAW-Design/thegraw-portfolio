@@ -1,19 +1,10 @@
 import { Footer } from "@/components/layout/footer";
-import { CaseStudiesIntroSection } from "@/components/sections/case-studies-intro-section";
+import { ContactSection } from "@/components/sections/contact-section";
 import { HeroSection } from "@/components/sections/hero-section";
-import { LetsWorkSection } from "@/components/sections/lets-work-section";
-import { ProjectShowcaseSection } from "@/components/sections/project-showcase-section";
+import { ProjectsIntroSection } from "@/components/sections/projects-intro-section";
 import { ViewAllCasesSection } from "@/components/sections/view-all-cases-section";
-import { HOME_PAGE } from "@/constants/pages";
-import { findProject } from "@/constants/projects";
-import type { Project, ProjectShowcase } from "@/types/project";
-
-const SHOWCASES = HOME_PAGE.showcases
-  .map((slug) => findProject(slug))
-  .filter(
-    (project): project is Project & { showcase: ProjectShowcase } =>
-      project?.showcase !== undefined,
-  );
+import { HomeCases } from "@/features/cases";
+import { HeroSword } from "@/features/hero-sword";
 
 export default function HomePage() {
   return (
@@ -21,13 +12,12 @@ export default function HomePage() {
       <main id="conteudo">
         <div data-hero-stack className="relative">
           <HeroSection />
-          <CaseStudiesIntroSection />
+          <ProjectsIntroSection />
+          <HeroSword />
         </div>
-        {SHOWCASES.map((project) => (
-          <ProjectShowcaseSection key={project.slug} project={project} />
-        ))}
-        <ViewAllCasesSection />
-        <LetsWorkSection />
+        <HomeCases band={<ViewAllCasesSection className="lg:hidden" />} />
+        <ViewAllCasesSection className="max-lg:hidden" />
+        <ContactSection />
       </main>
       <Footer />
     </>

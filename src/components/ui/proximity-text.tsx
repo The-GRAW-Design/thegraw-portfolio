@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { EASE, gsap, useGSAP } from "@/lib/gsap";
 
@@ -39,6 +39,50 @@ export function ProximityText({
   const rootRef = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
   const words = children.split(" ");
+
+  // Each letter sits in its own box, which drops the font's kerning: put it
+  // back as a margin (in em, so it follows the fluid size), measured on the
+  // real font once it has loaded.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    let cancelled = false;
+    const kern = () => {
+      if (cancelled) return;
+      const probe = document.createElement("span");
+      probe.style.cssText =
+        "position:absolute;left:0;top:0;visibility:hidden;white-space:pre";
+      root.appendChild(probe);
+      const width = (text: string) => {
+        probe.textContent = text;
+        return probe.getBoundingClientRect().width;
+      };
+      const size = parseFloat(getComputedStyle(root).fontSize) || 1;
+      root.querySelectorAll<HTMLElement>("[data-word]").forEach((word) => {
+        const letters = Array.from(
+          word.querySelectorAll<HTMLElement>("[data-letter]"),
+        );
+        letters.forEach((letter, index) => {
+          const next = letters[index + 1];
+          const pair = next
+            ? (letter.textContent ?? "") + next.textContent
+            : "";
+          const offset = next
+            ? width(pair) -
+              width(letter.textContent ?? "") -
+              width(next.textContent ?? "")
+            : 0;
+          letter.style.marginRight =
+            Math.abs(offset) > 0.01 ? `${(offset / size).toFixed(4)}em` : "";
+        });
+      });
+      probe.remove();
+    };
+    document.fonts.ready.then(kern);
+    return () => {
+      cancelled = true;
+    };
+  }, [children]);
 
   useGSAP(
     () => {
@@ -147,7 +191,7 @@ export function ProximityText({
       {words.map((word, wordIndex) => (
         <span key={wordIndex} aria-hidden>
           {wordIndex > 0 && " "}
-          <span className="inline-block whitespace-nowrap">
+          <span data-word className="inline-block whitespace-nowrap">
             {Array.from(word).map((letter, letterIndex) => (
               <span key={letterIndex} data-letter className="inline-block">
                 <span

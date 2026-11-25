@@ -7,7 +7,7 @@ import { asset } from "@/utils/asset";
  */
 export function HeaderLogo() {
   return (
-    <span className="relative block h-40.5 w-67 lg:h-54 lg:w-89.5">
+    <span className="relative block h-42.5 w-70.5 lg:h-54 lg:w-89.5">
       <Image
         src={asset("/icons/logo-the-graw-light.svg")}
         alt=""

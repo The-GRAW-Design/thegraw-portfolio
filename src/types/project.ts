@@ -84,9 +84,14 @@ export type ProjectCopy = {
 /** The cases page collage of a case: main image and the pieces around it. */
 export type ProjectCollage = {
   main: string;
+  /** The main image for the portrait collage on phones (home); defaults to `main`. */
+  mainPortrait?: string;
   /** Bottom (behind the main), top-left, right and left, as in the Figma. */
   pieces?: readonly [string, string, string, string];
 };
+
+/** A list next to the overview of the project page ("Marca", "Estratégia"). */
+export type ProjectScope = { title: string; items: readonly string[] };
 
 export type Project = {
   slug: string;
@@ -105,6 +110,8 @@ export type Project = {
   hero: { src: string; position?: string; overlay?: HeroOverlay } | null;
   /** Cases page collage; `null` shows the {EM BREVE} card there too. */
   collage: ProjectCollage | null;
+  /** Lists next to the overview (Figma "Project Open"); none hides them. */
+  scope?: readonly ProjectScope[];
   /** Credits, in two columns of two. */
   credits: readonly (readonly Credit[])[];
   /** Logo panel shown under the intro of a page without a gallery. */
