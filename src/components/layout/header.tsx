@@ -108,7 +108,7 @@ export function Header() {
           <a
             href={CONTACT_LINK.href}
             data-header-item
-            className="group pointer-events-auto hidden h-45 w-129 items-center justify-center text-hotbar transition-[scale] duration-300 ease-power3 active:scale-95 lg:flex lg:justify-self-start"
+            className="group pointer-events-auto hidden h-45 w-129 items-center justify-center text-nav transition-[scale] duration-300 ease-power3 active:scale-95 lg:flex lg:justify-self-start"
           >
             <ShuffleText>{CONTACT_LINK.label}</ShuffleText>
           </a>
@@ -127,7 +127,7 @@ export function Header() {
             aria-expanded={menuOpen}
             aria-controls="site-menu"
             className={cn(
-              "group pointer-events-auto flex h-35.5 w-101.75 items-center justify-center text-hotbar transition-[opacity,scale] duration-300 ease-power3 active:scale-95 lg:h-45 lg:w-129 lg:justify-self-end",
+              "group pointer-events-auto flex h-35.5 w-101.75 items-center justify-center text-nav transition-[opacity,scale] duration-300 ease-power3 active:scale-95 max-lg:text-hotbar lg:h-45 lg:w-129 lg:justify-self-end",
               menuOpen && "opacity-0",
             )}
             onClick={() => setMenuOpen(true)}
