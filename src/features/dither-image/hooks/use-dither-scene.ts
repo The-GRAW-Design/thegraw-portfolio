@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState, type RefObject } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import * as THREE from "three";
 import { DITHER_BAKE_FRAGMENT_SHADER } from "@/features/dither-image/shaders/dither-bake-fragment";
 import { DITHER_PRESENT_FRAGMENT_SHADER } from "@/features/dither-image/shaders/dither-present-fragment";
 import { DITHER_VERTEX_SHADER } from "@/features/dither-image/shaders/dither-vertex";
 import type {
+  DitherDisturbance,
   DitherFrame,
   DitherPalette,
   DitherQuantize,
@@ -66,9 +67,14 @@ type DitherSceneOptions = {
   scatter: number;
   quantize: DitherQuantize;
   levels: number;
+  /** Figma "Dither" brightness (%) and contrast. */
+  brightness: number;
+  contrast: number;
   frame: DitherFrame;
   /** Keep the image moving while visible, or render it once. */
   continuous: boolean;
+  /** Read every frame: cells pushed away from a moving segment. */
+  disturbance?: DitherDisturbance;
 };
 
 function createBayerTexture() {
@@ -115,11 +121,19 @@ export function useDitherScene(
     scatter,
     quantize,
     levels,
+    brightness,
+    contrast,
     frame,
     continuous,
+    disturbance,
   }: DitherSceneOptions,
 ) {
   const [uniforms, setUniforms] = useState<DitherUniforms | null>(null);
+  // A mutable object written by its owner: read live, never a dependency.
+  const disturbanceRef = useRef(disturbance);
+  useEffect(() => {
+    disturbanceRef.current = disturbance;
+  }, [disturbance]);
   // Props from Server Components arrive as new objects on every navigation:
   // compare them by value so an unchanged palette or frame keeps the scene.
   const paletteKey = JSON.stringify(palette);
@@ -192,6 +206,10 @@ export function useDitherScene(
         uPhase: { value: new THREE.Vector2() },
         uQuantize: { value: QUANTIZE_MODE[quantize] },
         uLevels: { value: levels },
+        // Figma "Dither": brightness shifts by (b - 100) / 200, contrast
+        // scales around 0.5.
+        uBrightness: { value: (brightness - 100) / 200 },
+        uContrast: { value: contrast },
       },
       depthTest: false,
       depthWrite: false,
@@ -224,6 +242,12 @@ export function useDitherScene(
         uWindStrength: { value: MOTION.windStrength },
         uWindScale: { value: MOTION.windScale },
         uMouseRadius: { value: 0.22 },
+        uPixelRatio: { value: 1 },
+        uWakeA: { value: new THREE.Vector2() },
+        uWakeB: { value: new THREE.Vector2() },
+        uWake: { value: 0 },
+        uWakeRing: { value: 0 },
+        uWakeRingStrength: { value: 0 },
       },
       blending: THREE.NoBlending,
       depthTest: false,
@@ -250,6 +274,39 @@ export function useDitherScene(
       if (loaded) renderer.render(presentScene, camera);
     };
 
+    // The disturbance segment, in drawing-buffer px from the top left.
+    const wake = presentMaterial.uniforms;
+    const readDisturbance = () => {
+      const source = disturbanceRef.current;
+      if (!source || (source.strength < 0.001 && source.ringStrength < 0.001)) {
+        wake.uWake.value = 0;
+        wake.uWakeRingStrength.value = 0;
+        return "";
+      }
+      const rect = container.getBoundingClientRect();
+      const ratio = rect.width ? resolution.x / rect.width : 1;
+      wake.uWakeA.value.set(
+        (source.a.x - rect.left) * ratio,
+        (source.a.y - rect.top) * ratio,
+      );
+      wake.uWakeB.value.set(
+        (source.b.x - rect.left) * ratio,
+        (source.b.y - rect.top) * ratio,
+      );
+      wake.uWake.value = source.strength;
+      wake.uWakeRing.value = source.ring * ratio;
+      wake.uWakeRingStrength.value = source.ringStrength;
+      return [
+        wake.uWakeA.value.x,
+        wake.uWakeA.value.y,
+        wake.uWakeB.value.x,
+        wake.uWakeB.value.y,
+        source.strength,
+        source.ring,
+        source.ringStrength,
+      ].join();
+    };
+
     // Re-render only when the random motion re-rolls or a GSAP uniform moved.
     let lastTick = -1;
     let lastState = "";
@@ -263,6 +320,7 @@ export function useDitherScene(
         animated.uMouse.value.x,
         animated.uMouse.value.y,
         animated.uMouseStrength.value,
+        readDisturbance(),
       ].join();
       if (motionTick === lastTick && state === lastState) return;
       lastTick = motionTick;
@@ -293,6 +351,7 @@ export function useDitherScene(
       bakeMaterial.uniforms.uPixelSize.value = cell;
       bakeMaterial.uniforms.uSubsamples.value = subsamples;
       presentMaterial.uniforms.uCell.value = Math.max(cell, 1);
+      presentMaterial.uniforms.uPixelRatio.value = renderer.getPixelRatio();
       if (loaded) {
         bake();
         present();
@@ -362,6 +421,8 @@ export function useDitherScene(
     scatter,
     quantize,
     levels,
+    brightness,
+    contrast,
     frameKey,
     continuous,
   ]);

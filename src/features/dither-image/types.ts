@@ -34,6 +34,22 @@ export type DitherAnimation = "intro" | "scroll" | "none";
  */
 export type DitherQuantize = "ordered" | "posterize" | "none";
 
+/**
+ * Something moving over the image that pushes its cells around (the hero
+ * sword): a segment in viewport px, written every frame by its owner and read
+ * by the render loop. Only the effect's own pixels move, no color is added.
+ */
+export type DitherDisturbance = {
+  /** Segment ends (e.g. the blade tip and the pommel), viewport px. */
+  a: { x: number; y: number };
+  b: { x: number; y: number };
+  /** 0–1: cells near the segment are blown away from it. */
+  strength: number;
+  /** Shockwave from the segment: its distance (px) and strength (0–1). */
+  ring: number;
+  ringStrength: number;
+};
+
 export type DitherImageProps = {
   src: string;
   palette: DitherPalette;
@@ -50,10 +66,15 @@ export type DitherImageProps = {
   quantize?: DitherQuantize;
   /** Quantization levels per channel (Figma "Levels"). */
   levels?: number;
+  /** Figma "Dither" brightness (%, 100 = unchanged) and contrast (1 = unchanged). */
+  brightness?: number;
+  contrast?: number;
   frame?: DitherFrame;
   /** Frame below the `lg` breakpoint (no Figma mobile frames); defaults to `frame`. */
   mobileFrame?: DitherFrame;
   animation?: DitherAnimation;
+  /** Live disturbance of the cells (WebGL only). */
+  disturbance?: DitherDisturbance;
   className?: string;
 };
 

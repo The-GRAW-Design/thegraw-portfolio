@@ -9,7 +9,8 @@ import { MAX_PALETTE_STOPS } from "@/features/dither-image/utils/palette";
  *    Figma) + scatter + offset -> position on the palette ramp.
  * 2. Quantization: per-channel Bayer 16x16 ("Dither") or flat ("Pixelate").
  *    Figma rasterizes effects at 1.25x and downsamples; ordered dithering is
- *    supersampled per pixel to match that texture.
+ *    supersampled per pixel to match that texture. The Dither effect first
+ *    applies its brightness and contrast to each channel.
  */
 export const DITHER_BAKE_FRAGMENT_SHADER = /* glsl */ `
   #define MAX_STOPS ${MAX_PALETTE_STOPS}
@@ -34,6 +35,8 @@ export const DITHER_BAKE_FRAGMENT_SHADER = /* glsl */ `
   uniform vec2 uPhase;
   uniform int uQuantize;
   uniform float uLevels;
+  uniform float uBrightness;
+  uniform float uContrast;
 
   float hash(vec2 p) {
     vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -92,6 +95,7 @@ export const DITHER_BAKE_FRAGMENT_SHADER = /* glsl */ `
     if (uQuantize == 2) {
       color = floor(color * steps + 0.5) / steps;
     } else if (uQuantize == 1) {
+      color = clamp((color - 0.5) * uContrast + 0.5 + uBrightness, 0.0, 1.0);
       vec3 sum = vec3(0.0);
       for (int j = 0; j < MAX_SUBSAMPLES; j++) {
         if (float(j) >= uSubsamples) break;

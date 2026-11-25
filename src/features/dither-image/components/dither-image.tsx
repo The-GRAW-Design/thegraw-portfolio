@@ -40,9 +40,12 @@ export function DitherImage({
   scatter = 0,
   quantize = "ordered",
   levels = 3,
+  brightness = 100,
+  contrast = 1,
   frame = FULL_FRAME,
   mobileFrame = frame,
   animation = "intro",
+  disturbance,
   className,
 }: DitherImageProps) {
   const webgl = useWebGLSupport();
@@ -57,6 +60,8 @@ export function DitherImage({
     scatter,
     quantize,
     levels,
+    brightness,
+    contrast,
     frame: desktop ? frame : mobileFrame,
   };
 
@@ -71,7 +76,11 @@ export function DitherImage({
       )}
     >
       {webgl === null ? null : webgl && !reducedMotion ? (
-        <DitherCanvas {...options} animation={animation} />
+        <DitherCanvas
+          {...options}
+          animation={animation}
+          disturbance={disturbance}
+        />
       ) : (
         <DitherFallback {...options} />
       )}
