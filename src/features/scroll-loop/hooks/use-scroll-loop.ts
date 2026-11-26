@@ -39,21 +39,23 @@ export function useScrollLoop(copyRef: RefObject<HTMLElement | null>) {
     };
   }, [copyRef]);
 
+  // Keys, the scrollbar and, without Lenis, every scroll move the page
+  // natively, up to its end: there the view is the start's, so jump back
+  // one period and they carry on. Lenis's own smooth scroll wraps itself.
   useEffect(() => {
-    if (!lenis) {
-      const wrap = () => {
-        const period = getLoopPeriod();
-        if (period > 0 && window.scrollY >= period - 1) {
-          window.scrollTo({
-            top: window.scrollY - period,
-            behavior: "instant",
-          });
-        }
-      };
-      window.addEventListener("scroll", wrap, { passive: true });
-      return () => window.removeEventListener("scroll", wrap);
-    }
+    const wrap = () => {
+      if (lenis?.isScrolling === "smooth") return;
+      const period = getLoopPeriod();
+      if (period > 0 && window.scrollY >= period - 1) {
+        window.scrollTo({ top: window.scrollY - period, behavior: "instant" });
+      }
+    };
+    window.addEventListener("scroll", wrap, { passive: true });
+    return () => window.removeEventListener("scroll", wrap);
+  }, [lenis]);
 
+  useEffect(() => {
+    if (!lenis) return;
     const unloop = loopLenis(lenis);
     // Lenis measures the page 250ms after it changes: a refresh (a pin
     // added or moved) has to reach its limit at once, or the wrap misses.
