@@ -1,12 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
+import { GradualBlur } from "@/components/ui/react-bits/gradual-blur";
 import { findProject, getProjectHref } from "@/constants/projects";
 import { SERVICES_PAGE } from "@/constants/services";
 import { TransitionLink } from "@/features/page-transition";
 import { EASE, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import type { Project, ProjectShowcase } from "@/types/project";
+import { cn } from "@/utils/cn";
 
 type ServicesProjectsSectionProps = {
   /** The repeat of the page start at the end of the loop: it never pins. */
@@ -14,6 +16,19 @@ type ServicesProjectsSectionProps = {
   /** Pairs this strip's swipes with the other copy's; returns the undo. */
   onViewport?: (viewport: HTMLElement) => () => void;
 };
+
+/**
+ * Figma side fades (Rectangles 52/53, read in the Figma editor), at the edges
+ * of the screen: 198.63 wide with a 3% tint, and a progressive background
+ * blur from 0 to 48.58 (24.29px in CSS) growing evenly over the outer 161.6
+ * toward the edge (GradualBlur: 12px per unit of strength).
+ */
+const EDGES = [
+  { side: "left", tint: "left-0 bg-linear-to-l" },
+  { side: "right", tint: "right-0 bg-linear-to-r" },
+] as const;
+const EDGE_BLUR_WIDTH = "calc(var(--spacing) * 161.6)";
+const EDGE_BLUR = 24.29 / 12;
 
 const SLIDES = SERVICES_PAGE.slides
   .map((slug) => findProject(slug))
@@ -50,8 +65,9 @@ function drift(images: HTMLElement[], offset: number) {
 /**
  * Figma "Projetos" (2.0): the "Project view" slides, 1711.6×966.3, the first
  * one at x 89 and the next peeking at the right edge; on phones a full-width
- * strip. Edge to edge, without the Figma side fades (the user's call): the
- * dark gap at the left only shows before the strip moves. With a mouse the
+ * strip. Edge to edge (the user's call), its Figma side fades at the edges of
+ * the screen: the dark gap at the left only shows before the strip moves.
+ * With a mouse the
  * strip pins in the middle of the screen and the vertical scroll moves the
  * slides until the last one meets the right edge; on touch screens they are
  * swiped, and without motion it is a plain horizontal scroller.
@@ -225,6 +241,29 @@ export function ServicesProjectsSection({
             ))}
           </ul>
         </div>
+
+        {/* Tint and progressive blur on both edges (React Bits GradualBlur). */}
+        {EDGES.map((edge) => (
+          <Fragment key={edge.side}>
+            <div
+              aria-hidden
+              className={cn(
+                "pointer-events-none absolute inset-y-0 z-10 hidden w-[calc(var(--spacing)*198.629)] from-transparent to-fade-faint lg:block",
+                edge.tint,
+              )}
+            />
+            <GradualBlur
+              position={edge.side}
+              width={EDGE_BLUR_WIDTH}
+              strength={EDGE_BLUR}
+              curve="linear"
+              exponential={false}
+              layers={8}
+              zIndex={10}
+              className="hidden lg:block"
+            />
+          </Fragment>
+        ))}
       </section>
     </div>
   );
