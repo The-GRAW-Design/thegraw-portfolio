@@ -60,6 +60,8 @@ export type DitherUniforms = {
 
 type DitherSceneOptions = {
   src: string;
+  /** Played instead of `src`, baked again on each of its frames. */
+  video?: string;
   palette: DitherPalette;
   pixelSize: number;
   opacity: number;
@@ -114,6 +116,7 @@ export function useDitherScene(
   containerRef: RefObject<HTMLDivElement | null>,
   {
     src,
+    video,
     palette,
     pixelSize,
     opacity,
@@ -151,6 +154,13 @@ export function useDitherScene(
     let visible = false;
     let loaded = false;
     let imageTexture: THREE.Texture | null = null;
+    // A video source: a new frame to bake, and where it was last seen
+    // (browsers without `requestVideoFrameCallback` follow its clock).
+    let player: HTMLVideoElement | null = null;
+    let frameRequest = 0;
+    let frameReady = false;
+    let followClock = false;
+    let lastVideoTime = -1;
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -307,11 +317,21 @@ export function useDitherScene(
       ].join();
     };
 
-    // Re-render only when the random motion re-rolls or a GSAP uniform moved.
+    // Re-render only when the random motion re-rolls, a GSAP uniform moved
+    // or the video shows a new frame (baked again first).
     let lastTick = -1;
     let lastState = "";
     const tick = (_time: number, deltaTime: number) => {
       const time = (presentMaterial.uniforms.uTime.value += deltaTime / 1000);
+      if (player && followClock) {
+        frameReady ||= player.currentTime !== lastVideoTime;
+        lastVideoTime = player.currentTime;
+      }
+      if (frameReady) {
+        frameReady = false;
+        bake();
+        lastTick = -1;
+      }
       const motionTick = Math.floor(time * TICKS_PER_SECOND);
       const state = [
         animated.uReveal.value,
@@ -331,6 +351,10 @@ export function useDitherScene(
     const updateLoop = () => {
       gsap.ticker.remove(tick);
       if (continuous && visible && loaded && !disposed) gsap.ticker.add(tick);
+      // The video only plays while it can be seen.
+      if (!player) return;
+      if (visible && !disposed) player.play().catch(() => {});
+      else player.pause();
     };
 
     const drawingBuffer = new THREE.Vector2();
@@ -367,36 +391,72 @@ export function useDitherScene(
     });
     intersectionObserver.observe(container);
 
-    new THREE.TextureLoader()
-      .loadAsync(src)
-      .then((texture) => {
-        if (disposed) {
-          texture.dispose();
-          return;
-        }
-        // Raw values: the bake shader converts them like Figma does.
-        texture.colorSpace = THREE.NoColorSpace;
-        // UVs use a top-left origin, like the CSS layout.
-        texture.flipY = false;
-        texture.minFilter = THREE.LinearFilter;
-        // Figma enlarges the image under its effects without smoothing: each
-        // source pixel shows as a block (≈3.4px in the hero), with the fine
-        // dither over it. The fallback samples it the same way.
-        texture.magFilter = THREE.NearestFilter;
-        texture.generateMipmaps = false;
-        const image = texture.image as { width: number; height: number };
-        bakeMaterial.uniforms.uImage.value = texture;
-        bakeMaterial.uniforms.uImageSize.value.set(image.width, image.height);
-        imageTexture = texture;
-        loaded = true;
-        bake();
-        present();
-        updateLoop();
-        setUniforms(animated);
-      })
-      .catch(() => {
-        // Leave the container background visible if the image fails.
-      });
+    const show = (texture: THREE.Texture, width: number, height: number) => {
+      // Raw values: the bake shader converts them like Figma does.
+      texture.colorSpace = THREE.NoColorSpace;
+      // UVs use a top-left origin, like the CSS layout.
+      texture.flipY = false;
+      texture.minFilter = THREE.LinearFilter;
+      // Figma enlarges the image under its effects without smoothing: each
+      // source pixel shows as a block (≈3.4px in the hero), with the fine
+      // dither over it. The fallback samples it the same way.
+      texture.magFilter = THREE.NearestFilter;
+      texture.generateMipmaps = false;
+      bakeMaterial.uniforms.uImage.value = texture;
+      bakeMaterial.uniforms.uImageSize.value.set(width, height);
+      imageTexture = texture;
+      loaded = true;
+      bake();
+      present();
+      updateLoop();
+      setUniforms(animated);
+    };
+
+    if (video) {
+      // Muted and inline, so browsers let it play on its own.
+      const element = document.createElement("video");
+      element.muted = true;
+      element.loop = true;
+      element.playsInline = true;
+      element.preload = "auto";
+      element.crossOrigin = "anonymous";
+      element.src = video;
+      player = element;
+      followClock = !("requestVideoFrameCallback" in element);
+      if (!followClock) {
+        const nextFrame = () => {
+          frameReady = true;
+          frameRequest = element.requestVideoFrameCallback(nextFrame);
+        };
+        frameRequest = element.requestVideoFrameCallback(nextFrame);
+      }
+      element.addEventListener(
+        "loadeddata",
+        () => {
+          if (disposed) return;
+          const texture = new THREE.VideoTexture(element);
+          // Its first frame is there even before it plays.
+          texture.needsUpdate = true;
+          show(texture, element.videoWidth, element.videoHeight);
+        },
+        { once: true },
+      );
+      updateLoop();
+    } else {
+      new THREE.TextureLoader()
+        .loadAsync(src)
+        .then((texture) => {
+          if (disposed) {
+            texture.dispose();
+            return;
+          }
+          const image = texture.image as { width: number; height: number };
+          show(texture, image.width, image.height);
+        })
+        .catch(() => {
+          // Leave the container background visible if the image fails.
+        });
+    }
 
     return () => {
       disposed = true;
@@ -409,6 +469,12 @@ export function useDitherScene(
       bakeTargets.forEach((target) => target.dispose());
       bayerTexture.dispose();
       imageTexture?.dispose();
+      if (player) {
+        if (!followClock) player.cancelVideoFrameCallback(frameRequest);
+        player.pause();
+        player.removeAttribute("src");
+        player.load();
+      }
       renderer.dispose();
       renderer.forceContextLoss();
       canvas.remove();
@@ -417,6 +483,7 @@ export function useDitherScene(
   }, [
     containerRef,
     src,
+    video,
     paletteKey,
     pixelSize,
     opacity,

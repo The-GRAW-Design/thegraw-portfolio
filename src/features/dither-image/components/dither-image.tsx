@@ -32,6 +32,7 @@ const DitherFallback = dynamic(
  */
 export function DitherImage({
   src,
+  video,
   palette,
   alt,
   pixelSize = 1,
@@ -80,6 +81,7 @@ export function DitherImage({
       {webgl === null ? null : webgl && !reducedMotion ? (
         <DitherCanvas
           {...options}
+          video={video}
           animation={animation}
           disturbance={disturbance}
           coveredBy={coveredBy}

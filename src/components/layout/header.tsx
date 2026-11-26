@@ -1,6 +1,7 @@
 "use client";
 
 import { TransitionLink } from "@/features/page-transition";
+import { loopedScroll } from "@/features/scroll-loop";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { HeaderLogo } from "@/components/layout/header-logo";
@@ -68,16 +69,20 @@ export function Header() {
         });
       });
 
-      // Hide while scrolling down, show again on the way up.
+      // Hide while scrolling down, show again on the way up. On a looping
+      // page the scroll jumps back to the start: follow the unrolled one.
       let hidden = false;
+      let last = loopedScroll(window.scrollY);
       ScrollTrigger.create({
         start: 0,
         end: "max",
         onUpdate: (self) => {
+          const scroll = loopedScroll(self.scroll());
+          const direction = Math.sign(scroll - last);
+          last = scroll;
+          if (direction === 0) return;
           const shouldHide =
-            self.direction === 1 &&
-            self.scroll() > HIDE_AFTER &&
-            !menuOpenRef.current;
+            direction === 1 && scroll > HIDE_AFTER && !menuOpenRef.current;
           if (shouldHide === hidden) return;
           hidden = shouldHide;
           gsap.to(header, {
