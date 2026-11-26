@@ -26,16 +26,29 @@ export function getLenis() {
 }
 
 /**
- * Lets a page scroll without end: Lenis wraps its scroll at the page limit
- * (`infinite`), and touch goes through Lenis too, since a native swipe stops
- * at the end of the page. Returns the undo.
+ * Lets a page scroll without end, downward: Lenis wraps its scroll at the
+ * page limit (`infinite`), and touch goes through Lenis too, since a native
+ * swipe stops at the end of the page. Its scroll is not wrapped internally,
+ * so the user's scrolls are kept from going above where the page started:
+ * a scroll up on the first screen stays put, and after some turns the page
+ * can be scrolled back up to its start, never past it. Returns the undo.
  */
 export function loopLenis(lenis: Lenis) {
   const { infinite, syncTouch } = lenis.options;
   lenis.options.infinite = true;
   lenis.options.syncTouch = true;
+  const scrollTo: Lenis["scrollTo"] = (target, options) =>
+    Lenis.prototype.scrollTo.call(
+      lenis,
+      typeof target === "number" && options?.programmatic === false
+        ? Math.max(0, target)
+        : target,
+      options,
+    );
+  lenis.scrollTo = scrollTo;
   lenis.resize();
   return () => {
+    Reflect.deleteProperty(lenis, "scrollTo");
     lenis.options.infinite = infinite;
     lenis.options.syncTouch = syncTouch;
     lenis.resize();
