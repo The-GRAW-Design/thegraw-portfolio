@@ -379,7 +379,10 @@ export function useDitherScene(
         // UVs use a top-left origin, like the CSS layout.
         texture.flipY = false;
         texture.minFilter = THREE.LinearFilter;
-        texture.magFilter = THREE.LinearFilter;
+        // Figma enlarges the image under its effects without smoothing: each
+        // source pixel shows as a block (≈3.4px in the hero), with the fine
+        // dither over it. The fallback samples it the same way.
+        texture.magFilter = THREE.NearestFilter;
         texture.generateMipmaps = false;
         const image = texture.image as { width: number; height: number };
         bakeMaterial.uniforms.uImage.value = texture;

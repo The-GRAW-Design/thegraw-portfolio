@@ -5,7 +5,13 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { SwordMode } from "@/features/hero-sword/types";
+import { heroWaitsForScroll } from "@/features/hero-sword/utils/intro";
 import { mixPose, slotPose } from "@/features/hero-sword/utils/pose";
+import {
+  HERO_REVEAL_SCROLL,
+  SWORD_LOAD_DELAY,
+  SWORD_REVEAL_DELAY,
+} from "@/features/hero-sword/utils/reveal";
 import { resetSwordWake, SWORD_WAKE } from "@/features/hero-sword/utils/wake";
 import { EASE, gsap, ScrollTrigger } from "@/lib/gsap";
 import { asset } from "@/utils/asset";
@@ -17,8 +23,6 @@ const FOV = 18;
 const MODEL = { tip: -0.7461, pommel: 0.2351 };
 const MODEL_LENGTH = MODEL.pommel - MODEL.tip;
 const MODEL_MID = (MODEL.pommel + MODEL.tip) / 2;
-/** The hero forms first: the sword flies in this long after the page starts. */
-const INTRO_DELAY = 1.1;
 /** Idle motion: float (px), roll around the blade and cursor tilt (rad). */
 const IDLE = { float: 5, roll: 0.14, tiltX: 0.16, tiltY: 0.28 };
 /**
@@ -58,13 +62,16 @@ function disposeObject(root: THREE.Object3D) {
  * The home sword in 3D, drawn on a fixed canvas over the hero stack. It rests
  * in the `[data-sword-slot]` boxes (hero, then "Projetos"), read live every
  * frame, so it moves with the page:
- * - entry: flies in tip first, spinning, and lands with a shockwave through
- *   the hero dither (`SWORD_WAKE`);
+ * - entry, on the first scroll when the site opens on the home on desktop
+ *   (the hero shows its background alone until then), or on load (back from
+ *   another page, or on phones): flies in tip first, spinning, and lands with a
+ *   shockwave through the hero dither (`SWORD_WAKE`);
  * - scroll: while "Projetos" comes up, it turns over and settles into its
  *   slot there, upright on desktop, flat on phones;
  * - idle: floats, rolls a little and leans toward the cursor; on phones it
  *   turns slowly around its blade instead.
- * Renders only while the hero stack is on screen; disposes everything.
+ * Renders only while the hero or "Projetos" is on screen (the stack also
+ * holds the cases, which cover the hero); disposes everything.
  */
 export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
   useEffect(() => {
@@ -78,6 +85,12 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
     const startedAt = performance.now();
     let disposed = false;
     let visible = true;
+    /** "Projetos" has gone past the top: the cases cover the hero. */
+    let passed = false;
+    /** The site opened on the home: the sword waits for the first scroll. */
+    const onScroll = heroWaitsForScroll();
+    /** Time for the sword to fly in (the first scroll, or right away). */
+    let revealed = !onScroll;
     let model: THREE.Object3D | null = null;
     /** The sword materials: each holds the room map, turned with the slot. */
     const materials: THREE.MeshStandardMaterial[] = [];
@@ -121,6 +134,8 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
 
     // Viewport px <-> world: z = 0 is the screen plane, 1 unit = 1 CSS px.
     const viewport = { width: 1, height: 1 };
+    /** Ticker time of the last frame drawn (s). */
+    let lastTime = 0;
     const resize = () => {
       const width = container.clientWidth;
       const height = container.clientHeight;
@@ -134,10 +149,10 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
       camera.near = distance * 0.05;
       camera.far = distance * 4;
       camera.updateProjectionMatrix();
+      // Resizing cleared the canvas: draw again before the browser paints it
+      // (blank until the next frame otherwise, a blink).
+      if (model) tick(lastTime, 0);
     };
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(container);
-    resize();
 
     // Scroll: 0 in the hero, 1 once "Projetos" is centred on screen.
     let dock = 0;
@@ -172,6 +187,7 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
     let turntableSpin = 0;
     const tick = (time: number, deltaTime: number) => {
       if (!model) return;
+      lastTime = time;
       const frames = Math.min(deltaTime / (1000 / 60), 4);
 
       // Rest pose: between the two slots, as the page scrolls.
@@ -241,9 +257,13 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
       SWORD_WAKE.ringStrength = ring.strength;
     };
 
+    const resizeObserver = new ResizeObserver(resize);
+    resizeObserver.observe(container);
+    resize();
+
     const updateLoop = () => {
       gsap.ticker.remove(tick);
-      if (visible && model && !disposed) {
+      if (visible && !passed && revealed && model && !disposed) {
         gsap.ticker.add(tick);
         canvas.style.visibility = "visible";
       } else {
@@ -257,8 +277,70 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
       updateLoop();
     });
     intersectionObserver.observe(stack);
+    const passTrigger = ScrollTrigger.create({
+      trigger: projects,
+      start: "bottom top",
+      onEnter: () => {
+        passed = true;
+        updateLoop();
+      },
+      onLeaveBack: () => {
+        passed = false;
+        updateLoop();
+      },
+    });
 
     let flight: gsap.core.Timeline | null = null;
+    const fly = () => {
+      if (!revealed || !model || flight) return;
+      // Back from another page: the knight forms first, as the page starts.
+      const elapsed = (performance.now() - startedAt) / 1000;
+      flight = gsap
+        .timeline({
+          delay: onScroll
+            ? SWORD_REVEAL_DELAY
+            : Math.max(0, SWORD_LOAD_DELAY - elapsed),
+          // Nothing shows before the flight.
+          onStart: () => {
+            pivot.visible = true;
+          },
+        })
+        .fromTo(
+          intro,
+          { travel: 1, spin: Math.PI * 3 },
+          { travel: 0, spin: 0, duration: 1.35, ease: EASE.expo },
+        )
+        // It bites in: the blade shivers and the shockwave runs out.
+        .fromTo(
+          intro,
+          { quiver: 1 },
+          { quiver: 0, duration: 0.9, ease: EASE.out },
+          0.22,
+        )
+        .fromTo(
+          ring,
+          { radius: 0, strength: 1 },
+          {
+            radius: () => Math.hypot(viewport.width, viewport.height) * 0.75,
+            strength: 0,
+            duration: 1.6,
+            ease: "power2.out",
+          },
+          0.2,
+        );
+    };
+    const revealTrigger = onScroll
+      ? ScrollTrigger.create({
+          start: HERO_REVEAL_SCROLL,
+          end: "max",
+          once: true,
+          onEnter: () => {
+            revealed = true;
+            fly();
+            updateLoop();
+          },
+        })
+      : null;
     const loader = new GLTFLoader();
     loader
       .loadAsync(asset("/models/sword.glb"))
@@ -293,39 +375,7 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
         pivot.add(gltf.scene);
         model = gltf.scene;
         setMode(stack, "live");
-
-        const elapsed = (performance.now() - startedAt) / 1000;
-        flight = gsap
-          .timeline({
-            delay: Math.max(0, INTRO_DELAY - elapsed),
-            // Nothing shows before the flight.
-            onStart: () => {
-              pivot.visible = true;
-            },
-          })
-          .fromTo(
-            intro,
-            { travel: 1, spin: Math.PI * 3 },
-            { travel: 0, spin: 0, duration: 1.35, ease: EASE.expo },
-          )
-          // It bites in: the blade shivers and the shockwave runs out.
-          .fromTo(
-            intro,
-            { quiver: 1 },
-            { quiver: 0, duration: 0.9, ease: EASE.out },
-            0.22,
-          )
-          .fromTo(
-            ring,
-            { radius: 0, strength: 1 },
-            {
-              radius: () => Math.hypot(viewport.width, viewport.height) * 0.75,
-              strength: 0,
-              duration: 1.6,
-              ease: "power2.out",
-            },
-            0.2,
-          );
+        fly();
         updateLoop();
       })
       .catch(() => {
@@ -337,6 +387,8 @@ export function useSwordScene(containerRef: RefObject<HTMLDivElement | null>) {
       gsap.ticker.remove(tick);
       flight?.kill();
       dockTrigger.kill();
+      passTrigger.kill();
+      revealTrigger?.kill();
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
       window.removeEventListener("pointermove", onPointerMove);

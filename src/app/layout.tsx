@@ -15,7 +15,8 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_CONFIG.name}`,
   },
   description: SITE_CONFIG.description,
-  // The THE GRAW sword mark on RED GRAW, with an ICO for the small sizes.
+  // Figma "Frame 35071": THE GRAW DESIGN with the sword on RED GRAW, with an
+  // ICO for the small sizes.
   icons: {
     icon: [
       { url: asset("/favicon.png"), type: "image/png", sizes: "192x192" },

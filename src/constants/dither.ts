@@ -6,9 +6,6 @@ type DitherPreset = Omit<DitherImageProps, "alt" | "animation" | "className">;
 /** Plain cover of the container, used on small screens. */
 const COVER_FRAME: DitherFrame = { x: 0, y: 0, width: 1, height: 1 };
 
-/** The desktop hero runs 30% past the first screen (`lg:h-[130svh]`). */
-const HERO_SCREENS = 1.3;
-
 /**
  * Figma "Desktop - 2" (site 2.0): the knight with the banner, 2500×2276 at
  * (-153, -424) in the 1920×1080 frame; phones: 401×852 at (-6, 0) in the
@@ -22,9 +19,9 @@ const HERO_FRAME: DitherFrame = {
 };
 
 /**
- * Figma "Desktop - 2" gradient map (white → blood → char), rendered like the
- * first hero at the user's request: grain and visible 3px pixels, which the
- * wind moves (the Figma Dither at pixel 1 is too fine to show it).
+ * Figma "Desktop - 2" / "Desktop - 3" (and the phone hero), exactly: gradient
+ * map white → blood → char (offset 0, scatter 0), then Dither: Bayer 16x16,
+ * per channel, 7 levels, brightness 82%, contrast 1, pixel size 1.
  */
 export const HERO_DITHER: DitherPreset = {
   src: asset("/images/home/hero-banner.webp"),
@@ -33,26 +30,17 @@ export const HERO_DITHER: DitherPreset = {
     { token: "blood", position: 0.5 },
     { token: "char", position: 1 },
   ],
-  pixelSize: 3.75,
-  scatter: 0.3,
-  quantize: "posterize",
-  levels: 16,
-  // The Figma Dither brightness, which sets the tone.
+  pixelSize: 1,
+  quantize: "ordered",
+  levels: 7,
   brightness: 82,
-  // Kept on the first screen: the image already runs past it, into the extra 30%.
-  frame: {
-    ...HERO_FRAME,
-    y: HERO_FRAME.y / HERO_SCREENS,
-    height: HERO_FRAME.height / HERO_SCREENS,
-  },
+  contrast: 1,
+  frame: HERO_FRAME,
   mobileFrame: { x: -0.01527, y: 0, width: 1.02036, height: 1 },
 };
 
-/** 404: the home hero on a single screen (the image keeps its Figma frame). */
-export const NOT_FOUND_DITHER: DitherPreset = {
-  ...HERO_DITHER,
-  frame: HERO_FRAME,
-};
+/** 404: the home hero, on a single screen like it. */
+export const NOT_FOUND_DITHER: DitherPreset = HERO_DITHER;
 
 /** Figma "Footer": image at 29% over RED GRAW, offset −15%, scatter 50%, then Pixelate (2px, 16 levels). */
 export const FOOTER_DITHER: DitherPreset = {

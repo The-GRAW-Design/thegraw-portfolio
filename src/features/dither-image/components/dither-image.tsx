@@ -47,6 +47,7 @@ export function DitherImage({
   mobileFrame = frame,
   animation = "intro",
   disturbance,
+  coveredBy,
   className,
 }: DitherImageProps) {
   const webgl = useWebGLSupport();
@@ -81,6 +82,7 @@ export function DitherImage({
           {...options}
           animation={animation}
           disturbance={disturbance}
+          coveredBy={coveredBy}
         />
       ) : (
         <DitherFallback {...options} />

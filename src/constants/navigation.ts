@@ -4,9 +4,10 @@ import { asset } from "@/utils/asset";
 /** Each link carries the thumbnail the menu opens beside it. */
 export const NAV_LINKS = [
   { label: "Início", href: "/", visual: asset("/images/menu/home.webp") },
+  // The cases showcase now lives only on the home: "Projetos" lists them all.
   {
     label: "Projetos",
-    href: "/cases",
+    href: "/cases/all",
     visual: asset("/images/menu/cases.webp"),
   },
   {
@@ -22,13 +23,13 @@ export const NAV_LINKS = [
 ] as const;
 
 export const FOOTER_LINKS = [
-  { label: "Work", href: "/cases" },
+  { label: "Work", href: "/cases/all" },
   { label: "Studio", href: "/studio" },
 ] as const;
 
 /** Site 2.0 footer links (desktop). */
 export const FOOTER_LINKS_PT = [
-  { label: "Projetos", href: "/cases" },
+  { label: "Projetos", href: "/cases/all" },
   { label: "Estúdio", href: "/studio" },
 ] as const;
 

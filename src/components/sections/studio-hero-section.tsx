@@ -1,17 +1,15 @@
 "use client";
 
-import Image from "next/image";
 import { useCallback, useRef, useState, type PointerEvent } from "react";
+import { ArrowButton } from "@/components/ui/arrow-button";
 import { ParallaxImage } from "@/components/ui/parallax-image";
 import { ProximityText } from "@/components/ui/proximity-text";
-import { Magnet } from "@/components/ui/react-bits/magnet";
 import { SplitReveal } from "@/components/ui/split-reveal";
 import { STUDIO_DITHER } from "@/constants/dither";
 import { STUDIO_PAGE, TEAM_MEMBERS } from "@/constants/pages";
 import { DitherImage } from "@/features/dither-image";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { EASE, gsap, useGSAP } from "@/lib/gsap";
-import { asset } from "@/utils/asset";
 import { cn } from "@/utils/cn";
 
 const MEMBER_COUNT = TEAM_MEMBERS.length;
@@ -229,41 +227,18 @@ export function StudioHeroSection() {
           member.cardClassName,
         )}
       >
-        {/* The arrows pull toward the cursor (React Bits Magnet) and nudge
-            the way they point. */}
+        {/* RED GRAW sweeps through the arrows on hover (`ArrowButton`). */}
         <div className="absolute top-451 right-14 left-15 flex justify-between lg:static lg:justify-start lg:gap-11">
-          <Magnet padding={36} magnetStrength={3} maxOffset={10}>
-            <button
-              type="button"
-              aria-label="Pessoa anterior"
-              className="group block backdrop-blur-[1.2px] transition-[scale] duration-300 ease-power3 active:scale-90"
-              onClick={() => go(-1)}
-            >
-              <Image
-                src={asset("/icons/arrow-prev.svg")}
-                alt=""
-                width={48}
-                height={48}
-                className="size-26.5 rotate-180 transition-[translate,opacity] duration-300 ease-power3 group-hover:-translate-x-6 group-hover:opacity-80 lg:size-48"
-              />
-            </button>
-          </Magnet>
-          <Magnet padding={36} magnetStrength={3} maxOffset={10}>
-            <button
-              type="button"
-              aria-label="Próxima pessoa"
-              className="group block backdrop-blur-[1.2px] transition-[scale] duration-300 ease-power3 active:scale-90"
-              onClick={() => go(1)}
-            >
-              <Image
-                src={asset("/icons/arrow-next.svg")}
-                alt=""
-                width={48}
-                height={48}
-                className="size-26.5 transition-[translate,opacity] duration-300 ease-power3 group-hover:translate-x-6 group-hover:opacity-80 lg:size-48"
-              />
-            </button>
-          </Magnet>
+          <ArrowButton
+            direction="prev"
+            aria-label="Pessoa anterior"
+            onClick={() => go(-1)}
+          />
+          <ArrowButton
+            direction="next"
+            aria-label="Próxima pessoa"
+            onClick={() => go(1)}
+          />
         </div>
         <div
           key={index}

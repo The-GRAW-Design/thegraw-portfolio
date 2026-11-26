@@ -8,11 +8,15 @@ import { EASE, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 const ENTRY_COARSE = 8;
 const SCROLL_COARSE = 2.5;
 
-/** GSAP-driven uniforms: entry reveal, scroll coarsening and cursor lens. */
+/**
+ * GSAP-driven uniforms: entry reveal, scroll coarsening and cursor lens.
+ * `coveredBy`: see `DitherImageProps`.
+ */
 export function useDitherAnimation(
   containerRef: RefObject<HTMLDivElement | null>,
   uniforms: DitherUniforms | null,
   animation: DitherAnimation,
+  coveredBy?: string,
 ) {
   useGSAP(
     () => {
@@ -43,8 +47,13 @@ export function useDitherAnimation(
         });
       }
 
-      // Scroll: coarser grain while the section leaves (intro) or enters (scroll).
+      // Scroll: coarser grain while the section leaves (intro) or enters
+      // (scroll); a sticky image "leaves" while its cover slides over it.
       const leaving = animation === "intro";
+      const cover =
+        leaving && coveredBy
+          ? document.querySelector<HTMLElement>(coveredBy)
+          : null;
       gsap.fromTo(
         uniforms.uScrollCoarse,
         { value: leaving ? 1 : SCROLL_COARSE / 2 },
@@ -52,15 +61,31 @@ export function useDitherAnimation(
           value: leaving ? SCROLL_COARSE : 1,
           ease: leaving ? "power2.in" : "power2.out",
           scrollTrigger: {
-            trigger: container,
-            start: leaving ? "top top" : "top bottom",
-            end: leaving ? "bottom top" : "top 40%",
+            trigger: cover ?? container,
+            start: cover ? "top bottom" : leaving ? "top top" : "top bottom",
+            end: cover ? "top top" : leaving ? "bottom top" : "top 40%",
             scrub: 0.6,
           },
         },
       );
+      // Once the cover has gone by (its texts may show the image through
+      // them), hidden: the render loop stops as the scene's observer sees it
+      // leave.
+      const uncover = () => {
+        container.style.display = "";
+      };
+      if (cover) {
+        ScrollTrigger.create({
+          trigger: cover,
+          start: "bottom top",
+          onEnter: () => {
+            container.style.display = "none";
+          },
+          onLeaveBack: uncover,
+        });
+      }
       // Cursor: a lens of coarser cells follows the pointer (desktop only).
-      if (!window.matchMedia("(pointer: fine)").matches) return;
+      if (!window.matchMedia("(pointer: fine)").matches) return uncover;
       const mouse = uniforms.uMouse.value;
       const moveX = gsap.quickTo(mouse, "x", { duration: 0.8, ease: EASE.out });
       const moveY = gsap.quickTo(mouse, "y", { duration: 0.8, ease: EASE.out });
@@ -94,6 +119,7 @@ export function useDitherAnimation(
       window.addEventListener("scroll", track, { passive: true });
       document.documentElement.addEventListener("pointerleave", onPointerLeave);
       return () => {
+        uncover();
         window.removeEventListener("pointermove", onPointerMove);
         window.removeEventListener("scroll", track);
         document.documentElement.removeEventListener(
@@ -102,6 +128,6 @@ export function useDitherAnimation(
         );
       };
     },
-    { dependencies: [uniforms, animation], revertOnUpdate: true },
+    { dependencies: [uniforms, animation, coveredBy], revertOnUpdate: true },
   );
 }

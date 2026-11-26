@@ -10,12 +10,13 @@ export default function HomePage() {
   return (
     <>
       <main id="conteudo">
+        {/* The hero stays fixed until "Projetos" and the cases cover it. */}
         <div data-hero-stack className="relative">
           <HeroSection />
           <ProjectsIntroSection />
+          <HomeCases band={<ViewAllCasesSection className="lg:hidden" />} />
           <HeroSword />
         </div>
-        <HomeCases band={<ViewAllCasesSection className="lg:hidden" />} />
         <ViewAllCasesSection className="max-lg:hidden" />
         <ContactSection />
       </main>

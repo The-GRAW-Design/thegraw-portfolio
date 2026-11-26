@@ -11,6 +11,11 @@ type SplitRevealProps = {
   split?: "chars" | "words" | "lines";
   /** Play on mount or when the element scrolls into view. */
   trigger?: "load" | "scroll";
+  /**
+   * Play once the page has scrolled this many px instead (wherever the text
+   * is), never forced to its end by a fast scroll.
+   */
+  revealAt?: number;
   /** Seconds before the first unit moves. */
   delay?: number;
   className?: string;
@@ -37,6 +42,7 @@ export function SplitReveal({
   children,
   split = "words",
   trigger = "scroll",
+  revealAt,
   delay = 0,
   className,
 }: SplitRevealProps) {
@@ -56,7 +62,12 @@ export function SplitReveal({
       ease={EASE.expo}
       duration={split === "chars" ? 1.1 : 1}
       delay={STAGGER[split]}
-      trigger={trigger === "load" ? "load" : "view"}
+      trigger={trigger === "load" && revealAt === undefined ? "load" : "view"}
+      scrollTrigger={
+        revealAt === undefined
+          ? undefined
+          : { start: revealAt, end: "max", fastScrollEnd: false }
+      }
       threshold={0.12}
       rootMargin="0px"
       className={className}

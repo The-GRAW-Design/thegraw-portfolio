@@ -12,6 +12,7 @@ import { useTextKnockout } from "@/hooks/use-text-knockout";
  * over a light grain, with the sword between them (it settles here from the
  * hero). The section slides over the hero, and its texts are cut out of the
  * grain like the menu words on hover, showing the hero through them, blurred.
+ * It is the hero's cover (`data-hero-cover`): the hero holds still under it.
  */
 export function ProjectsIntroSection() {
   const ref = useRef<HTMLElement>(null);
@@ -21,6 +22,7 @@ export function ProjectsIntroSection() {
   return (
     <section
       ref={ref}
+      data-hero-cover
       data-header-theme="dark"
       className="relative z-10 h-412 overflow-hidden text-black lg:h-617"
     >
