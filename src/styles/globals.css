@@ -66,6 +66,8 @@
   --color-dusk: rgb(0 0 0 / 0.49);
   --color-fade-light: rgb(228 228 228 / 0.19);
   --color-fade-dark: rgb(15 15 15 / 0.19);
+  /* Site 2.0 services: tint of the projects strip side fades */
+  --color-fade-faint: rgb(15 15 15 / 0.03);
   --color-tint: rgb(1 60 196 / 0.01);
   --color-glass: rgb(211 211 211 / 0.59);
   --color-chip: rgb(101 101 101 / 0.18);
