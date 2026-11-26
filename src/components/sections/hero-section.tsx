@@ -1,4 +1,4 @@
-import { HERO_DITHER } from "@/constants/dither";
+import { HERO_VIDEO_DITHER } from "@/constants/dither";
 import { HOME_PAGE } from "@/constants/pages";
 import { HeroWords, SwordBackdrop, SwordSlot } from "@/features/hero-sword";
 
@@ -27,7 +27,7 @@ export function HeroSection() {
         className="sticky top-0 h-lvh overflow-hidden bg-black-graw text-white-graw"
       >
         <SwordBackdrop
-          {...HERO_DITHER}
+          {...HERO_VIDEO_DITHER}
           animation="intro"
           coveredBy={HERO_COVER}
         />
