@@ -1,14 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { Fragment, useEffect, useRef } from "react";
-import { GradualBlur } from "@/components/ui/react-bits/gradual-blur";
+import { useEffect, useRef } from "react";
 import { findProject, getProjectHref } from "@/constants/projects";
 import { SERVICES_PAGE } from "@/constants/services";
 import { TransitionLink } from "@/features/page-transition";
 import { EASE, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import type { Project, ProjectShowcase } from "@/types/project";
-import { cn } from "@/utils/cn";
 
 type ServicesProjectsSectionProps = {
   /** The repeat of the page start at the end of the loop: it never pins. */
@@ -16,19 +14,6 @@ type ServicesProjectsSectionProps = {
   /** Pairs this strip's swipes with the other copy's; returns the undo. */
   onViewport?: (viewport: HTMLElement) => () => void;
 };
-
-/**
- * Figma side fades (Rectangles 52/53, read in the Figma editor): 198.63 wide
- * with a 3% tint, and a progressive background blur from 0 to 48.58 (24.29px
- * in CSS) growing evenly over the outer 161.6 toward the edge
- * (GradualBlur: 12px per unit of strength).
- */
-const EDGES = [
-  { side: "left", tint: "left-0 bg-linear-to-l" },
-  { side: "right", tint: "right-0 bg-linear-to-r" },
-] as const;
-const EDGE_BLUR_WIDTH = "calc(var(--spacing) * 161.6)";
-const EDGE_BLUR = 24.29 / 12;
 
 const SLIDES = SERVICES_PAGE.slides
   .map((slug) => findProject(slug))
@@ -44,7 +29,7 @@ const TOUCH = "(pointer: coarse)";
 /** How far the swipe hint pulls the track, in viewport widths. */
 const SWIPE_HINT = 0.14;
 /**
- * One slide away from the window, an image lags 2.5% of its slide behind it
+ * One slide away from its place, an image lags 2.5% of its slide behind it
  * and is 6% larger (3% of room on each side, so no edge ever shows). At rest
  * it is framed exactly as in the Figma.
  */
@@ -63,11 +48,13 @@ function drift(images: HTMLElement[], offset: number) {
 }
 
 /**
- * Figma "Projetos" (2.0): the "Project view" slides in a 1711.6×966.3 window
- * at x 89, blurred at both sides; on phones a full-width strip. With a mouse
- * the strip pins in the middle of the screen and the vertical scroll moves
- * the slides through the window; on touch screens they are swiped, and
- * without motion it is a plain horizontal scroller.
+ * Figma "Projetos" (2.0): the "Project view" slides, 1711.6×966.3, the first
+ * one at x 89 and the next peeking at the right edge; on phones a full-width
+ * strip. Edge to edge, without the Figma side fades (the user's call): the
+ * dark gap at the left only shows before the strip moves. With a mouse the
+ * strip pins in the middle of the screen and the vertical scroll moves the
+ * slides until the last one meets the right edge; on touch screens they are
+ * swiped, and without motion it is a plain horizontal scroller.
  */
 export function ServicesProjectsSection({
   copy = false,
@@ -94,6 +81,9 @@ export function ServicesProjectsSection({
         "[data-slide-image]",
         track,
       );
+      const slideWidth = () =>
+        (track.firstElementChild as HTMLElement | null)?.offsetWidth ||
+        viewport.clientWidth;
       const media = gsap.matchMedia();
 
       // Mouse: the vertical scroll moves the slides. The repeat stays at
@@ -120,7 +110,7 @@ export function ServicesProjectsSection({
             scrub: true,
             invalidateOnRefresh: true,
             onUpdate: (self) =>
-              drift(images, self.progress * (images.length - 1)),
+              drift(images, (self.progress * distance()) / slideWidth()),
           },
         });
         return release;
@@ -129,8 +119,7 @@ export function ServicesProjectsSection({
       // Touch: native swipes with snap, the drift following that scroll.
       // Once the strip comes in, it nudges sideways to show it can be swiped.
       media.add(`${MOTION} and ${TOUCH}`, () => {
-        const follow = () =>
-          drift(images, viewport.scrollLeft / viewport.clientWidth);
+        const follow = () => drift(images, viewport.scrollLeft / slideWidth());
         follow();
         viewport.addEventListener("scroll", follow, { passive: true });
         const stopFollowing = () =>
@@ -194,10 +183,11 @@ export function ServicesProjectsSection({
   );
 
   return (
-    <div ref={pinRef} data-header-theme="light" className="lg:pl-89">
+    <div ref={pinRef} data-header-theme="light">
+      {/* Desktop: the page's black shows in the gap before the first slide. */}
       <section
         aria-label={SERVICES_PAGE.projectsLabel}
-        className="@container relative aspect-[393/432.3] overflow-hidden bg-black-graw lg:aspect-auto lg:h-966.25 lg:w-1711.5"
+        className="@container relative aspect-[393/432.3] overflow-hidden bg-black-graw lg:aspect-auto lg:h-966.25 lg:bg-transparent"
       >
         {/* Lenis contains the overscroll of `data-lenis-prevent-horizontal` on
             both axes; the vertical one is let through so a vertical swipe
@@ -207,11 +197,12 @@ export function ServicesProjectsSection({
           data-lenis-prevent-horizontal
           className="absolute inset-0 snap-x snap-mandatory [scrollbar-width:none] overflow-x-auto overscroll-y-auto!"
         >
-          <ul ref={trackRef} className="flex h-full w-max">
+          {/* The first slide snaps with its gap; the others edge to edge. */}
+          <ul ref={trackRef} className="flex h-full w-max lg:pl-89">
             {SLIDES.map((project, index) => (
               <li
                 key={project.slug}
-                className="relative h-full w-[100cqw] shrink-0 snap-start overflow-hidden"
+                className="relative h-full w-[100cqw] shrink-0 snap-start overflow-hidden lg:w-1711.5 lg:first:scroll-ml-89"
               >
                 <TransitionLink
                   href={getProjectHref(project)}
@@ -234,29 +225,6 @@ export function ServicesProjectsSection({
             ))}
           </ul>
         </div>
-
-        {/* Tint and progressive blur on both edges (React Bits GradualBlur). */}
-        {EDGES.map((edge) => (
-          <Fragment key={edge.side}>
-            <div
-              aria-hidden
-              className={cn(
-                "pointer-events-none absolute inset-y-0 z-10 hidden w-[calc(var(--spacing)*198.629)] from-transparent to-fade-faint lg:block",
-                edge.tint,
-              )}
-            />
-            <GradualBlur
-              position={edge.side}
-              width={EDGE_BLUR_WIDTH}
-              strength={EDGE_BLUR}
-              curve="linear"
-              exponential={false}
-              layers={8}
-              zIndex={10}
-              className="hidden lg:block"
-            />
-          </Fragment>
-        ))}
       </section>
     </div>
   );
