@@ -1,13 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { GradualBlur } from "@/components/ui/react-bits/gradual-blur";
 import { findProject, getProjectHref } from "@/constants/projects";
 import { SERVICES_PAGE } from "@/constants/services";
 import { TransitionLink } from "@/features/page-transition";
 import { EASE, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import type { Project, ProjectShowcase } from "@/types/project";
+import { cn } from "@/utils/cn";
 
 type ServicesProjectsSectionProps = {
   /** The repeat of the page start at the end of the loop: it never pins. */
@@ -17,13 +18,17 @@ type ServicesProjectsSectionProps = {
 };
 
 /**
- * Figma side fades (Rectangles 52/53): 198.63 wide, a background blur of
- * 24.292 growing toward the edge (GradualBlur: 12px per unit of strength)
- * and a 3% tint.
+ * Figma side fades (Rectangles 52/53, read in the Figma editor): 198.63 wide
+ * with a 3% tint, and a progressive background blur from 0 to 48.58 (24.29px
+ * in CSS) growing evenly over the outer 161.6 toward the edge
+ * (GradualBlur: 12px per unit of strength).
  */
-const EDGES = ["left", "right"] as const;
-const EDGE_WIDTH = "calc(var(--spacing) * 198.629)";
-const EDGE_BLUR = 24.292 / 12;
+const EDGES = [
+  { side: "left", tint: "left-0 bg-linear-to-l" },
+  { side: "right", tint: "right-0 bg-linear-to-r" },
+] as const;
+const EDGE_BLUR_WIDTH = "calc(var(--spacing) * 161.6)";
+const EDGE_BLUR = 24.29 / 12;
 
 const SLIDES = SERVICES_PAGE.slides
   .map((slug) => findProject(slug))
@@ -38,14 +43,21 @@ const MOUSE = "(hover: hover) and (pointer: fine)";
 const TOUCH = "(pointer: coarse)";
 /** How far the swipe hint pulls the track, in viewport widths. */
 const SWIPE_HINT = 0.14;
-/** How far an image lags behind its slide, in % of its box, one slide away. */
+/**
+ * One slide away from the window, an image lags 2.5% of its slide behind it
+ * and is 6% larger (3% of room on each side, so no edge ever shows). At rest
+ * it is framed exactly as in the Figma.
+ */
 const DRIFT = 2.5;
+const DRIFT_ZOOM = 0.06;
 
 /** Each image lags behind its slide as the strip moves (`offset` in slides). */
 function drift(images: HTMLElement[], offset: number) {
   images.forEach((image, index) => {
+    const away = gsap.utils.clamp(-1, 1, index - offset);
     gsap.set(image, {
-      xPercent: -DRIFT * gsap.utils.clamp(-1, 1, index - offset),
+      xPercent: -DRIFT * away,
+      scale: 1 + DRIFT_ZOOM * Math.abs(away),
     });
   });
 }
@@ -207,16 +219,13 @@ export function ServicesProjectsSection({
                   tabIndex={copy ? -1 : undefined}
                   className="group absolute inset-0 block focus-visible:outline-offset-[-4px]"
                 >
-                  <div
-                    data-slide-image
-                    className="absolute inset-y-0 -left-[3%] w-[106%]"
-                  >
+                  <div data-slide-image className="absolute inset-0">
                     <Image
                       src={project.showcase.background}
                       alt=""
                       fill
                       priority={!copy && index === 0}
-                      sizes="(min-width: 1024px) 95vw, 106vw"
+                      sizes="(min-width: 1024px) 90vw, 100vw"
                       className="object-cover transition-transform duration-700 ease-power3 group-hover:scale-[1.02]"
                     />
                   </div>
@@ -226,18 +235,27 @@ export function ServicesProjectsSection({
           </ul>
         </div>
 
-        {/* Progressive blur and tint on both edges (React Bits GradualBlur). */}
+        {/* Tint and progressive blur on both edges (React Bits GradualBlur). */}
         {EDGES.map((edge) => (
-          <GradualBlur
-            key={edge}
-            position={edge}
-            width={EDGE_WIDTH}
-            strength={EDGE_BLUR}
-            layers={6}
-            tint="var(--color-fade-faint)"
-            zIndex={10}
-            className="hidden lg:block"
-          />
+          <Fragment key={edge.side}>
+            <div
+              aria-hidden
+              className={cn(
+                "pointer-events-none absolute inset-y-0 z-10 hidden w-[calc(var(--spacing)*198.629)] from-transparent to-fade-faint lg:block",
+                edge.tint,
+              )}
+            />
+            <GradualBlur
+              position={edge.side}
+              width={EDGE_BLUR_WIDTH}
+              strength={EDGE_BLUR}
+              curve="linear"
+              exponential={false}
+              layers={8}
+              zIndex={10}
+              className="hidden lg:block"
+            />
+          </Fragment>
         ))}
       </section>
     </div>
