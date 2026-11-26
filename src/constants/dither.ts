@@ -39,6 +39,20 @@ export const HERO_DITHER: DitherPreset = {
   mobileFrame: { x: -0.01527, y: 0, width: 1.02036, height: 1 },
 };
 
+/**
+ * Test (2026-11-26): the home hero with the user's looping video (a knight
+ * riding with a banner) instead of the image, through the same effect. The
+ * 16:9 video covers the screen; its first frame is the still for the static
+ * fallback.
+ */
+export const HERO_VIDEO_DITHER: DitherPreset = {
+  ...HERO_DITHER,
+  src: asset("/images/home/hero-video-poster.webp"),
+  video: asset("/videos/hero-loop.mp4"),
+  frame: COVER_FRAME,
+  mobileFrame: COVER_FRAME,
+};
+
 /** 404: the home hero, on a single screen like it. */
 export const NOT_FOUND_DITHER: DitherPreset = HERO_DITHER;
 
