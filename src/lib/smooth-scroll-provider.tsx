@@ -25,6 +25,23 @@ export function getLenis() {
   return lenisInstance;
 }
 
+/**
+ * Lets a page scroll without end: Lenis wraps its scroll at the page limit
+ * (`infinite`), and touch goes through Lenis too, since a native swipe stops
+ * at the end of the page. Returns the undo.
+ */
+export function loopLenis(lenis: Lenis) {
+  const { infinite, syncTouch } = lenis.options;
+  lenis.options.infinite = true;
+  lenis.options.syncTouch = true;
+  lenis.resize();
+  return () => {
+    lenis.options.infinite = infinite;
+    lenis.options.syncTouch = syncTouch;
+    lenis.resize();
+  };
+}
+
 type SmoothScrollProviderProps = {
   children: ReactNode;
 };
