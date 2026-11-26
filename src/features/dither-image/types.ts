@@ -51,7 +51,13 @@ export type DitherDisturbance = {
 };
 
 export type DitherImageProps = {
+  /** The image, or the still of `video` for the static fallback. */
   src: string;
+  /**
+   * A muted looping video run through the same effect instead of `src`
+   * (WebGL only): each of its frames is baked again as it plays.
+   */
+  video?: string;
   palette: DitherPalette;
   /** Accessible description; omit for decorative images. */
   alt?: string;
