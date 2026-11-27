@@ -40,15 +40,21 @@ export const HERO_DITHER: DitherPreset = {
 };
 
 /**
- * Test (2026-11-26): the home hero with the user's looping video (a knight
- * riding with a banner) instead of the image, through the same effect. The
- * 16:9 video covers the screen; its first frame is the still for the static
- * fallback.
+ * Test (2026-11-26): the home hero with the user's 4 s looping video (the
+ * knight holding up a waving banner, embers drifting) instead of the image.
+ * The video already carries its colors, so only the dither applies (same
+ * Bayer 16x16, 7 levels, pixel size 1): no gradient map, neutral brightness
+ * and contrast. The 16:9 video covers the screen; its first frame is the
+ * still for the static fallback.
  */
 export const HERO_VIDEO_DITHER: DitherPreset = {
-  ...HERO_DITHER,
   src: asset("/images/home/hero-video-poster.webp"),
-  video: asset("/videos/hero-loop.mp4"),
+  video: asset("/videos/hero-fluid-loop.mp4"),
+  pixelSize: 1,
+  quantize: "ordered",
+  levels: 7,
+  brightness: 100,
+  contrast: 1,
   frame: COVER_FRAME,
   mobileFrame: COVER_FRAME,
 };

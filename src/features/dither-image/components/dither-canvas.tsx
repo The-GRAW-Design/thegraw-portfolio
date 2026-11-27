@@ -14,7 +14,7 @@ import type {
 type DitherCanvasProps = {
   src: string;
   video?: string;
-  palette: DitherPalette;
+  palette?: DitherPalette;
   pixelSize: number;
   opacity: number;
   offset: number;
