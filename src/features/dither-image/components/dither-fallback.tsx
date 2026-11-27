@@ -24,7 +24,7 @@ import {
 
 type DitherFallbackProps = {
   src: string;
-  palette: DitherPalette;
+  palette?: DitherPalette;
   pixelSize: number;
   opacity: number;
   offset: number;
@@ -66,7 +66,7 @@ export function DitherFallback({
     let cancelled = false;
     let source: ImageData | null = null;
     let frameRequest = 0;
-    const resolved = resolvePalette(palette);
+    const resolved = palette ? resolvePalette(palette) : null;
     const thresholds = createBayerThresholds();
 
     const draw = () => {
@@ -88,7 +88,8 @@ export function DitherFallback({
 
       for (let y = 0; y < canvasHeight; y++) {
         for (let x = 0; x < canvasWidth; x++) {
-          // Same as the shader: gradient map once per pixel (or coarse cell).
+          // Same as the shader: gradient map once per pixel (or coarse cell),
+          // or the source's own color without a palette.
           const cellX = Math.floor(x / sampleCell);
           const cellY = Math.floor(y / sampleCell);
           const [u, v] = containerToImageUv(
@@ -109,16 +110,25 @@ export function DitherFallback({
             Math.max(0, Math.floor(v * source.height)),
           );
           const index = (sy * source.width + sx) * 4;
-          const luma = figmaLuma(
+          const rgb = [
             source.data[index] / 255,
             source.data[index + 1] / 255,
             source.data[index + 2] / 255,
-          );
-          const t = Math.min(
-            1,
-            Math.max(0, luma + (hash2d(cellX, cellY) - 0.5) * scatter - offset),
-          );
-          const mapped = gradientMap(resolved, t);
+          ] as const;
+          const mapped = resolved
+            ? gradientMap(
+                resolved,
+                Math.min(
+                  1,
+                  Math.max(
+                    0,
+                    figmaLuma(...rgb) +
+                      (hash2d(cellX, cellY) - 0.5) * scatter -
+                      offset,
+                  ),
+                ),
+              )
+            : rgb;
           const sum = [0, 0, 0];
 
           for (let j = 0; j < subsamples; j++) {

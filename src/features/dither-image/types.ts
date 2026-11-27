@@ -58,7 +58,8 @@ export type DitherImageProps = {
    * (WebGL only): each of its frames is baked again as it plays.
    */
   video?: string;
-  palette: DitherPalette;
+  /** The gradient map; omitted, the source keeps its own colors (only the dither applies). */
+  palette?: DitherPalette;
   /** Accessible description; omit for decorative images. */
   alt?: string;
   /** Size of a cell in CSS pixels. */

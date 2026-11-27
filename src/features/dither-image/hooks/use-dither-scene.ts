@@ -62,7 +62,7 @@ type DitherSceneOptions = {
   src: string;
   /** Played instead of `src`, baked again on each of its frames. */
   video?: string;
-  palette: DitherPalette;
+  palette?: DitherPalette;
   pixelSize: number;
   opacity: number;
   offset: number;
@@ -139,7 +139,7 @@ export function useDitherScene(
   }, [disturbance]);
   // Props from Server Components arrive as new objects on every navigation:
   // compare them by value so an unchanged palette or frame keeps the scene.
-  const paletteKey = JSON.stringify(palette);
+  const paletteKey = JSON.stringify(palette ?? null);
   const frameKey = JSON.stringify(frame);
 
   useEffect(() => {
@@ -175,7 +175,11 @@ export function useDitherScene(
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     const geometry = new THREE.PlaneGeometry(2, 2);
     const bayerTexture = createBayerTexture();
-    const resolved = resolvePalette(JSON.parse(paletteKey) as DitherPalette);
+    const scenePalette = JSON.parse(paletteKey) as DitherPalette | null;
+    // No palette: zero stops, the shader keeps the source's own colors.
+    const resolved = scenePalette
+      ? resolvePalette(scenePalette)
+      : { colors: [], positions: [] };
     const sceneFrame = JSON.parse(frameKey) as DitherFrame;
     const toVector = (rgb: readonly number[] | undefined) =>
       new THREE.Vector3(...(rgb ?? [0, 0, 0]));

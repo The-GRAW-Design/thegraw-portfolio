@@ -6,7 +6,8 @@ import { MAX_PALETTE_STOPS } from "@/features/dither-image/utils/palette";
  * Several variants are baked (shifted Bayer phase, new scatter seed): the same
  * effect, so animating between them never introduces new colors.
  * 1. Gradient map: luminance (texture read as linear, converted to sRGB, like
- *    Figma) + scatter + offset -> position on the palette ramp.
+ *    Figma) + scatter + offset -> position on the palette ramp. Without stops
+ *    (no palette) the source keeps its own colors.
  * 2. Quantization: per-channel Bayer 16x16 ("Dither") or flat ("Pixelate").
  *    Figma rasterizes effects at 1.25x and downsamples; ordered dithering is
  *    supersampled per pixel to match that texture. Brightness and contrast
@@ -84,12 +85,15 @@ export const DITHER_BAKE_FRAGMENT_SHADER = /* glsl */ `
   void main() {
     vec2 px = floor(vec2(gl_FragCoord.x, uResolution.y - gl_FragCoord.y));
 
-    // Gradient map once per pixel, or once per cell for coarse cells.
+    // Gradient map (or the source's own color without stops) once per
+    // pixel, or once per cell for coarse cells.
     float sampleCell = max(uPixelSize, 1.0);
     vec2 cell = floor(px / sampleCell);
     vec3 source = texture2D(uImage, clamp(frameUv((cell + 0.5) * sampleCell / uResolution), 0.0, 1.0)).rgb;
     float scatter = (hash(cell + uSeed * 37.0) - 0.5) * uScatter;
-    vec3 color = gradientMap(clamp(figmaLuma(source) + scatter - uOffset, 0.0, 1.0));
+    vec3 color = uStopCount > 0
+      ? gradientMap(clamp(figmaLuma(source) + scatter - uOffset, 0.0, 1.0))
+      : source;
 
     float steps = uLevels - 1.0;
     if (uQuantize != 0) {
